@@ -1,0 +1,100 @@
+
+################################################################
+### The code to read maps of genes using CCDS code of genes  ###
+
+library(stringr)   # to use string data in input files
+
+make_map  <-  function(f_out    =  'Input/map.txt', 
+                       ls   =  c( 'CCDS4107.1', 'CCDS8702.1', 
+                                  'CCDS43171.1', 'CCDS11118.1' ), 
+                       f_in =  'Input/CCDS.current.cdslen.txt' 
+                       ){
+    ### ls - the list of CCDS ids of genes for simulation
+    
+    ### Read of the file with genome information (get dataset)
+    df  <-  read.delim( file = f_in, sep = '\t', header = TRUE)
+    
+    ### Extract the row ids of dataset 
+    ids  <-  NULL 
+    for (i in 1:length( ls ) )        ids  <-  c( ids, which( df$ccds_id == ls[i] ) )
+    
+    ### df[ ids, ]
+    
+    ###  Get the only needed data  
+    
+    dt  <- df[ ids, ]
+    rm( df, i, ids )
+    
+    ### get a vector of strings:
+    dfALL  <-  NULL
+    for (i in 1:length(dt[,1]) ) {
+        lct  <-   as.character( dt[ i, 'cds_locations'] ) 
+        
+        lct  <-  str_sub( lct, 2, str_length( lct )-1 )
+        lct  <-   strsplit( lct , split = ',') 
+        lct  <-  lct[[1]]
+        
+        lct  <-  strsplit( lct[1:length(lct)] , split = '-')
+        
+        
+        df <- data.frame( matrix( unlist(lct), nrow=length(lct), byrow=TRUE ), 
+                         stringsAsFactors=FALSE )
+        df[ , 1] <- as.numeric( df[ , 1] ) 
+        df[ , 2] <- as.numeric( df[ , 2] ) 
+        names( df )  <-  c( 'Start', 'End' )
+        
+        dfALL  <-  rbind( dfALL, 
+                         data.frame( Chr = as.character( dt$X.chromosome[i] ), 
+                                     CCDS_ID = as.character( dt$ccds_id[i] ), 
+                                     Gene = as.character( dt$gene[i] ), 
+                                     df, stringsAsFactors = FALSE )
+                        )
+    }
+    
+    dfALL$Len  <-  dfALL$End  -  dfALL$Start + 1
+    
+    write.table( dfALL, file = f_out, quote = FALSE, sep = '\t',
+                 row.names = FALSE, col.names = TRUE )
+    
+    return( dfALL )
+}    
+
+
+order_gene_map  <-  function( gene_map ){
+    gm = NULL
+    for( t in   unique(gene_map$Chr) ) { 
+        
+        w = which( gene_map$Chr == t )
+        gm2  =  gene_map[ w, ]
+        gmt  =  gm2[ order( gm2$Start ), ]
+        gm   =  rbind( gm, gmt )
+        
+    }
+    rownames(gm) <- 1:length(gm$Chr)
+    return( gm )
+}
+
+# The function to get length of CDS and RNA from gene map
+get_len_cds_rna  <-  function( gene_map){ 
+    
+    name0  =  unique( gene_map$Gene )
+    cds0   =  NULL
+    rna0   =  NULL
+    # Get length of CDS and RNA from gene_map:
+    for ( i in 1:length(name0) ) {
+        w     =  which( gene_map$Gene == name0[ i ] )
+        cds0  =  c( cds0, sum( gene_map$End[w]  -  gene_map$Start[w] + 1 ) )
+        rna0  =  c( rna0, max( gene_map$End[w] ) - min( gene_map$Start[w]) + 1  )
+    }
+    
+    w = sapply( name0, FUN = function(x) which( onco$name  ==  x ) )
+    
+    name0  =  name0[w]
+    rna0   =  rna0[w]
+    cds0   =  cds0[w]
+
+    return( list( name0, cds0, rna0 ) )
+}
+
+
+
