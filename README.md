@@ -45,7 +45,7 @@ This version **tugHall 3.0**  has additional changes in the part of binominal di
 calculate binominal distribution for big numbers like n=10^14 or more with probability p=0.1 or something. 
 For so huge numbers we have to use approximation with normal distribution, because **rbinom()** function has a limitation for numbers **n**x**p**>10^12. 
 
-Also this version has possibilities to calculate the copy number alterations like deletion and duplication in comparison with version 2.1. 
+Also, this version has possibilities to calculate the copy number alterations like deletion and duplication in comparison with version 2.1. 
 
 
 Content of package
