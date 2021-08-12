@@ -439,11 +439,11 @@ Point_Mutations <- setRefClass(
         Parental_1or2	= "numeric",         # 1 or 2
         Chr	          = "character",       # Chromosome name
         Ref_pos	      = "numeric",         # Reference position
-        Phys_pos	    = "vector",          # Physical positions [from:to]
-        Delta	        = "vector",          # Delta of positions [from:to]
+        Phys_pos	    = "vector",          # Physical positions 
+        Delta	        = "vector",          # Delta of positions 
         Copy_number	  = "numeric",         # Copy number of allele 
         Gene_name	    = "character",       # Gene's name
-        MalfunctionedByPointMut  = "logical",       # True of False
+        MalfunctionedByPointMut  = "logical",       # True or False
         mut_order     = "numeric"          # order of mutation to reproduce the map 
     ),
     
@@ -620,11 +620,12 @@ get_point_mutation <- function( onco1, gm_1_2 ){
     p   =  sample( sp, size = 1, replace = TRUE, 
                   prob = gm[sp,'Len'] / sum( gm[sp,'Len'] ) )   ### get the block in gene_map
     pos =  sample( gm$Start[p]:gm$End[p], 1, replace=FALSE) 
+    Chr =  gm$Chr[p]
     
-    return( list( prntl, gene, pos ) )
+    return( list( prntl, gene, pos, Chr ) )
 }
 
-generate_pnt  <-  function( prntl, gene, pos, onco1 ) {
+generate_pnt  <-  function( prntl, gene, pos, onco1, Chr ) {
     ### The function to generate object of point mutation pnt
     pnt0 = Point_Mutations$new()
     pnt0$Gene_name = gene
@@ -632,10 +633,10 @@ generate_pnt  <-  function( prntl, gene, pos, onco1 ) {
                                 pnt_clones[[ length(pnt_clones) ]]$PointMut_ID + 2 ) 
     pnt0$Allele = 'B'  # Mutation occurs on allele B
     pnt0$Parental_1or2  =  as.integer(prntl)   
-    pnt0$Chr = gene_map$Chr[ which( gene_map$Gene == gene )[1] ]
+    pnt0$Chr = Chr
     pnt0$Ref_pos  = pos
-    pnt0$Phys_pos = c( pos, pos )
-    pnt0$Delta = pnt0$Phys_pos - pnt0$Ref_pos
+    pnt0$Phys_pos = pos
+    pnt0$Delta = 0
     pnt0$Copy_number = 1
     u = ifelse( onco1$onsp[ which(onco1$name == gene) ] == 'o', uo, us)
     pnt0$MalfunctionedByPointMut  =  ifelse( (runif(1) < u), TRUE, FALSE )
@@ -1106,7 +1107,7 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
                             # onco1 is onco related to new clone1
     
     ### if (sum(mut1) == 0) stop("The mutation is zero, that is incorrect", call. = TRUE)    # We have known that mutation must occur 
-    type_events  =  sample( x = c('point_mut', 'dup', 'del' ), size = num_mut,
+    type_events  =  sample( x = c('point_mut', 'del', 'dup' ), size = num_mut,
                                 replace = TRUE, prob = (onco1$prob_1 + onco1$prob_2)/2 )
     gm  =  modify_gene_map( clone1 , onco1 )
     # print( gm[[1]] )
@@ -1118,7 +1119,8 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
             prntl = unlist( pm[[1]] )
             gene  = unlist( pm[[2]] )
             pos   = unlist( pm[[3]] )
-            pnt0 = generate_pnt( prntl, gene, pos, onco1 )
+            Chr   = unlist( pm[[4]] )
+            pnt0 = generate_pnt( prntl, gene, pos, onco1, Chr )
             if ( (clone1$PointMut_ID == 0)[1] ) {
                         id   =  pnt_clones[[ length(pnt_clones) ]]$PointMut_ID
                       } else  id   =  c( clone1$PointMut_ID, pnt_clones[[ length(pnt_clones) ]]$PointMut_ID )
@@ -1129,7 +1131,7 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
             } else {
                 clone1$pasgene[ which( onco$name == gene ) ] = 1
             }
-            gm[[ prntl ]]  =  add_pnt_mutation( gm = gm[[ prntl ]], pos_pnt = pos, Chr = pnt0$Chr )
+            gm[[ prntl ]]  =  add_pnt_mutation( gm = gm[[ prntl ]], pos_pnt = pos, Chr = Chr )
         }
         
         if (t == 'dup' | t == 'del') {
@@ -1150,10 +1152,12 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
                 clone1$pasgene[ sapply(genes, FUN = function(x) which(onco$name == x) ) ] = 1
             }
             
+            ### Change the gene_map related chromosome
             ifelse( t == 'dup', 
                     gm[[ prntl ]]  <-  add_duplication( gm = gm[[ prntl ]], Ref_start = start_end[1], Ref_end = start_end[2], Chr = Chr ),
                     gm[[ prntl ]]  <-     add_deletion( gm = gm[[ prntl ]], Ref_start = start_end[1], Ref_end = start_end[2], Chr = Chr )  ) 
             
+            ### Check what point mutations match into the CNA 
             sp = FALSE
             if ( clone1$PointMut_ID != 0 ){
             sp = sapply( clone1$PointMut_ID , FUN = function( x )  {
@@ -1162,11 +1166,9 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
             }
             
             if ( any( sp ) ){
-                sapply( clone1$PointMut_ID[ sp ], FUN = function( x ) {
-                          pn_cn  =  pnt_clones[[x]]$Copy_number + ifelse(t == 'dup', 1, -1 )
-                          pnt_clones[[x]]$Copy_number  =  ifelse( pn_cn >= 0, pn_cn, 0 )
-                      } )
-                print( clone1$PointMut_ID[ sp ] )
+                sapply( clone1$PointMut_ID[ sp ], 
+                        FUN = function( x ) change_pnt_by_cna( pnt1  =  pnt_clones[[x]], start_end, t )  )
+                ###  print( clone1$PointMut_ID[ sp ] )
             }
             
         }
@@ -1175,6 +1177,29 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
     onco_update( onco1, gm )
 
 }
+
+
+
+### The function to change the point mutation due to CNA:
+change_pnt_by_cna  <-  function( pnt1, start_end, t ) {
+    
+    ntrs  =  intersect( which( pnt1$Phys_pos >= start_end[1] ), 
+                        which( pnt1$Phys_pos <= start_end[2] )  )
+    cf    =  length( ntrs )  ### coefficient for CN  
+    
+    if ( pnt1$Copy_number != 0 )  {
+        pn_cn  =  pnt1$Copy_number + cf * ifelse(t == 'dup', 1, -1 )
+        pnt1$Copy_number  =  ifelse( pn_cn >= 0, pn_cn, 0 )
+    }
+    
+    pos_pnt       =   pnt1$Phys_pos[ ntrs ]
+    
+    dlt  =  ifelse( t == 'dup', start_end[2]  -  start_end[1], start_end[1]  -  start_end[2] )
+    pnt1$Phys_pos   =  c( pnt1$Phys_pos, pos_pnt + dlt )
+    pnt1$Delta      =    pnt1$Phys_pos  -  pnt1$Ref_pos
+
+}
+
 
 ### The function to update onco1 after mutation ( used in trial_mutagenesis )
 onco_update  <-  function( onco1, gm ){
@@ -1204,13 +1229,14 @@ onco_update  <-  function( onco1, gm ){
     return( onco1 )
 }
 
-### The function to check point mutation matches or doesn't match into duplication or deletion
+### The function to check point mutations match or don't match into duplication or deletion
 chk_pnt_mut  <-  function( pnt1 , Ref_start, Ref_end, Chr, prntl ){
     
-    if ( pnt1$Chr == Chr &  pnt1$Ref_pos <= Ref_end & pnt1$Ref_pos >= Ref_start & pnt1$Parental_1or2 == prntl ) {
-        return( TRUE )} else {
-        return( FALSE )
-        }
+    for( X in pnt1$Phys_pos ){
+        if ( pnt1$Chr == Chr &  X <= Ref_end & X >= Ref_start & pnt1$Parental_1or2 == prntl ) {
+            return( TRUE )}
+    }
+    return( FALSE )
 }
 
 # to make one copy for clone1 in clone_init function

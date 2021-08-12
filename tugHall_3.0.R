@@ -12,7 +12,7 @@ lstG  <<- NULL
     library(stringr)   # to use string data in input files
     library(actuar)    # to use BIG NUMBERS in N_cell variable
     
-    source(file = "Code/tugHall_3.0_functions.R")
+    source(file = "Code/tugHall_2.2_functions.R")
     source(file = "Code/read_maps.R")
     
 
@@ -59,7 +59,7 @@ lstG  <<- NULL
     
     E0 <<-  1E-4       # parameter in the division probability  
     F0 <<-  10         # parameter in the division probability  
-    m0 <<-  1E-7       # mutation probability  
+    m0 <<-  1E-6       # mutation probability  
     uo <<-  0.5        # oncogene mutation probability  
     us <<-  0.5        # suppressor mutation probability  
     s0 <<-  10         # parameter in the sigmoid function  
@@ -69,8 +69,8 @@ lstG  <<- NULL
     censore_n <<- 10^5       # Max cell number where the program forcibly stops
     censore_t <<- 100         # Max time where the program forcibly stops
     ### New parameters for CNA:
-    m_dup  <<- 1E-8 # mutation probability for duplication
-    m_del  <<- 1E-8 # mutation probability for deletion 
+    m_dup  <<- 8E-8 # mutation probability for duplication
+    m_del  <<- 1E-9 # mutation probability for deletion 
     lambda_dup  <<- 5000  # CNA duplication average length (of the geometrical distribution for the length)
     lambda_del  <<- 7000  # CNA deletion average length
     uo_dup  <<- 0.8 # Gene malfunction probability by CNA duplication for oncogene
