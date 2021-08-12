@@ -12,7 +12,7 @@ lstG  <<- NULL
     library(stringr)   # to use string data in input files
     library(actuar)    # to use BIG NUMBERS in N_cell variable
     
-    source(file = "Code/tugHall_2.2_functions.R")
+    source(file = "Code/tugHall_3.0_functions.R")
     source(file = "Code/read_maps.R")
     
 
