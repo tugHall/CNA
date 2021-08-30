@@ -1,11 +1,5 @@
 
-for ( v in 1:100 ) {
-print( ' The simulation number ')
-print( v )
-lstG  <<- NULL
-
 ### LIBRARIES and SOURCES ------------------------------------------------
-
 
     ###  The simulation uses the functions and classes in the "Code/tugHall_2.1_functions.R" 
     
@@ -108,9 +102,6 @@ lstG  <<- NULL
 ### Simulation of the cancer cell/clone evolution:
 smlt = model(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, censore_n, censore_t, d0)
 
-rm( list  =  ls() )
-
-}
 
 ### GET RESULTS ----------------------------------------------------------
 
