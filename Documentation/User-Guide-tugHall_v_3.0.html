@@ -1,0 +1,2507 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>tugHall version 3.0: USER-GUIDE-tugHall</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">tugHall version 3.0: USER-GUIDE-tugHall</h1>
+
+
+
+<div id="requirements-for-tughall-simulation" class="section level2">
+<h2>Requirements for tugHall simulation:</h2>
+<p>R version <strong>3.6.0</strong> or later</p>
+<p>libraries: <strong>stringr, actuar, tidyr</strong></p>
+<p>Note that the program has two different procedures in general: the first is the simulation and the second is the analysis of the simulation results. Please, pay attention that the requirements for these procedures are <strong>different</strong>. This User-Guide pertains to the <strong>simulation procedure</strong> alone.</p>
+<p><br /></p>
+</div>
+<div id="table-of-contents" class="section level1">
+<h1>Table of Contents</h1>
+<ol style="list-style-type: decimal">
+<li><a href="#quick">Quick start guide</a></li>
+<li><a href="#directories">Structure of directories</a></li>
+<li><a href="#inputs">Inputs</a></li>
+<li><a href="#outputs">Outputs</a></li>
+<li><a href="#run">How to run</a></li>
+<li><a href="#new">Differences with cell-based code and version 2.0</a></li>
+<li><a href="#new_cna">Differences with clone-based code and version 2.1</a></li>
+</ol>
+<p><a name="quick"></a></p>
+</div>
+<div id="quick-start-guide" class="section level1">
+<h1>1. Quick start guide</h1>
+<p>The simplest way to run tugHall:</p>
+<ul>
+<li>Save the <strong>/tugHall_2_2_CNA/</strong> directory to the working folder;</li>
+<li>Run <strong>tugHall_3.0.R</strong>.</li>
+</ul>
+<p>The code has its initial input parameters and input files in the <strong>/Input/</strong> folder. After the simulation the user can see results of the simulation (please, see <strong>User-Guide-Analysis_3</strong> for details) in the dialogue box, which will save to the <strong>/Output/</strong> and <strong>/Figures/</strong> folders. Note that the analysis procedure requires additional libraries and a higher version of R - 3.6.0.</p>
+<p><a name="directories"></a></p>
+</div>
+<div id="structure-of-directories" class="section level1">
+<h1>2. Structure of directories</h1>
+<div id="documentation-directory" class="section level3">
+<h3>Documentation directory:</h3>
+<p><strong>User-Guide-tugHall_v_3.0.XXX</strong> - user guide for a simulation in the XXX = Rmd, html or pdf formats.</p>
+<p><strong>User-Guide-Analysis_v3.0.XXX</strong> - user guide for the generation of an analysis and a report in the XXX = Rmd, html or pdf formats.</p>
+<p>dir <strong>/tugHall_3_0_CNA/</strong> - the directory that contains the software <strong>tugHall</strong> version 3.0.</p>
+<p><br /></p>
+</div>
+<div id="tughall_3_0_cna-directory" class="section level3">
+<h3><strong>/tugHall_3_0_CNA/</strong> directory:</h3>
+<p><strong>tugHall_3.0.R</strong> - R script to run a simulation and to define the parameters.</p>
+<p>dir <strong>/Code/</strong> - the folder with a code and a function library.</p>
+<p>dir <strong>/Input/</strong> - the folder with the input files.</p>
+<p>dir <strong>/Output/</strong> - the folder with the output files.</p>
+<p>dir <strong>/Figures/</strong> - the folder with the plot figures.</p>
+<p><br /></p>
+</div>
+<div id="code-directory" class="section level3">
+<h3><strong>/Code/</strong> directory:</h3>
+<p><strong>pic_lic.jpg</strong> - the necessary file for the user guide.</p>
+<p><strong>tugHall_3.0_functions.R</strong> - the file that contains the functions for the simulation / core of program.</p>
+<p><strong>read_maps.R</strong> - the file to read chromosomal locations got genes of interest from CCDS.current.txt file in the <em>Input/</em> folder</p>
+<p><strong>Analysis_clones.R</strong> - the file to analyze the results of a simulation and to plot figures.</p>
+<p><strong>Functions_clones.R</strong> - the file with the functions for the analysis of results.</p>
+<p><br /></p>
+</div>
+<div id="input-directory" class="section level3">
+<h3><strong>/Input/</strong> directory:</h3>
+<p><strong>cloneinit.txt</strong> - file with a list of initial cells with/without destroyed genes.</p>
+<p><strong>gene_cds2.txt</strong> - file with hallmark variables and weights.</p>
+<p><strong>CCDS.current.txt</strong> - file with information about chromosomal locations that was getting from <a href="https://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/">CCDS database</a>.</p>
+<p><br /></p>
+</div>
+<div id="output-directory" class="section level3">
+<h3><strong>/Output/</strong> directory:</h3>
+<p><strong>cloneout.txt</strong> - the file with simulation output.</p>
+<p><strong>geneout.txt</strong> - the file with information about hallmark variables and the weights.</p>
+<p><strong>log.txt</strong> - the file with information about all parameters.</p>
+<p><strong>Weights.txt</strong> - the file with information about weights between hallmarks and genes.</p>
+<p><strong>point_mutations.txt</strong> - the file contains information about point mutations in genome of clones.</p>
+<p><strong>CNA_mutations.txt</strong> - the file contains information about copy number alterations in genome of clones.</p>
+<p><strong>gene_map.txt</strong> - file with information about chromosomal locations for <em>genes of interest</em> only.</p>
+<p><strong>Order_of_malfunction.txt</strong> - see <strong>USER-GUIDE-Analysis</strong>.</p>
+<p><strong>VAF.txt</strong> - see <strong>USER-GUIDE-Analysis</strong>.</p>
+<p><br /></p>
+</div>
+<div id="figures-directory" class="section level3">
+<h3><strong>/Figures/</strong> directory</h3>
+<p>In the <strong>/Figures/</strong> directory there are figures in *.jpg format, which appear after the analysis of the simulation results. See <strong>USER-GUIDE-Analysis_3</strong>.</p>
+<p><a name="inputs"></a></p>
+</div>
+</div>
+<div id="inputs" class="section level1">
+<h1>3. Inputs</h1>
+<div id="input-of-hallmark-variables-and-gene-weights" class="section level2">
+<h2>Input of hallmark variables and gene weights</h2>
+<p>The file <strong>tugHall/Input/gene_hallmarks.txt</strong> defines the hallmark variables and weights:</p>
+<table>
+<caption><strong>Table 1. Input file for genes.</strong> Example of input file for hallmarks and weights in the file <em><strong>tugHall_2_2_CNA/Input/gene_hallmarks.txt</strong></em>.</caption>
+<thead>
+<tr class="header">
+<th align="center">Genes</th>
+<th align="center">Suppressor or Oncogene</th>
+<th align="center">Hallmark</th>
+<th align="center">Weights</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">APC</td>
+<td align="center">s</td>
+<td align="center">apoptosis</td>
+<td align="center">0.2616483</td>
+</tr>
+<tr class="even">
+<td align="center">APC</td>
+<td align="center">s</td>
+<td align="center">growth</td>
+<td align="center">0.3285351</td>
+</tr>
+<tr class="odd">
+<td align="center">APC</td>
+<td align="center">s</td>
+<td align="center">invasion</td>
+<td align="center">0.3746081</td>
+</tr>
+<tr class="even">
+<td align="center">KRAS</td>
+<td align="center">o</td>
+<td align="center">apoptosis</td>
+<td align="center">0.2099736</td>
+</tr>
+<tr class="odd">
+<td align="center">KRAS</td>
+<td align="center">o</td>
+<td align="center">growth</td>
+<td align="center">0.2881968</td>
+</tr>
+<tr class="even">
+<td align="center">KRAS</td>
+<td align="center">o</td>
+<td align="center">immortalization</td>
+<td align="center">0.4735684</td>
+</tr>
+<tr class="odd">
+<td align="center">KRAS</td>
+<td align="center">o</td>
+<td align="center">angiogenesis</td>
+<td align="center">0.3525394</td>
+</tr>
+<tr class="even">
+<td align="center">KRAS</td>
+<td align="center">o</td>
+<td align="center">invasion</td>
+<td align="center">0.0446472</td>
+</tr>
+<tr class="odd">
+<td align="center">TP53</td>
+<td align="center">s</td>
+<td align="center">apoptosis</td>
+<td align="center">0.2543523</td>
+</tr>
+<tr class="even">
+<td align="center">TP53</td>
+<td align="center">s</td>
+<td align="center">growth</td>
+<td align="center">0.3076387</td>
+</tr>
+<tr class="odd">
+<td align="center">TP53</td>
+<td align="center">s</td>
+<td align="center">angiogenesis</td>
+<td align="center">0.4012288</td>
+</tr>
+<tr class="even">
+<td align="center">TP53</td>
+<td align="center">s</td>
+<td align="center">immortalization</td>
+<td align="center">0.5264316</td>
+</tr>
+<tr class="odd">
+<td align="center">TP53</td>
+<td align="center">s</td>
+<td align="center">invasion</td>
+<td align="center">0.0645107</td>
+</tr>
+<tr class="even">
+<td align="center">PIK3CA</td>
+<td align="center">o</td>
+<td align="center">invasion</td>
+<td align="center">0.3588945</td>
+</tr>
+<tr class="odd">
+<td align="center">PIK3CA</td>
+<td align="center">o</td>
+<td align="center">growth</td>
+<td align="center">0.2879753</td>
+</tr>
+<tr class="even">
+<td align="center">PIK3CA</td>
+<td align="center">o</td>
+<td align="center">angiogenesis</td>
+<td align="center">0.3261495</td>
+</tr>
+<tr class="odd">
+<td align="center">PIK3CA</td>
+<td align="center">o</td>
+<td align="center">apoptosis</td>
+<td align="center">0.2938981</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><p><strong>Genes</strong> - name of gene, e.g., TP53, KRAS. The names must be typed carefully. The program detects all the unique gene names.</p></li>
+<li><p><strong>Suppressor or oncogene.</strong> - Distinction of oncogene/suppressor:</p></li>
+</ol>
+<ul>
+<li>o: oncogene</li>
+<li>s: suppressor</li>
+<li>?: unknown (will be randomly assigned)</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Hallmark</strong> - hallmark name, e.g., “apoptosis”. Available names:</li>
+</ol>
+<ul>
+<li>apoptosis</li>
+<li>immortalization</li>
+<li>growth</li>
+<li>anti-growth</li>
+<li>angiogenesis</li>
+<li>invasion</li>
+</ul>
+<p>Note that “growth” and “anti-growth” are related to the single hallmark “growth/anti-growth”. Note that “invasion” is related to “invasion/metastasis” hallmark.</p>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Weights</strong> - Hallmark weights for genes, e.g., 0.333 and 0.5. For each hallmark, the program checks the summation of all the weights. If it is not equal to 1, then the program normalizes it to reach unity. Note that, if the gene belongs to more than one hallmark type, it must be separated into separate lines.</li>
+</ol>
+<hr />
+<p>After that, the program defines all the weights. <strong>Unspecified weights</strong> are set to 0. Program performs normalization so that the sum of all weights should be equal to 1 for each column. The <strong>tugHall/Output/Weights.txt</strong> file saves these final input weights for the simulation. Only the first 10 lines are presented here:</p>
+<table>
+<caption><strong>Table 2. Weights for hallmarks.</strong> Example of weights for hallmarks and genes from <em><strong>tugHall/Output/Weights.txt</strong></em> file. Unspecified values equal 0.</caption>
+<colgroup>
+<col width="6%" />
+<col width="13%" />
+<col width="15%" />
+<col width="21%" />
+<col width="18%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Genes</th>
+<th align="center">Apoptosis, <span class="math inline">\(H_a\)</span></th>
+<th align="center">Angiogenesis, <span class="math inline">\(H_b\)</span></th>
+<th align="center">Growth / Anti-growth, <span class="math inline">\(H_d\)</span></th>
+<th align="center">Immortalization, <span class="math inline">\(H_i\)</span></th>
+<th align="center">Invasion / Metastasis, <span class="math inline">\(H_{im}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">APC</td>
+<td align="center">0.2565501</td>
+<td align="center">0.0000000</td>
+<td align="center">0.2709912</td>
+<td align="center">0.0000000</td>
+<td align="center">0.4445540</td>
+</tr>
+<tr class="even">
+<td align="center">KRAS</td>
+<td align="center">0.2058822</td>
+<td align="center">0.3264502</td>
+<td align="center">0.2377183</td>
+<td align="center">0.4735684</td>
+<td align="center">0.0529836</td>
+</tr>
+<tr class="odd">
+<td align="center">TP53</td>
+<td align="center">0.2493962</td>
+<td align="center">0.3715365</td>
+<td align="center">0.2537549</td>
+<td align="center">0.5264316</td>
+<td align="center">0.0765560</td>
+</tr>
+<tr class="even">
+<td align="center">PIK3CA</td>
+<td align="center">0.2881715</td>
+<td align="center">0.3020133</td>
+<td align="center">0.2375356</td>
+<td align="center">0.0000000</td>
+<td align="center">0.4259064</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><p><strong>Genes</strong> - name of genes.</p></li>
+<li><p><strong>Apoptosis, <span class="math inline">\(H_a\)</span></strong> - weights of hallmark “Apoptosis”.</p></li>
+<li><p><strong>Angiogenesis, <span class="math inline">\(H_b\)</span></strong> - weights of hallmark “Angiogenesis”.</p></li>
+<li><p><strong>Growth / Anti-growth, <span class="math inline">\(H_d\)</span></strong> - weights of hallmark “Growth / Anti-growth”.</p></li>
+<li><p><strong>Immortalization, <span class="math inline">\(H_i\)</span></strong> - weights of hallmark “Immortalization”.</p></li>
+<li><p><strong>Invasion / Metastasis, <span class="math inline">\(H_{im}\)</span></strong> - weights of hallmark “Invasion / Metastasis”.</p></li>
+</ol>
+<hr />
+</div>
+<div id="input-the-probabilities" class="section level2">
+<h2>Input the probabilities</h2>
+<p>The input of the probabilities used in the model is possible in the code for parameter value settings, <strong>“tugHall_3_0.R”</strong>:</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Probability variable and value</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>E0 &lt;- 2E-4</strong></td>
+<td align="left">Parameter <span class="math inline">\(E_0\)</span> related to environmental resource limitation</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>F0 &lt;- 1E0</strong></td>
+<td align="left">Parameter <span class="math inline">\(F_0\)</span> related angiogenesis</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>m &lt;- 1E-6</strong></td>
+<td align="left">Point mutation probability <span class="math inline">\(m&#39;\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><strong>uo &lt;- 0.5</strong></td>
+<td align="left">Gene malfunction probability by point mutation for oncogene <span class="math inline">\(u_o\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>us &lt;- 0.5</strong></td>
+<td align="left">Gene malfunction probability by point mutation for suppressor <span class="math inline">\(u_s\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><strong>s &lt;- 10</strong></td>
+<td align="left">Parameter in the sigmoid function <span class="math inline">\(s\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>k &lt;- 0.1</strong></td>
+<td align="left">Environmental death probability <span class="math inline">\(k&#39;\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><strong>m_dup &lt;- 0.01</strong></td>
+<td align="left">CNA duplication probability <span class="math inline">\(m_{dup}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>m_del &lt;- 0.01</strong></td>
+<td align="left">CNA deletion probability <span class="math inline">\(m_{del}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><strong>lambda_dup &lt;- 7000</strong></td>
+<td align="left">CNA duplication average length <span class="math inline">\(\lambda_{dup}\)</span> (of the geometrical distribution for the length)</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>lambda_del &lt;- 5000</strong></td>
+<td align="left">CNA deletion average length <span class="math inline">\(\lambda_{del}\)</span> (of the geometrical distribution for the length)</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>uo,dup &lt;- 0.8</strong></td>
+<td align="left">Gene malfunction probability by CNA duplication for oncogene <span class="math inline">\(u_{o,dup}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>us,dup &lt;- 0</strong></td>
+<td align="left">Gene malfunction probability by CNA duplication for suppressor, <span class="math inline">\(u_{s,dup}\)</span>. Currently, 0 is assumed.</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>uo,del &lt;- 0</strong></td>
+<td align="left">Gene malfunction probability by CNA deletion for oncogene <span class="math inline">\(u_{o,del}\)</span>. Currently, 0 is assumed.</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>us,del &lt;- 0.8</strong></td>
+<td align="left">Gene malfunction probability by CNA deletion for suppressor, <span class="math inline">\(u_{s,del}\)</span>.</td>
+</tr>
+<tr class="even">
+<td align="left"><img width="250/"></td>
+<td align="left"><img width="270/"></td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="filename-input" class="section level2">
+<h2>Filename input</h2>
+<p>Also in the code <strong>“tugHall_3_3.R”</strong> user can define names of input and output files, and additional parameters of simulation:</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variables and file names</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>genefile &lt;- ‘gene_hallmarks.txt’</strong></td>
+<td align="left">File with information about gene-hallmarks weights</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>mapfile &lt;- ‘gene_map.txt’</strong></td>
+<td align="left">File with information about genes’ map</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>clonefile &lt;- ‘cloneinit.txt’</strong></td>
+<td align="left">Initial Cells</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>geneoutfile &lt;- ‘geneout.txt’</strong></td>
+<td align="left">Gene Out file with hallmarks</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>cloneoutfile &lt;- ‘cloneout.txt’</strong></td>
+<td align="left">Output information of simulation</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>logoutfile &lt;- ‘log.txt’</strong></td>
+<td align="left">Log file to save the input information of simulation</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>censore_n &lt;- 30000 </strong></td>
+<td align="left">Max cell number where the program forcibly stops</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>censore_t &lt;- 200</strong></td>
+<td align="left">Max time where the program forcibly stops</td>
+</tr>
+<tr class="odd">
+<td align="left"><img width="200/"></td>
+<td align="left"><img width="350/"></td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="input-of-the-initial-clones" class="section level2">
+<h2>Input of the initial clones</h2>
+<p><strong>Pay attention, it does not work yet, and it will be working.</strong></p>
+<p>The initial states of cells are defined in <strong>“tugHall_3_0_CNA/Input/cloneinit.txt”</strong> file:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Clone ID</th>
+<th align="left">List of malfunctioned genes</th>
+<th align="left">Number of cells</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">&quot;&quot;</td>
+<td align="left">1000</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">“APC”</td>
+<td align="left">10</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">“APC, KRAS”</td>
+<td align="left">100</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">“KRAS”</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="left">“TP53, KRAS”</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">…</td>
+<td align="left">…</td>
+<td align="left">100</td>
+</tr>
+<tr class="odd">
+<td align="left">1000</td>
+<td align="left">&quot;&quot;</td>
+<td align="left">10</td>
+</tr>
+<tr class="even">
+<td align="left"><img width="50/"></td>
+<td align="left"><img width="150/"></td>
+<td align="left"><img width="150/"></td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><p><strong>Clone ID</strong> - ID of clone, e.g., 1, 324.</p></li>
+<li><p><strong>List of malfunctioned genes</strong> - list of malfunctioned genes for each clone, e.g. ““,”KRAS, APC“. The values are comma separated. The double quotes (”&quot;) without gene names indicate a clone without malfunctioned genes.</p></li>
+<li><p><strong>Number of cells</strong> - number of cells in each clone, e.g., 1, 1000.</p></li>
+</ol>
+</div>
+<div id="input-of-the-genes-maps" class="section level2">
+<h2>Input of the genes’ maps</h2>
+<p>This new version of <strong>tugHall</strong> allows to calculate CNAs in the genome. The breakpoints of CNAs may fall on genic regions consisting of exons and introns. That’s why it’s needed to enter information about gene’s map. In the <strong>/Input/</strong> directory you can find <strong>CCDS.current.txt</strong>, which was getting from <a href="https://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/">CCDS database</a> at the National Center for Biotechnology Information and has information about genes. At the beginning of simulation, the program reads this file and extracts genes’ map, which is put into <strong>“tugHall_2_clones/Input/gene_map.txt”</strong>. For example, the map is shown as follow:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Chr</th>
+<th align="center">CCDS_ID</th>
+<th align="center">Gene</th>
+<th align="center">Start</th>
+<th align="center">End</th>
+<th align="center">Len</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112754890</td>
+<td align="center">112755024</td>
+<td align="center">135</td>
+</tr>
+<tr class="even">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112766325</td>
+<td align="center">112766409</td>
+<td align="center">85</td>
+</tr>
+<tr class="odd">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112767188</td>
+<td align="center">112767389</td>
+<td align="center">202</td>
+</tr>
+<tr class="even">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112775628</td>
+<td align="center">112775736</td>
+<td align="center">109</td>
+</tr>
+<tr class="odd">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112780789</td>
+<td align="center">112780902</td>
+<td align="center">114</td>
+</tr>
+<tr class="even">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112792445</td>
+<td align="center">112792528</td>
+<td align="center">84</td>
+</tr>
+<tr class="odd">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112801278</td>
+<td align="center">112801382</td>
+<td align="center">105</td>
+</tr>
+<tr class="even">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112815494</td>
+<td align="center">112815592</td>
+<td align="center">99</td>
+</tr>
+<tr class="odd">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112818965</td>
+<td align="center">112819343</td>
+<td align="center">379</td>
+</tr>
+<tr class="even">
+<td align="center">5</td>
+<td align="center">CCDS4107.1</td>
+<td align="center">APC</td>
+<td align="center">112821895</td>
+<td align="center">112821990</td>
+<td align="center">96</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><p><strong>Chr</strong> - Name of the chromosome, e.g., 1, 12, X, Y.</p></li>
+<li><p><strong>CCDS_ID</strong> - ID of the gene in the <a href="https://www.ncbi.nlm.nih.gov/CCDS/">CCDS database</a>.</p></li>
+<li><p><strong>Gene</strong> - the name of the gene.</p></li>
+<li><p><strong>Start</strong> - the start position of each exon of the gene.</p></li>
+<li><p><strong>End</strong> - the final position of each exon of the gene.</p></li>
+<li><p><strong>Len</strong> - the length of gene’s location <em>Len = End - Start + 1</em></p></li>
+</ol>
+<hr />
+<p><a name="outputs"></a></p>
+</div>
+</div>
+<div id="outputs" class="section level1">
+<h1>4. Outputs</h1>
+<p>The output data consists of several files after the simulation.</p>
+<div id="log.txt-file" class="section level2">
+<h2>“log.txt” file</h2>
+<p>The file <strong>“log.txt”</strong> contains information about probabilities and file names. These variables are explained in the <a href="#inputs">“Inputs”</a>.</p>
+<table>
+<caption><strong>Table 3. log.txt file.</strong> Example of log.txt file.</caption>
+<thead>
+<tr class="header">
+<th align="center">Variable</th>
+<th align="center">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">genefile</td>
+<td align="center">Input/gene_hallmarks.txt</td>
+</tr>
+<tr class="even">
+<td align="center">clonefile</td>
+<td align="center">Input/cloneinit.txt</td>
+</tr>
+<tr class="odd">
+<td align="center">geneoutfile</td>
+<td align="center">Output/geneout.txt</td>
+</tr>
+<tr class="even">
+<td align="center">cloneoutfile</td>
+<td align="center">Output/cloneout.txt</td>
+</tr>
+<tr class="odd">
+<td align="center">logoutfile</td>
+<td align="center">Output/log.txt</td>
+</tr>
+<tr class="even">
+<td align="center">E</td>
+<td align="center">1e-04</td>
+</tr>
+<tr class="odd">
+<td align="center">F</td>
+<td align="center">10</td>
+</tr>
+<tr class="even">
+<td align="center">m0</td>
+<td align="center">1e-06</td>
+</tr>
+<tr class="odd">
+<td align="center">uo</td>
+<td align="center">0.5</td>
+</tr>
+<tr class="even">
+<td align="center">us</td>
+<td align="center">0.5</td>
+</tr>
+<tr class="odd">
+<td align="center">s</td>
+<td align="center">10</td>
+</tr>
+<tr class="even">
+<td align="center">k</td>
+<td align="center">0.2</td>
+</tr>
+<tr class="odd">
+<td align="center">m_dup</td>
+<td align="center">8e-08</td>
+</tr>
+<tr class="even">
+<td align="center">m_del</td>
+<td align="center">1e-09</td>
+</tr>
+<tr class="odd">
+<td align="center">lambda_dup</td>
+<td align="center">5000</td>
+</tr>
+<tr class="even">
+<td align="center">lambda_del</td>
+<td align="center">7000</td>
+</tr>
+<tr class="odd">
+<td align="center">uo_dup</td>
+<td align="center">0.8</td>
+</tr>
+<tr class="even">
+<td align="center">us_dup</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">uo_del</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">us_del</td>
+<td align="center">0.8</td>
+</tr>
+<tr class="odd">
+<td align="center">censore_n</td>
+<td align="center">1e+05</td>
+</tr>
+<tr class="even">
+<td align="center">censore_t</td>
+<td align="center">100</td>
+</tr>
+<tr class="odd">
+<td align="center">d0</td>
+<td align="center">0.35</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="geneout.txt-file" class="section level2">
+<h2>“geneout.txt” file</h2>
+<p>The file <strong>“geneout.txt”</strong> contains input information about the weights that connect the hallmarks and genes, which are defined by the user. These variables also are explained in the <a href="#inputs">“Inputs”</a>.</p>
+<table>
+<caption><strong>Table 4. geneout.txt file.</strong> Given below is an example of the geneout.txt file.</caption>
+<thead>
+<tr class="header">
+<th align="center">Gene_name</th>
+<th align="center">Hallmark_name</th>
+<th align="center">Weight</th>
+<th align="center">Suppressor_or_oncogene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">APC</td>
+<td align="center">apoptosis</td>
+<td align="center">0.2565501</td>
+<td align="center">s</td>
+</tr>
+<tr class="even">
+<td align="center">KRAS</td>
+<td align="center">apoptosis</td>
+<td align="center">0.2058822</td>
+<td align="center">o</td>
+</tr>
+<tr class="odd">
+<td align="center">TP53</td>
+<td align="center">apoptosis</td>
+<td align="center">0.2493962</td>
+<td align="center">s</td>
+</tr>
+<tr class="even">
+<td align="center">PIK3CA</td>
+<td align="center">apoptosis</td>
+<td align="center">0.2881715</td>
+<td align="center">o</td>
+</tr>
+<tr class="odd">
+<td align="center">KRAS</td>
+<td align="center">immortalization</td>
+<td align="center">0.4735684</td>
+<td align="center">o</td>
+</tr>
+<tr class="even">
+<td align="center">TP53</td>
+<td align="center">immortalization</td>
+<td align="center">0.5264316</td>
+<td align="center">s</td>
+</tr>
+<tr class="odd">
+<td align="center">APC</td>
+<td align="center">growth|anti-growth</td>
+<td align="center">0.2709912</td>
+<td align="center">s</td>
+</tr>
+<tr class="even">
+<td align="center">KRAS</td>
+<td align="center">growth|anti-growth</td>
+<td align="center">0.2377183</td>
+<td align="center">o</td>
+</tr>
+<tr class="odd">
+<td align="center">TP53</td>
+<td align="center">growth|anti-growth</td>
+<td align="center">0.2537549</td>
+<td align="center">s</td>
+</tr>
+<tr class="even">
+<td align="center">PIK3CA</td>
+<td align="center">growth|anti-growth</td>
+<td align="center">0.2375356</td>
+<td align="center">o</td>
+</tr>
+<tr class="odd">
+<td align="center">KRAS</td>
+<td align="center">angiogenesis</td>
+<td align="center">0.3264502</td>
+<td align="center">o</td>
+</tr>
+<tr class="even">
+<td align="center">TP53</td>
+<td align="center">angiogenesis</td>
+<td align="center">0.3715365</td>
+<td align="center">s</td>
+</tr>
+<tr class="odd">
+<td align="center">PIK3CA</td>
+<td align="center">angiogenesis</td>
+<td align="center">0.3020133</td>
+<td align="center">o</td>
+</tr>
+<tr class="even">
+<td align="center">APC</td>
+<td align="center">invasion</td>
+<td align="center">0.4445540</td>
+<td align="center">s</td>
+</tr>
+<tr class="odd">
+<td align="center">KRAS</td>
+<td align="center">invasion</td>
+<td align="center">0.0529836</td>
+<td align="center">o</td>
+</tr>
+<tr class="even">
+<td align="center">TP53</td>
+<td align="center">invasion</td>
+<td align="center">0.0765560</td>
+<td align="center">s</td>
+</tr>
+<tr class="odd">
+<td align="center">PIK3CA</td>
+<td align="center">invasion</td>
+<td align="center">0.4259064</td>
+<td align="center">o</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="cloneout.txt-file" class="section level2">
+<h2>“cloneout.txt” file</h2>
+<p>The file <strong>“cloneout.txt”</strong> contains the results of the simulation and includes the evolution data: all the output data for each clone at each time step (only the first 10 lines are presented):</p>
+<table>
+<caption><strong>Table 5. Output data.</strong> Example of output data for all clones. The names of columns are related to the description in the Tables 1,2 and <em>USER-GUIDE-Analysis_3</em>’s figures. Columns are from 1 to 16.</caption>
+<thead>
+<tr class="header">
+<th align="center">Time</th>
+<th align="center">N_cells</th>
+<th align="center">AvgOrIndx</th>
+<th align="center">ID</th>
+<th align="center">ParentID</th>
+<th align="center">Birthday</th>
+<th align="center">c</th>
+<th align="center">d</th>
+<th align="center">i</th>
+<th align="center">im</th>
+<th align="center">a</th>
+<th align="center">k</th>
+<th align="center">E</th>
+<th align="center">N</th>
+<th align="center">Nmax</th>
+<th align="center">M</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">0</td>
+<td align="center">-</td>
+<td align="center">avg</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">1000</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">0</td>
+<td align="center">1000</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">1000</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">-</td>
+<td align="center">avg</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">0.2496</td>
+<td align="center">0.2502</td>
+<td align="center">1</td>
+<td align="center">0.0004</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">9.9924</td>
+<td align="center">1001</td>
+<td align="center">10030.</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">989</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0.2496</td>
+<td align="center">0.2499</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">1001</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2496</td>
+<td align="center">0.2499</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">1001</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">3</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2496</td>
+<td align="center">0.2499</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">1001</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">4</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2496</td>
+<td align="center">0.5626</td>
+<td align="center">1</td>
+<td align="center">0.4259</td>
+<td align="center">0</td>
+<td align="center">0.2</td>
+<td align="center">2.4874</td>
+<td align="center">1001</td>
+<td align="center">40201.</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">5</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2496</td>
+<td align="center">0.2499</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">1001</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">6</td>
+<td align="center">6</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2496</td>
+<td align="center">0.2499</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">1001</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">7</td>
+<td align="center">7</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2496</td>
+<td align="center">0.2499</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.0066</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">1001</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><strong>Time</strong> - the time step, e.g., 1, 50.</li>
+<li><strong>N_cells</strong> - the number of cells in this clone, e.g. 1000, 2.</li>
+<li><strong>AvgOrIndx</strong> - “avg” or “index”: “avg” is for a line with averaged values across different (index) lines at the same time step; “index” shows the cell’s index at the current time step, e.g., avg, 4,7.</li>
+<li><strong>ID</strong> - the unique ID of clone, e.g., 1, 50.</li>
+<li><strong>Parent_ID</strong> - the parent index, e.g., 0, 45.</li>
+<li><strong>Birth_time</strong> - the birthday time step, e.g., 0, 5.</li>
+<li><strong>c</strong> - the counter of cell divisions for the clone.</li>
+<li><strong>d</strong> - the probability of division for the cell, e.g., 0.1, 0.8.</li>
+<li><strong>i</strong> - the probability of immortalization for the cell, e.g., 0.1, 0.8.</li>
+<li><strong>im</strong> - the probability of invasion/metastasis for the cell, e.g., 0.1, 0.8.</li>
+<li><strong>a</strong> - the probability of apoptosis for the cell, e.g., 0.1, 0.8.</li>
+<li><strong>k</strong> - the probability of death due to the environment, e.g., 0.1, 0.8.</li>
+<li><strong>E</strong> - the E coefficient for the function of the division probability, e.g., 10^4, 10^5.</li>
+<li><strong>N</strong> - the number of primary tumor cells at this time step, e.g., 134, 5432.</li>
+<li><strong>Nmax</strong> - the theoretically maximal number of primary tumor cells, e.g., 10000, 5000.</li>
+<li><strong>M</strong> - the number of metastasis cells at this time step, e.g., 16, 15439.</li>
+</ol>
+<table style="width:100%;">
+<caption><strong>Continuation of Table 5. </strong> Columns are from 17 to 28.</caption>
+<colgroup>
+<col width="4%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="3%" />
+<col width="7%" />
+<col width="7%" />
+<col width="4%" />
+<col width="7%" />
+<col width="9%" />
+<col width="13%" />
+<col width="10%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Time</th>
+<th align="center">AvgOrIndx</th>
+<th align="center">Ha</th>
+<th align="center">Him</th>
+<th align="center">Hi</th>
+<th align="center">Hd</th>
+<th align="center">Hb</th>
+<th align="center">type</th>
+<th align="center">mut_den</th>
+<th align="center">onco_genes</th>
+<th align="center">passenger_genes</th>
+<th align="center">PointMut_ID</th>
+<th align="center">CNA_ID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">0</td>
+<td align="center">avg</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr class="even">
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">avg</td>
+<td align="center">0.000287</td>
+<td align="center">0.000425</td>
+<td align="center">0</td>
+<td align="center">0.000237</td>
+<td align="center">0.000301</td>
+<td align="center">0</td>
+<td align="center">0.000249</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0 0 0 1</td>
+<td align="center">3</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">4</td>
+<td align="center">0.288171</td>
+<td align="center">0.425906</td>
+<td align="center">0</td>
+<td align="center">0.237535</td>
+<td align="center">0.302013</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">0 0 0 1</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0</td>
+<td align="center">2</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">6</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0</td>
+<td align="center">3</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">7</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0</td>
+<td align="center">4</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">8</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0</td>
+<td align="center">5</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">9</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0</td>
+<td align="center">6</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">10</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0</td>
+<td align="center">7</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">11</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0 0 1 0</td>
+<td align="center">0</td>
+<td align="center">8</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">12</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">5</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">13</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">1 0 0 0</td>
+<td align="center">7</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">avg</td>
+<td align="center">0.000518</td>
+<td align="center">0.000898</td>
+<td align="center">0</td>
+<td align="center">0.000548</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0.000505</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+</tbody>
+</table>
+<ol start="17" style="list-style-type: decimal">
+<li><strong>Ha</strong> - the value of the hallmark “Apoptosis” for the cell, e.g., 0.1, 0.4444.</li>
+<li><strong>Him</strong> - the value of the hallmark “Invasion / Metastasis” for the cell, e.g., 0.1, 0.4444.</li>
+<li><strong>Hi</strong> - the value of the hallmark “Immortalization” for the cell, e.g., 0.1, 0.4444.</li>
+<li><strong>Hd</strong> - the value of the hallmark “Growth / Anti-growth” for the cell, e.g., 0.1, 0.4444 .</li>
+<li><strong>Hb</strong> - the value of the hallmark “Angiogenesis” for the cell, e.g., 0.1, 0.4444 .</li>
+<li><strong>type</strong> - the type of the cell: “0” is primary tumor cell, “1” is the metastatic cell, e.g., 0, 1.</li>
+<li><strong>mut_den</strong> - the density of mutations (tumor mutation burden) for the cell, e.g., 0, 0.32.</li>
+<li><strong>onco_genes</strong> - the binary numbers indicate the driver mutation at the gene related to order of genes in onco as well as order of the next columns with genes’ names.</li>
+<li><strong>passenger_genes</strong> - the binary numbers indicate the passenger mutation at the gene related to order of genes in onco as well as order of the next columns with genes’ names.</li>
+<li><strong>PointMut_ID</strong> - the index of data row for point mutation data frame saved at the end of simulation in the file <strong>Point_mutations.txt</strong>, e.g., 23, 32.</li>
+<li><strong>CNA_ID</strong> - the index of data row for CNA data frame saved at the end of simulation in the file <strong>CNA.txt</strong>, e.g., 44, 21.</li>
+</ol>
+<p>There are two columns (24th and 25th) with the indexes of point mutations and CNAs in Table 5. Each index corresponds to index in the related data frames for point mutations and for CNAs (Tables 6 and 7 respectively).</p>
+<table>
+<caption><strong>Continuation of Table 5. </strong> Columns are from 29 to end.</caption>
+<colgroup>
+<col width="6%" />
+<col width="6%" />
+<col width="7%" />
+<col width="7%" />
+<col width="8%" />
+<col width="6%" />
+<col width="7%" />
+<col width="7%" />
+<col width="8%" />
+<col width="5%" />
+<col width="11%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">onco_ID</th>
+<th align="center">CDS_APC</th>
+<th align="center">CDS_KRAS</th>
+<th align="center">CDS_TP53</th>
+<th align="center">CDS_PIK3CA</th>
+<th align="center">RNA_APC</th>
+<th align="center">RNA_KRAS</th>
+<th align="center">RNA_TP53</th>
+<th align="center">RNA_PIK3CA</th>
+<th align="center">p0</th>
+<th align="center">prob_point_mut</th>
+<th align="center">prob_del</th>
+<th align="center">prob_dup</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+<tr class="odd">
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+<tr class="odd">
+<td align="center">4</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+<tr class="even">
+<td align="center">5</td>
+<td align="center">8994</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89698</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9728</td>
+<td align="center">0.5064</td>
+<td align="center">0.0060</td>
+<td align="center">0.4874</td>
+</tr>
+<tr class="odd">
+<td align="center">6</td>
+<td align="center">8607</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89311</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9732</td>
+<td align="center">0.5000</td>
+<td align="center">0.0061</td>
+<td align="center">0.4937</td>
+</tr>
+<tr class="even">
+<td align="center">7</td>
+<td align="center">8947</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89651</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9728</td>
+<td align="center">0.5057</td>
+<td align="center">0.0061</td>
+<td align="center">0.4881</td>
+</tr>
+<tr class="odd">
+<td align="center">8</td>
+<td align="center">13648</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">94352</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9679</td>
+<td align="center">0.5711</td>
+<td align="center">0.0052</td>
+<td align="center">0.4235</td>
+</tr>
+<tr class="even">
+<td align="center">9</td>
+<td align="center">8553</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89257</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9732</td>
+<td align="center">0.4991</td>
+<td align="center">0.0061</td>
+<td align="center">0.4947</td>
+</tr>
+<tr class="odd">
+<td align="center">10</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+<tr class="even">
+<td align="center">11</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1930</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">9366</td>
+<td align="center">35539</td>
+<td align="center">0.9724</td>
+<td align="center">0.5087</td>
+<td align="center">0.0060</td>
+<td align="center">0.4852</td>
+</tr>
+<tr class="odd">
+<td align="center">12</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+<tr class="even">
+<td align="center">13</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+<tr class="odd">
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9733</td>
+<td align="center">0.4987</td>
+<td align="center">0.0061</td>
+<td align="center">0.4950</td>
+</tr>
+</tbody>
+</table>
+<ol start="28" style="list-style-type: decimal">
+<li><strong>onco_ID</strong> - the index of the data related to onco object at simulation that has info about lengths of RNA and CDS for each chromosome.</li>
+</ol>
+<p>29-32. <strong>CDS_(gene’s name)</strong>, for example <strong>CDS_APC</strong> - the length of CDS for each gene in the order of names of genes for ONLY FIRST chromosome of a clone.</p>
+<p>33-36. <strong>RNA_(gene’s name)</strong>, for example <strong>RNA_APC</strong> - the length of RNA for each gene in the order of names of genes for ONLY FIRST chromosome of a clone.</p>
+<ol start="37" style="list-style-type: decimal">
+<li><p><strong>p0</strong> - the probability that during a trial, a cell of the clone has NO mutation. Applied to all cells in the clone.</p></li>
+<li><p><strong>prob_point_mut</strong> - the conditional probability that if cell will have a mutation it should be a <strong>point mutation</strong>.</p></li>
+<li><p><strong>prob_del</strong> - the conditional probability that if cell will have a mutation it should be a <strong>deletion</strong>.</p></li>
+<li><p><strong>prob_dup</strong> - the conditional probability that if cell will have a mutation it should be a <strong>duplication</strong>.</p></li>
+</ol>
+<p>The information of the columns from 28 to 40 is related to <em>onco</em> object in simulation for a clone. Please, pay attention that probability of mutations depend on length of CDS and RNA of all chromosome but the table has information only for first chromosome.</p>
+<table>
+<caption><strong>Table 6. </strong> Point mutation data frame which will be saved to the file <strong>Point_mutations.txt</strong> at the end of simulation.</caption>
+<colgroup>
+<col width="2%" />
+<col width="9%" />
+<col width="10%" />
+<col width="3%" />
+<col width="7%" />
+<col width="16%" />
+<col width="7%" />
+<col width="9%" />
+<col width="7%" />
+<col width="17%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="center">PointMut_ID</th>
+<th align="center">Parental_1or2</th>
+<th align="center">Chr</th>
+<th align="center">Ref_pos</th>
+<th align="center">Phys_pos</th>
+<th align="center">Delta</th>
+<th align="center">Copy_number</th>
+<th align="center">Gene_name</th>
+<th align="center">MalfunctionedByPointMut</th>
+<th align="center">mut_order</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">179</td>
+<td align="center">179</td>
+<td align="center">2</td>
+<td align="center">17</td>
+<td align="center">7676150</td>
+<td align="center">[7676150]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">TP53</td>
+<td align="center">TRUE</td>
+<td align="center">163</td>
+</tr>
+<tr class="even">
+<td align="left">180</td>
+<td align="center">179</td>
+<td align="center">1</td>
+<td align="center">17</td>
+<td align="center">7676150</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">TP53</td>
+<td align="center">NA</td>
+<td align="center">163</td>
+</tr>
+<tr class="odd">
+<td align="left">181</td>
+<td align="center">181</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112841874</td>
+<td align="center">[112841874, 112843388]</td>
+<td align="center">[0, 1514]</td>
+<td align="center">2</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">164</td>
+</tr>
+<tr class="even">
+<td align="left">182</td>
+<td align="center">181</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112841874</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">164</td>
+</tr>
+<tr class="odd">
+<td align="left">183</td>
+<td align="center">183</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112842532</td>
+<td align="center">[112842532]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">TRUE</td>
+<td align="center">168</td>
+</tr>
+<tr class="even">
+<td align="left">184</td>
+<td align="center">183</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112842532</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">168</td>
+</tr>
+<tr class="odd">
+<td align="left">185</td>
+<td align="center">185</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112840836</td>
+<td align="center">[112840836]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">170</td>
+</tr>
+<tr class="even">
+<td align="left">186</td>
+<td align="center">185</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112840836</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">170</td>
+</tr>
+<tr class="odd">
+<td align="left">187</td>
+<td align="center">187</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112838108</td>
+<td align="center">[112838108]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">171</td>
+</tr>
+<tr class="even">
+<td align="left">188</td>
+<td align="center">187</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112838108</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">171</td>
+</tr>
+<tr class="odd">
+<td align="left">189</td>
+<td align="center">189</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112838634</td>
+<td align="center">[112838634]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">172</td>
+</tr>
+<tr class="even">
+<td align="left">190</td>
+<td align="center">189</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112838634</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">172</td>
+</tr>
+<tr class="odd">
+<td align="left">191</td>
+<td align="center">191</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112841590</td>
+<td align="center">[112841590]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">TRUE</td>
+<td align="center">181</td>
+</tr>
+<tr class="even">
+<td align="left">192</td>
+<td align="center">191</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112841590</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">181</td>
+</tr>
+<tr class="odd">
+<td align="left">193</td>
+<td align="center">193</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112841756</td>
+<td align="center">[112841756]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">182</td>
+</tr>
+<tr class="even">
+<td align="left">194</td>
+<td align="center">193</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112841756</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">182</td>
+</tr>
+<tr class="odd">
+<td align="left">195</td>
+<td align="center">195</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112840487</td>
+<td align="center">[112840487]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">183</td>
+</tr>
+<tr class="even">
+<td align="left">196</td>
+<td align="center">195</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112840487</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">183</td>
+</tr>
+<tr class="odd">
+<td align="left">197</td>
+<td align="center">197</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">179201398</td>
+<td align="center">[179201398]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">PIK3CA</td>
+<td align="center">TRUE</td>
+<td align="center">184</td>
+</tr>
+<tr class="even">
+<td align="left">198</td>
+<td align="center">197</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">179201398</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">PIK3CA</td>
+<td align="center">NA</td>
+<td align="center">184</td>
+</tr>
+<tr class="odd">
+<td align="left">199</td>
+<td align="center">199</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112792458</td>
+<td align="center">[112792458]</td>
+<td align="center">[0]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">TRUE</td>
+<td align="center">185</td>
+</tr>
+<tr class="even">
+<td align="left">200</td>
+<td align="center">199</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112792458</td>
+<td align="center">[NA]</td>
+<td align="center">[NA]</td>
+<td align="center">1</td>
+<td align="center">APC</td>
+<td align="center">NA</td>
+<td align="center">185</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><strong>PointMut_ID</strong> - ID of point mutation, first ID is related to variant allele ‘B’ and same <em>second</em> ID - to the original allele A.</li>
+<li><strong>Parental_1or2</strong> - indicates either of the two parental chromosomes.</li>
+<li><strong>Chr</strong> - name of a chromosome.</li>
+<li><strong>Ref_pos</strong> - the reference position of an allele. The reference position is on the coordinate system of the human reference genome.</li>
+<li><strong>Phys_pos</strong> - the physical position of an allele. The physical length of a (parental) chromosome is extended or shrunk by CNA duplications or deletions, respectively. When a duplication happens, the reference position is divided into two or more physical positions, which are represented by multiple elements in a vector. When a deletion happens and the allele is lost, the lost is represented by “-” on the coordinate system of physical positions.</li>
+<li><strong>Delta</strong> - difference between the reference and physical positions.</li>
+<li><strong>Copy_number</strong> - the copy number of an allele.</li>
+<li><strong>Gene_name</strong> - the name of a gene.</li>
+<li><strong>MalfunctionedByPointMut</strong> - logical indicator of whether or not the gene is malfunctioned by the point mutation.</li>
+</ol>
+<table>
+<caption><strong>Table 7.</strong> CNA mutation data frame which will be saved to the file <strong>CNA.txt</strong> at the end of simulation.</caption>
+<colgroup>
+<col width="3%" />
+<col width="7%" />
+<col width="14%" />
+<col width="9%" />
+<col width="4%" />
+<col width="10%" />
+<col width="10%" />
+<col width="11%" />
+<col width="18%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="center">CNA_ID</th>
+<th align="center">Parental_1or2</th>
+<th align="center">dupOrdel</th>
+<th align="center">Chr</th>
+<th align="center">Ref_start</th>
+<th align="center">Ref_end</th>
+<th align="center">Gene_names</th>
+<th align="center">MalfunctionedByCNA</th>
+<th align="center">mut_order</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">200</td>
+<td align="center">200</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112842255</td>
+<td align="center">112844456</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">426</td>
+</tr>
+<tr class="even">
+<td align="left">201</td>
+<td align="center">201</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112835091</td>
+<td align="center">112835164</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">428</td>
+</tr>
+<tr class="odd">
+<td align="left">202</td>
+<td align="center">202</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112839406</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">429</td>
+</tr>
+<tr class="even">
+<td align="left">203</td>
+<td align="center">203</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112843606</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">430</td>
+</tr>
+<tr class="odd">
+<td align="left">204</td>
+<td align="center">204</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">3</td>
+<td align="center">179219684</td>
+<td align="center">179225408</td>
+<td align="center">PIK3CA</td>
+<td align="center">TRUE</td>
+<td align="center">434</td>
+</tr>
+<tr class="even">
+<td align="left">205</td>
+<td align="center">205</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112841043</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">435</td>
+</tr>
+<tr class="odd">
+<td align="left">206</td>
+<td align="center">206</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112819033</td>
+<td align="center">112821331</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">439</td>
+</tr>
+<tr class="even">
+<td align="left">207</td>
+<td align="center">207</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112842671</td>
+<td align="center">112843715</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">440</td>
+</tr>
+<tr class="odd">
+<td align="left">208</td>
+<td align="center">208</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">3</td>
+<td align="center">179225970</td>
+<td align="center">179228295</td>
+<td align="center">PIK3CA</td>
+<td align="center">TRUE</td>
+<td align="center">442</td>
+</tr>
+<tr class="even">
+<td align="left">209</td>
+<td align="center">209</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112840539</td>
+<td align="center">112840575</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">446</td>
+</tr>
+<tr class="odd">
+<td align="left">210</td>
+<td align="center">210</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112838089</td>
+<td align="center">112838810</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">449</td>
+</tr>
+<tr class="even">
+<td align="left">211</td>
+<td align="center">211</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112827128</td>
+<td align="center">112827316</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">450</td>
+</tr>
+<tr class="odd">
+<td align="left">212</td>
+<td align="center">212</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112842435</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">451</td>
+</tr>
+<tr class="even">
+<td align="left">213</td>
+<td align="center">213</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112840306</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">452</td>
+</tr>
+<tr class="odd">
+<td align="left">214</td>
+<td align="center">214</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112841721</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">456</td>
+</tr>
+<tr class="even">
+<td align="left">215</td>
+<td align="center">215</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112841873</td>
+<td align="center">112843314</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">457</td>
+</tr>
+<tr class="odd">
+<td align="left">216</td>
+<td align="center">216</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112843153</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">458</td>
+</tr>
+<tr class="even">
+<td align="left">217</td>
+<td align="center">217</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112841809</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">459</td>
+</tr>
+<tr class="odd">
+<td align="left">218</td>
+<td align="center">218</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112839366</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">461</td>
+</tr>
+<tr class="even">
+<td align="left">219</td>
+<td align="center">219</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112839636</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">462</td>
+</tr>
+<tr class="odd">
+<td align="left">220</td>
+<td align="center">220</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">3</td>
+<td align="center">179224173</td>
+<td align="center">179225375</td>
+<td align="center">PIK3CA</td>
+<td align="center">TRUE</td>
+<td align="center">465</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><strong>CNA_ID</strong> - ID of CNA.</li>
+<li><strong>Parental_1or2</strong> - indicates either of the two parental chromosomes.</li>
+<li><strong>DuplicationOrDeletion</strong> - indicator of duplication or deletion for CNA.</li>
+<li><strong>Chr</strong> - name of a chromosome.</li>
+<li><strong>Reference_start</strong> - the reference position of the CNA start.</li>
+<li><strong>Reference_end</strong> - the reference position of the CNA end.</li>
+<li><strong>Gene_name</strong> - the name(s) of a gene(s).</li>
+<li><strong>MalfunctionedByCNA</strong> - logical indicator of whether or not the gene(s) is malfunctioned by the CNA.</li>
+<li><strong>mut_order</strong> - indicator of mutation order in the simulation, it’s used to detect order of mutations in the clone.</li>
+</ol>
+<hr />
+<p><a name="run"></a></p>
+</div>
+</div>
+<div id="how-to-run" class="section level1">
+<h1>5. How to run</h1>
+<p>In order to make the simulation, please follow the procedure:</p>
+<ol style="list-style-type: decimal">
+<li><p>Copy <strong>/tugHall_3_0_CNA/</strong> directory into the working directory.</p></li>
+<li><p>CD to the <strong>/tugHall_3_0_CNA/</strong> directory.</p></li>
+<li><p>Run the <strong>tugHall_3.0.R</strong> file, using the command line like</p></li>
+</ol>
+<p><code>R --vanilla &lt; tugHall_3_0.R</code></p>
+<p>or using the line by line procedure in <strong>R Studio</strong>. In this case we have:</p>
+<ul>
+<li><strong><code>load library(stringr)</code></strong> and <strong><code>source(file = &quot;Code/tugHall_2.2_functions.R&quot;)</code></strong>;</li>
+<li>create the Output and Figures directories, if needed;</li>
+<li>define the simulation parameters;</li>
+<li>make the input file for initial cells, if needed;</li>
+<li>run the <em>model()</em> function to simulate;</li>
+<li>run <strong><code>source(&quot;Code/Analysis_clone.R&quot;)</code></strong> in order to analyze the results and plot the figures in the dialogue box (see <strong>User-Guide-Analysis_v3.0</strong>).</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>To obtain analysis reports of the simulation, please refer to <strong>User-Guide-Analysis_v3.0.RMD</strong>. In <strong>User-Guide-Analysis_v3.0.RMD</strong>, commands are embedded to include files under <strong>Output/</strong> and <strong>Figure/</strong>. So, after analysis with tugHall, you can generate analysis reports automatically from <strong>User-Guide-Analysis_v3.0.RMD</strong>. For more details, please refer to “Writing reproducible reports in R” on the github (<a href="https://nicercode.github.io/guides/reports/" class="uri">https://nicercode.github.io/guides/reports/</a>).</li>
+</ol>
+<p><a name="new"></a></p>
+</div>
+<div id="differences-with-cell-based-code-and-version-2.0" class="section level1">
+<h1>6. Differences with cell-based code and version 2.0</h1>
+<div id="reason-to-develop-clone-based-code" class="section level2">
+<h2>6.1. Reason to develop clone-based code</h2>
+<ul>
+<li><p>Clone-based code was designed to accelerate calculation and increase number of tumor cell. Advantage of clone-based algorithm is making trial for all cells at 1 clone with one application of <strong>trial()</strong> function. In cell-based algorithm <strong>trial()</strong> applies to each cell. But if number of cells equal number of clones, then speed up is 1. That’s why clone-based code works faster for any cases.</p></li>
+<li><p>Another reason is a case, when we need to simulate huge number of cells like <span class="math inline">\(10^7\)</span> or <span class="math inline">\(10^9\)</span>, but mutation rate is very low. Cell-based algorithm takes a huge computational cost, and vice versa clone-based algorithm will work very fast, if mutated cells will appear slowly.</p></li>
+</ul>
+</div>
+<div id="usage-of-trial-function" class="section level2">
+<h2>6.2. Usage of <em>trial()</em> function</h2>
+<ul>
+<li>In <strong>trial()</strong> function program applies several trials like environmental death, apoptosis death, division process, etc. We changed the trials with probability <span class="math inline">\(p\)</span> (for some death process) for each cell in the clone with for 1 trial with procedure:</li>
+</ul>
+<p><span class="math inline">\(N_{cells} = N_{cells} - Binom(p,N_{cells})\)</span>,</p>
+<p>where <span class="math inline">\(Binom(p,N_{cells})\)</span> is random number from the binomial distribution with probability <span class="math inline">\(p\)</span>, <span class="math inline">\(N_{cells}\)</span> is a number of cells in a clone. Probability <span class="math inline">\(p\)</span> is one of probability of death process, for example <span class="math inline">\(p = a&#39;\)</span> or <span class="math inline">\(p = k\)</span> etc.</p>
+<ul>
+<li>For cell division with probability <span class="math inline">\(d&#39;\)</span> the new number of cells will be:</li>
+</ul>
+<p><span class="math inline">\(N_{cells} = N_{cells} + Binom(d&#39;,N_{cells})\)</span></p>
+<ul>
+<li>Check at the end of <strong>trial()</strong> function: if <span class="math inline">\(N_{cells} = 0\)</span>, then the clone has died.</li>
+</ul>
+</div>
+<div id="usage-of-mutation-function" class="section level2">
+<h2>6.3. Usage of mutation function</h2>
+<ul>
+<li>In mutation function we have changed the mutation to birth of a new clone (one mutation is a birth of one clone):</li>
+</ul>
+<p><span class="math inline">\(N_{new\_clones} = Binom(m,N_{new\_cells})\)</span>,</p>
+<p><span class="math inline">\(N_{new\_cells} = Binom(d&#39;,N_{cells})\)</span>.</p>
+<ul>
+<li>Passenger or Driver mutations do not matter for new clone’s generation. Only during analysis, we will distinguish Passengers or Drivers clones.</li>
+</ul>
+</div>
+<div id="average-function" class="section level2">
+<h2>6.4. Average function</h2>
+<ul>
+<li>The average values <span class="math inline">\(\overline{x}\)</span> of probabilities or hallmarks are found by summation on the <span class="math inline">\(x_i\)</span> with multiplication by cells number <span class="math inline">\(N_{cells,i}\)</span> of this clone:</li>
+</ul>
+<p><span class="math inline">\(\overline{x} = \sum_i x_i \times w_i\)</span>,</p>
+<p>where <span class="math inline">\(w_i = \frac{N_{cells,i} }{ N_{cells,tot}}\)</span> is <span class="math inline">\(i\)</span>th clone’s occupancy in whole cell population <span class="math inline">\(N_{cells,tot} = \sum_i N_{cells,i}\)</span>, <span class="math inline">\(x_i\)</span> is the value for <span class="math inline">\(i\)</span>th clone, summation applies for all clones <span class="math inline">\(i = 1 .. N_{clones}\)</span>.</p>
+<ul>
+<li>For this purpose, we added the calculation of cells number (primary and metastasis) before average and hallmarks update.</li>
+</ul>
+</div>
+<div id="difference-with-version-2.0" class="section level2">
+<h2>6.5. Difference with version 2.0</h2>
+<p>In the current version we use library <em>actuar</em> to make non-zero-binom calculation faster, and we use the approximation for big numbers of cells in <strong>trial()</strong> function, because <strong>rbinom()</strong> function in R has restriction for big numbers like <span class="math inline">\(n \times p &gt; 10^{12}\)</span>.</p>
+<p><a name="new_cna"></a></p>
+</div>
+</div>
+<div id="differences-with-clone-based-code-and-version-2.1" class="section level1">
+<h1>7. Differences with clone-based code and version 2.1</h1>
+<div id="reason-to-develop-cna-based-code" class="section level2">
+<h2>7.1. Reason to develop CNA-based code</h2>
+<p>New version of tugHall with copy number alteration (CNA) was designed for correct calculation of VAF influenced by CNA and tumor purity. It’s expected that this design should improve comparison between observation VAF <span class="math inline">\(\in [0;1]\)</span> and calculated VAF. The previous versions of tugHall have VAF in the range <span class="math inline">\([0;0.5]\)</span> because of the neglect of CNA and tumor purity.</p>
+</div>
+<div id="calculation-of-point-and-cna-mutations" class="section level2">
+<h2>7.2. Calculation of point and CNA mutations</h2>
+<p>Probabilities of CNA mutations are calculated in the same way as point mutations:</p>
+<ul>
+<li><p><span class="math inline">\(m_{point} = m_0 \times l_{CDS}\)</span> - for point mutation, where <span class="math inline">\(l_{CDS}\)</span> is the length of all exons of a gene and <span class="math inline">\(m_0\)</span> is a constant per base pairs defined by users;</p></li>
+<li><p><span class="math inline">\(m_{0,dup}\)</span> and <span class="math inline">\(m_{0,del}\)</span>, or we collectively call <span class="math inline">\(m_{0,CNA}\)</span>, indicate the first breakpoint event of a CNA and is a constant per base pairs defined by users. <span class="math inline">\(m_{CNA} = m_{0,CNA} \times l_{RNA}\)</span>, where <span class="math inline">\(l_{RNA}\)</span> is the total region size of all genes of interest which consists of exons as well as introns.</p></li>
+<li><p>a length of CNA is calculated using geometrical distribution: <span class="math inline">\(l_{CNA} = rgeom(1,1 / \lambda_{CNA})\)</span>+1, where <span class="math inline">\(\lambda_{CNA}\)</span> is average base-pair length defined by users.</p></li>
+<li><p>probability of malfunctioning a gene <span class="math inline">\(u = u_{s,CNA}\)</span> for suppressor and <span class="math inline">\(u = u_{o,CNA}\)</span> for oncogene.</p></li>
+</ul>
+<p>So, the algorithm of CNA is as follow:</p>
+<pre><code>if ( runif(1) &lt; m_dup + m_del ) then &#39;Generate CNA&#39;:
+  - define which event should occur - duplication or deletion using ratio m_dup/m_del like: 
+      event  &lt;-  sample(c(&#39;dup&#39;, &#39;del&#39;), 1, prob = c( m_dup, m_del )/sum(m_dup, m_del) )
+
+  - find randomly first position within the regions of genes of interest;
+  - find the length of CNA from geometrical distribution
+  - define with probability 0.5 is it the parental chromosome 1 or 2;
+  - define the list of genes in CNA;
+  - define with probabilty u = {u_o or u_s} is it malfunction for each gene;
+  - check overlap of position for other mutations (and if it&#39;s necessesary change their positions).</code></pre>
+<p>The calculation of probabilities and hallmarks variables is not changed.</p>
+<p>At the end of a simulation the VAF frequencies are calculated in accordance with formulation:</p>
+<p><span class="math inline">\(\LARGE VAF^i = \frac{(1-\rho)n^i_{B,N}+\sum_{s=1}^{\#sp} \tau_s n^i_{B,S}}{(1-\rho)(n^i_{A,N} + n^i_{B,N}) + \sum_{s=1}^{\#sp} \tau_s (n^i_{A,S} + n^i_{B,S}) }\)</span>,</p>
+<p>where:</p>
+<p><span class="math inline">\(i\)</span> is position (site) index,</p>
+<p><span class="math inline">\(s\)</span> is subpopulation index,</p>
+<p><span class="math inline">\(\tau\)</span> is subpopulation fraction,</p>
+<p><span class="math inline">\(\rho\)</span> is tumor purity,</p>
+<p><span class="math inline">\(n\)</span> is copy number,</p>
+<p>A denotes an original allele A, B - variant B, and N - normal.</p>
+<p>In usual application and in program we used for normal cells <span class="math inline">\(n^i_{A,N} = 2\)</span> and <span class="math inline">\(n^i_{B,N} = 0\)</span>, so VAF is calculated as follow:</p>
+<p><span class="math inline">\(\LARGE VAF^i = \frac{\sum_{s=1}^{\#sp} \tau_s n^i_{B,S}}{2(1-\rho) + \sum_{s=1}^{\#sp} \tau_s (n^i_{A,S} + n^i_{B,S}) }\)</span></p>
+<hr />
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
