@@ -4,8 +4,13 @@ tugHall version 3.0
 [![License](https://img.shields.io/badge/License-GPLv3-orange.svg)](https://github.com/tugHall/Clone-based/blob/master/Documentation/LICENSE)
 
 
+<<<<<<< HEAD
 **tugHall** _(**tu**mor **g**ene-**Hall**mark)_ is a cancer-cell evolution model simulator, wherein gene mutations are linked to the hallmarks of cancer, 
 which influence tumor cell behaviors. 
+=======
+**tugHall** _(**tu**mor **g**ene-**Hall**mark)_ is a cancer-cell evolution model simulator, wherein gene mutations are linked to the hallmarks of cancer,
+which influence tumor cell behaviors.
+>>>>>>> 3c2c4b123750e0e11bd5f64cd1f6283c4e13ca84
 
 
 This is an _**R**_-based script to simulate the cancer cell evolution in the framework of the model proposed by _**Prof. Mamoru Kato**_,
@@ -23,8 +28,8 @@ _Division of Bioinformatics, Research Institute, National Cancer Center Japan, T
 
 All questions and requests can be sent to inagonov@ncc.go.jp
 
-Project source can be downloaded from websites  
---- 
+Project source can be downloaded from websites
+---
 https://github.com/tugHall/  -  the developing resource
 
 Short description
@@ -36,16 +41,24 @@ How to use **tugHall** and how to analyze data, kindly see user-guides in **Docu
 General changes
 ---
 
-This version is based on the clone consideration instead cell-based version 1.1.  
+This version is based on the clone consideration instead cell-based version 1.1.
 Each clone has one or more cells, that allows to accelerate the calculations when number of clones is much less than number of cells.
 Definition of clone: the clone is set of cell with same set of genes, which have same mutated / not mutated sites in genes.
 
+<<<<<<< HEAD
 Changes in comparison with tugHall v.2.1 
 ---
 
 This version can calculate the copy number alterations (CNA) caused by deletions and duplications in comparison with version 2.1. 
 CNAs may malfunction genes and change variant allel frequences if the point mutations are located on CNAs.
 
+=======
+Changes in comparison with tugHall v.2.1
+---
+
+This version can calculate the copy number alterations (CNA) caused by deletions and duplications in comparison with version 2.1.
+CNAs may malfunction genes and change variant allel frequences if the point mutations are located on CNAs.
+>>>>>>> 3c2c4b123750e0e11bd5f64cd1f6283c4e13ca84
 
 Content of package
 ---
