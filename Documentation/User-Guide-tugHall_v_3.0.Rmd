@@ -1,0 +1,594 @@
+---
+title: "tugHall version 3.0: USER-GUIDE-tugHall"
+#authors: "Iurii Nagornov, Nishino Jo and Mamoru Kato"
+## date: "`r Sys.Date()`"
+output: 
+    rmarkdown::html_vignette:
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  fig.path='tugHall/Figures/',
+  echo=FALSE, 
+  warning=FALSE, 
+  message=FALSE,
+  collapse = TRUE,
+  comment = "#>"
+)
+
+Sys.setenv("TimeZone" = "Japan")
+```
+
+## Requirements for tugHall simulation:
+
+R version **3.6.0** or later
+
+libraries: **stringr, actuar, tidyr**  
+
+Note that the program has two different procedures in general: the first is the simulation and the second is the analysis of the simulation results.
+Please, pay attention that the requirements for these procedures are **different**.
+This User-Guide pertains to the **simulation procedure** alone. 
+
+<br />
+
+# Table of Contents
+1. [Quick start guide](#quick)
+2. [Structure of directories](#directories)
+3. [Inputs](#inputs)
+4. [Outputs](#outputs)
+5. [How to run](#run)
+6. [Differences with cell-based code and version 2.0](#new)
+7. [Differences with clone-based code and version 2.1](#new_cna)
+
+
+<a name="quick"></a>
+
+# 1. Quick start guide 
+
+The simplest way to run tugHall:
+
+- Save the **/tugHall_2_2_CNA/** directory to the working folder;
+- Run **tugHall_3.0.R**.
+
+The code has its initial input parameters and input files in the **/Input/** folder. After the simulation the user can see results of the simulation (please, see **User-Guide-Analysis_3** for details) in the dialogue box, which will save to the **/Output/** and **/Figures/** folders. Note that the analysis procedure requires additional libraries and a higher version of R - 3.6.0.
+
+
+<a name="directories"></a>
+
+# 2. Structure of directories 
+
+
+### Documentation directory:
+
+**User-Guide-tugHall_v_3.0.XXX** - user guide for a simulation in the XXX = Rmd, html or pdf formats.
+
+**User-Guide-Analysis_v3.0.XXX** - user guide for the generation of an analysis and a report  in the XXX = Rmd, html or pdf formats.
+
+dir **/tugHall_3_0_CNA/** - the directory that contains the software **tugHall** version 3.0.  
+
+<br />
+
+### **/tugHall_3_0_CNA/** directory:
+
+**tugHall_3.0.R** - R script to run a simulation and to define the parameters.
+
+dir **/Code/** - the folder with a code and a function library.
+
+dir **/Input/** - the folder with the input files.
+
+dir **/Output/** - the folder with the output files.
+
+dir **/Figures/** - the folder with the plot figures.  
+
+<br />
+
+### **/Code/** directory:
+
+**pic_lic.jpg** - the necessary file for the user guide.
+
+**tugHall_3.0_functions.R** - the file that contains the functions for the simulation / core of program.
+
+**read_maps.R** - the file to read chromosomal locations got genes of interest from CCDS.current.txt file in the *Input/* folder
+
+**Analysis_clones.R** - the file to analyze the results of a simulation and to plot figures.
+
+**Functions_clones.R** - the file with the functions for the analysis of results.  
+
+<br />
+
+### **/Input/** directory:
+
+**cloneinit.txt** - file with a list of initial cells with/without destroyed genes. 
+
+**gene_cds2.txt** - file with hallmark variables and weights.
+
+**CCDS.current.txt** - file with information about chromosomal locations that was getting from [CCDS database](https://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/). 
+
+
+<br />
+
+### **/Output/** directory:
+
+**cloneout.txt** - the file with simulation output.
+
+**geneout.txt** - the file with information about hallmark variables and the weights.
+
+**log.txt** - the file with information about all parameters. 
+
+**Weights.txt** - the file with information about weights between hallmarks and genes.
+
+**point_mutations.txt** - the file contains information about point mutations in genome of clones.
+
+**CNA_mutations.txt** - the file contains information about copy number alterations in genome of clones.
+
+**gene_map.txt** - file with information about chromosomal locations for *genes of interest* only.
+
+
+**Order_of_malfunction.txt** - see **USER-GUIDE-Analysis**.
+
+**VAF.txt** - see **USER-GUIDE-Analysis**.
+
+<br />
+
+### **/Figures/** directory
+
+In the **/Figures/** directory there are figures in \*.jpg format, which appear after the analysis of the simulation results. See **USER-GUIDE-Analysis_3**.
+
+
+<a name="inputs"></a>
+
+# 3. Inputs 
+
+## Input of hallmark variables and gene weights
+
+The file **tugHall/Input/gene_hallmarks.txt** defines the hallmark variables and weights:
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Input/gene_hallmarks.txt",header = FALSE, sep = "\t" )
+x <- data.frame( x[ , 1], x[ , 3], x[ , 2], x[ , 4] )
+knitr::kable(x, col.names = c("Genes", "Suppressor or Oncogene", "Hallmark", "Weights"), align = "c", caption = "**Table 1. Input file for genes.** Example of input file for hallmarks and weights in the file _**tugHall_2_2_CNA/Input/gene_hallmarks.txt**_.")
+```
+
+1. **Genes**  - name of gene, e.g., TP53, KRAS. The names must be typed carefully. The program detects all the unique gene names.
+
+2. **Suppressor or oncogene.**  - Distinction of oncogene/suppressor:
+- o: oncogene
+- s: suppressor
+- ?: unknown (will be randomly assigned)
+
+3. **Hallmark** - hallmark name, e.g., "apoptosis". Available names: 
+- apoptosis
+- immortalization
+- growth
+- anti-growth
+- angiogenesis
+- invasion
+
+Note that "growth" and "anti-growth" are related to the single hallmark "growth/anti-growth".
+Note that "invasion" is related to "invasion/metastasis" hallmark.
+
+
+4. **Weights**  - Hallmark weights for genes, e.g., 0.333 and 0.5. For each hallmark, the program checks the summation of all the weights. If it is not equal to 1, then the program normalizes it to reach unity. Note that, if the gene belongs to more than one hallmark type, it must be separated into separate lines.
+
+---
+
+
+After that, the program defines all the weights. **Unspecified  weights** are set to 0. Program performs normalization so that the sum of all weights should be equal to 1 for each column. The **tugHall/Output/Weights.txt** file saves these final input weights for the simulation. Only the first 10 lines are presented here:
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/Weights.txt", header = TRUE, sep = "\t", nrows = 10)
+knitr::kable(x,  col.names = c("Genes", "Apoptosis, $H_a$", "Angiogenesis, $H_b$", "Growth / Anti-growth, $H_d$", "Immortalization, $H_i$", 
+                               "Invasion / Metastasis, $H_{im}$"), align = "c", caption = "**Table 2. Weights for hallmarks.** Example of weights for hallmarks and genes from _**tugHall/Output/Weights.txt**_ file. Unspecified values equal 0.")
+```
+
+1. **Genes** - name of genes.
+
+2. **Apoptosis, $H_a$** - weights of hallmark "Apoptosis".
+
+3. **Angiogenesis, $H_b$** - weights of hallmark "Angiogenesis".
+
+4. **Growth / Anti-growth, $H_d$** - weights of hallmark "Growth / Anti-growth".
+
+5. **Immortalization, $H_i$** - weights of hallmark "Immortalization".
+
+6. **Invasion / Metastasis, $H_{im}$** - weights of hallmark "Invasion / Metastasis".
+
+---
+
+## Input the probabilities
+
+The input of the probabilities used in the model is possible in the code for parameter value settings, **"tugHall_3_0.R"**:
+
+|  Probability variable and value | Description  |
+|:---|:---|
+| **E0 <- 2E-4**    | Parameter $E_0$ related to environmental resource limitation | 
+| **F0 <- 1E0**     | Parameter $F_0$ related angiogenesis  |
+| **m <-  1E-6**    | Point mutation probability  $m'$ |
+| **uo <- 0.5**     | Gene malfunction probability by point mutation for oncogene $u_o$ |
+| **us <- 0.5**     | Gene malfunction probability by point mutation for suppressor $u_s$ | 
+| **s <-  10**      | Parameter in the sigmoid function $s$ |  
+| **k <-  0.1**     | Environmental death probability $k'$ |
+| **m_dup      <-  0.01**     | CNA duplication probability $m_{dup}$ |
+| **m_del      <-  0.01**     | CNA deletion probability $m_{del}$ |
+| **lambda_dup <-  7000**        | CNA duplication average length $\lambda_{dup}$ (of the geometrical distribution for the length) |
+| **lambda_del <-  5000**        | CNA deletion average length $\lambda_{del}$ (of the geometrical distribution for the length) |
+| **uo,dup <- 0.8**     | Gene malfunction probability by CNA duplication for oncogene $u_{o,dup}$ |
+| **us,dup <- 0**     | Gene malfunction probability by CNA duplication for suppressor, $u_{s,dup}$. Currently, 0 is assumed. |
+| **uo,del <- 0**     | Gene malfunction probability by CNA deletion for oncogene $u_{o,del}$. Currently, 0 is assumed. |
+| **us,del <- 0.8**     | Gene malfunction probability by CNA deletion for suppressor, $u_{s,del}$.  |
+| <img width=250/> | <img width=270/> |
+
+
+---
+
+
+## Filename input
+
+Also in the code **"tugHall_3_3.R"** user can define names of input and output files, and additional parameters of simulation:
+
+|  Variables and file names  | Description  |
+|:---|:---|
+| **genefile <- 'gene_hallmarks.txt'**     | File with information about gene-hallmarks weights  |
+| **mapfile <- 'gene_map.txt'**     | File with information about genes' map |
+| **clonefile <- 'cloneinit.txt'**      | Initial Cells  |
+| **geneoutfile <- 'geneout.txt'**    | Gene Out file with hallmarks  |
+| **cloneoutfile <- 'cloneout.txt'**   | Output information of simulation  |
+| **logoutfile <-  'log.txt'**       | Log file to save the input information of simulation  |
+| **censore_n <- 30000 **     | Max cell number where the program forcibly stops  |
+| **censore_t <- 200**        | Max time where the program forcibly stops  |
+| <img width=200/> | <img width=350/> |
+
+
+---
+
+
+## Input of the initial clones
+
+**Pay attention, it does not work yet, and it will be working.**
+
+The initial states of cells are defined in **"tugHall_3_0_CNA/Input/cloneinit.txt"** file:
+
+|  Clone ID  | List of malfunctioned genes  | Number of cells |
+|:---|:---|:---|
+| 1 | ""  | 1000 |
+| 2    |  "APC" | 10 |
+| 3   | "APC, KRAS"  | 100 |
+| 4   | "KRAS"  | 1 |
+| 5   | "TP53, KRAS"  | 1 |
+| ...   | ...  | 100 |
+| 1000        | ""  | 10 |
+| <img width=50/> | <img width=150/> | <img width=150/> |
+
+1. **Clone ID**  - ID of clone, e.g., 1, 324.
+
+2. **List of malfunctioned genes** - list of malfunctioned genes for each clone, e.g. "“,”KRAS, APC“. The values are comma separated. The double quotes ("") without gene names indicate a clone without malfunctioned genes.
+
+3. **Number of cells**  - number of cells in each clone, e.g., 1, 1000.
+
+
+## Input of the genes' maps
+
+This new version of **tugHall** allows to calculate CNAs in the genome. The breakpoints of CNAs may fall on genic regions consisting of exons and introns. That's why it's needed to enter information about gene's map.
+In the **/Input/** directory you can find **CCDS.current.txt**, which was getting from [CCDS database](https://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/) at the National Center for Biotechnology Information and has information about genes. 
+At the beginning of simulation, the program reads this file and extracts genes’ map, which is put into 
+ **"tugHall_2_clones/Input/gene_map.txt"**. For example, the map is shown as follow:
+
+```{r, echo=FALSE, results='asis'}
+x <- read.table( file = "../Input/gene_map.txt",header = TRUE, sep = "\t",  nrows = 10)
+knitr::kable(x, align = "c", caption = "")
+```
+
+1. **Chr**  - Name of the chromosome, e.g., 1, 12, X, Y.
+
+2. **CCDS_ID** - ID of the gene in the [CCDS database](https://www.ncbi.nlm.nih.gov/CCDS/).
+
+3. **Gene**  -  the name of the gene.
+
+3. **Start**  -  the start position of each exon of the gene.
+
+4. **End**  -   the final position of each exon of the gene.
+
+5. **Len** - the length of gene's location *Len = End - Start + 1*
+
+---
+
+<a name="outputs"></a>
+
+# 4. Outputs 
+
+The output data consists of several files after the simulation. 
+
+## "log.txt" file
+The file **"log.txt"** contains information about probabilities and file names. These variables are explained in the ["Inputs"](#inputs). 
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/log.txt",header = FALSE, sep = "\t", col.names = c("Variable","Value"))
+x[is.na(x)] <- ""
+knitr::kable(x, align = "c", caption = "**Table 3. log.txt file.** Example of log.txt file.")
+```
+
+
+## "geneout.txt" file
+The file **"geneout.txt"** contains input information about the weights that connect the hallmarks and genes, which are defined by the user. These variables also are explained in the ["Inputs"](#inputs). 
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/geneout.txt",header = FALSE, sep = "\t", col.names = c("Gene_name","Hallmark_name", "Weight", "Suppressor_or_oncogene"))
+x[is.na(x)] <- ""
+knitr::kable(x, align = "c", caption = "**Table 4. geneout.txt file.** Given below is an example of the geneout.txt file.")
+```
+
+
+## "cloneout.txt" file
+
+The file **"cloneout.txt"** contains the results of the simulation and includes the evolution data: all the output data for each clone at each time step (only the first 10 lines are presented): 
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/cloneout.txt",header = TRUE, sep = "\t", nrows = 10)
+x <- x[,c(1:16)] 
+# library(stringr)
+# library(tidyr)
+x[is.na(x)] <- ""
+library(stringr)
+x[] <- lapply(x, str_trunc, 6, ellipsis = "")
+knitr::kable(x, align = "c", caption = "**Table 5. Output data.** Example of output data for all clones. The names of columns are related to the description in the Tables 1,2 and *USER-GUIDE-Analysis_3*'s figures. Columns are from 1 to 16.")
+```
+
+1. **Time** - the time step, e.g., 1, 50.
+2. **N\_cells** - the number of cells in this clone, e.g. 1000, 2.
+3. **AvgOrIndx** - "avg" or "index": "avg" is for a line with averaged values across different (index) lines at the same time step; "index" shows the cell's index at the current time step,  e.g., avg, 4,7.
+4. **ID** - the unique ID of clone, e.g., 1, 50.
+5. **Parent_ID** - the parent index,  e.g., 0, 45.
+6. **Birth_time** - the birthday time step,  e.g., 0, 5.
+7. **c** - the counter of cell divisions for the clone.
+8. **d**  - the probability of division for the cell, e.g., 0.1, 0.8.
+9. **i**  - the probability of immortalization for the cell, e.g., 0.1, 0.8.
+10. **im**   - the probability of invasion/metastasis for the cell, e.g., 0.1, 0.8.
+11. **a**   - the probability of apoptosis for the cell, e.g., 0.1, 0.8.
+12. **k**   - the probability of death due to the environment, e.g., 0.1, 0.8.
+13. **E**  - the E coefficient for the function of the division probability, e.g., 10^4, 10^5.
+14. **N** - the number of primary tumor cells at this time step, e.g., 134, 5432.
+15. **Nmax** - the theoretically maximal number of primary tumor cells, e.g., 10000, 5000.
+16. **M** - the number of metastasis cells at this time step, e.g., 16, 15439.
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/cloneout.txt",header = TRUE, sep = "\t", nrows = 18)
+x[is.na(x)] <- ""
+x <- x[,c(1,3,17:27)] 
+library(stringr)
+x[] <- lapply(x, str_trunc, 8, ellipsis = "")
+knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns are from 17 to 28.")
+```
+
+17. **Ha** - the value of the hallmark "Apoptosis" for the cell, e.g., 0.1, 0.4444.
+18. **Him** - the value of the hallmark "Invasion / Metastasis" for the cell, e.g., 0.1, 0.4444.
+19. **Hi** - the value of the hallmark "Immortalization" for the cell, e.g., 0.1, 0.4444.
+20. **Hd** - the value of the hallmark "Growth / Anti-growth" for the cell, e.g., 0.1, 0.4444 .
+21. **Hb** - the value of the hallmark "Angiogenesis" for the cell, e.g., 0.1, 0.4444 .
+22. **type** - the type of the cell: "0" is primary tumor cell, "1" is the metastatic cell, e.g., 0, 1.
+23. **mut_den** - the density of mutations (tumor mutation burden) for the cell, e.g., 0, 0.32.
+24. **onco_genes** - the binary numbers indicate the driver mutation at the gene related to order of genes in onco as well as order of the next columns with genes' names.
+25. **passenger_genes** - the binary numbers indicate the passenger mutation at the gene related to order of genes in onco as well as order of the next columns with genes' names.
+26. **PointMut_ID** - the index of data row for point mutation data frame saved at the end of simulation in the file **Point_mutations.txt**, e.g., 23, 32.
+27. **CNA_ID** - the index of data row for CNA data frame saved at the end of simulation in the file **CNA.txt**, e.g., 44, 21.
+
+There are two columns (24th and 25th) with the indexes of point mutations and CNAs in Table 5. Each index corresponds to index in the related data frames for point mutations and for CNAs (Tables 6 and 7 respectively).
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/cloneout.txt",header = TRUE, sep = "\t", nrows = 18, stringsAsFactors = FALSE)
+x[is.na(x)] <- ""
+x <- x[,28:ncol(x)] 
+library(stringr)
+x[] <- lapply(x, str_trunc, 6, ellipsis = "")
+knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns are from 29 to end.")
+```
+28. **onco_ID** - the index of the data related to onco object at simulation that has info about lengths of RNA and CDS for each chromosome.
+
+29-32. **CDS_(gene's name)**, for example **CDS_APC** - the length of CDS for each gene in the order of names of genes for ONLY FIRST chromosome of a clone. 
+
+33-36. **RNA_(gene's name)**, for example **RNA_APC** - the length of RNA for each gene in the order of names of genes for ONLY FIRST chromosome of a clone.
+
+37. **p0** - the probability that during a trial, a cell of the clone has NO mutation. Applied to all cells in the clone.
+
+38. **prob_point_mut** - the conditional probability that if cell will have a mutation it should be a **point mutation**. 
+
+39. **prob_del** - the conditional probability that if cell will have a mutation it should be a **deletion**. 
+
+40. **prob_dup** - the conditional probability that if cell will have a mutation it should be a **duplication**. 
+
+The information of the columns from 28 to 40 is related to *onco* object in simulation for a clone.
+Please, pay attention that probability of mutations depend on length of CDS and RNA of all chromosome but the table has information only for first chromosome. 
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/point_mutations.txt",header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+# x[is.na(x)] <- ""
+x = x[ 179 : 200, ]
+knitr::kable(x, align = "c", caption = "**Table 6. ** Point mutation data frame which will be saved to the file **Point_mutations.txt** at the end of simulation.")
+```
+
+
+1. **PointMut_ID** - ID of point mutation, first ID is related to variant allele 'B' and same *second* ID - to the original allele A. 
+2. **Parental_1or2** - indicates either of the two parental chromosomes. 
+3. **Chr** - name of a chromosome.
+4. **Ref_pos** - the reference position of an allele. The reference position is on the coordinate system of the human reference genome. 
+5. **Phys_pos** - the physical position of an allele. The physical length of a (parental) chromosome is extended or shrunk by CNA duplications or deletions, respectively. When a duplication happens, the reference position is divided into two or more physical positions, which are represented by multiple elements in a vector. When a deletion happens and the allele is lost, the lost is represented by “-” on the coordinate system of physical positions. 
+6. **Delta** - difference between the reference and physical positions.
+7. **Copy_number** - the copy number of an allele. 
+8. **Gene_name** - the name of a gene.
+9. **MalfunctionedByPointMut** - logical indicator of whether or not the gene is malfunctioned by the point mutation. 
+
+
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/CNA_mutations.txt",header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+# x[is.na(x)] <- ""
+x = x[ 200 : 220, ]
+knitr::kable(x, align = "c", caption = "**Table 7.** CNA mutation data frame which will be saved to the file **CNA.txt** at the end of simulation.")
+```
+
+1. **CNA_ID** - ID of CNA. 
+2. **Parental_1or2** - indicates either of the two parental chromosomes. 
+3. **DuplicationOrDeletion** - indicator of duplication or deletion for CNA.
+4. **Chr** - name of a chromosome.
+5. **Reference_start** - the reference position of the CNA start.
+6. **Reference_end** - the reference position of the CNA end.
+7. **Gene_name** - the name(s) of a gene(s).
+8. **MalfunctionedByCNA** - logical indicator of whether or not the gene(s) is malfunctioned by the CNA. 
+9. **mut_order** - indicator of mutation order in the simulation, it's used to detect order of mutations in the clone.
+
+---
+
+<a name="run"></a>
+
+# 5. How to run
+
+In order to make the simulation, please follow the procedure:
+
+1. Copy **/tugHall_3_0_CNA/** directory into the working directory.
+
+2. CD to the **/tugHall_3_0_CNA/** directory. 
+
+3. Run the **tugHall_3.0.R** file, using the command line like
+
+`R --vanilla < tugHall_3_0.R`
+
+or using the line by line procedure in **R Studio**. In this case we have:
+
+  - **`load library(stringr)`** and **`source(file = "Code/tugHall_2.2_functions.R")`**;
+  - create the Output and Figures directories, if needed;
+  - define the simulation parameters; 
+  - make the input file for initial cells, if needed;
+  - run the *model()* function to simulate;
+  - run **`source("Code/Analysis_clone.R")`** in order to analyze the results and plot the figures in the dialogue box (see **User-Guide-Analysis_v3.0**).
+  
+4. To obtain analysis reports of the simulation, please refer to **User-Guide-Analysis_v3.0.RMD**. 
+In **User-Guide-Analysis_v3.0.RMD**, commands are embedded to include files under **Output/** and **Figure/**. So, after analysis with tugHall, you can generate analysis reports automatically from **User-Guide-Analysis_v3.0.RMD**. For more details, please refer to "Writing reproducible reports in R" on the github (https://nicercode.github.io/guides/reports/).
+
+
+<a name="new"></a>
+
+# 6. Differences with cell-based code and version 2.0
+
+## 6.1. Reason to develop clone-based code
+
+* Clone-based code was designed to accelerate calculation and increase number of tumor cell. 
+Advantage of clone-based algorithm is making trial for all cells at 1 clone with one application of **trial()** function. In cell-based algorithm **trial()** applies to each cell. But if number of cells equal number of clones, then speed up is 1. That's why  clone-based code works faster for any cases. 
+
+* Another reason is a case, when we need to simulate huge number of cells like $10^7$ or $10^9$, but mutation rate is very low. Cell-based algorithm takes a huge computational cost, and vice versa clone-based algorithm will work very fast, if mutated cells will appear slowly.
+
+## 6.2. Usage of _trial()_ function
+
+* In **trial()** function program applies several trials like environmental death, apoptosis death, division process, etc. We changed the trials with probability $p$ (for some death process) for each cell in the clone with for 1 trial with procedure:
+
+$N_{cells} = N_{cells} - Binom(p,N_{cells})$,
+
+where $Binom(p,N_{cells})$ is random number from the binomial distribution with probability $p$, $N_{cells}$ is a number of cells in a clone. Probability $p$ is one of probability of death process, for example $p = a'$ or $p = k$ etc. 
+
+* For cell division with probability $d'$ the new number of cells will be:
+
+$N_{cells} = N_{cells} + Binom(d',N_{cells})$
+
+
+* Check at the end of **trial()** function: if $N_{cells} = 0$, then the clone has died.
+
+## 6.3. Usage of mutation function
+
+* In mutation function we have changed the mutation to birth of a new clone (one mutation is a birth of one clone):
+
+$N_{new\_clones} = Binom(m,N_{new\_cells})$,
+
+$N_{new\_cells} = Binom(d',N_{cells})$.
+
+* Passenger or Driver mutations do not matter for new clone's generation. Only during analysis, we will distinguish Passengers or Drivers clones.
+
+
+## 6.4. Average function
+
+* The average values $\overline{x}$ of probabilities or hallmarks are found by summation on the $x_i$ with multiplication by cells number $N_{cells,i}$ of this clone:
+
+$\overline{x} = \sum_i x_i \times w_i$,
+
+where $w_i = \frac{N_{cells,i} }{ N_{cells,tot}}$ is $i$th clone’s occupancy in
+whole cell population $N_{cells,tot} = \sum_i N_{cells,i}$, 
+$x_i$  is the value for $i$th clone, 
+summation applies for all clones $i = 1 .. N_{clones}$.
+
+* For this purpose, we added the calculation of cells number (primary and metastasis) before average and hallmarks update.
+
+
+## 6.5. Difference with version 2.0
+
+In the current version we use library *actuar* to make non-zero-binom calculation faster, and 
+we use the approximation for big numbers of cells in **trial()** function, because **rbinom()** function in R has restriction for big numbers like $n \times p > 10^{12}$. 
+
+
+<a name="new_cna"></a>
+
+# 7. Differences with clone-based code and version 2.1
+
+## 7.1. Reason to develop CNA-based code
+
+New version of tugHall with copy number alteration (CNA) was designed for correct calculation of VAF influenced by CNA and tumor purity. It's expected that this design should improve comparison between observation VAF $\in [0;1]$ and calculated VAF. The previous versions of tugHall have VAF in the range $[0;0.5]$
+because of the neglect of CNA and tumor purity.
+
+
+## 7.2. Calculation of point and CNA mutations
+
+Probabilities of CNA mutations are calculated in the same way as point mutations:
+
+* $m_{point} = m_0 \times l_{CDS}$ - for point mutation, where $l_{CDS}$ is the length of all exons of a gene and $m_0$ is a constant per base pairs defined by users;
+
+
+* $m_{0,dup}$ and $m_{0,del}$, or we collectively call $m_{0,CNA}$, indicate the first breakpoint event of a CNA and is a constant per base pairs defined by users. 
+$m_{CNA} = m_{0,CNA} \times l_{RNA}$, where $l_{RNA}$ is the total region size of all genes of interest which consists of exons as well as introns. 
+
+
+* a length of CNA is calculated using geometrical distribution:
+    $l_{CNA} = rgeom(1,1 / \lambda_{CNA})$+1, where $\lambda_{CNA}$ is average base-pair length defined by users.
+    
+* probability of malfunctioning a gene $u = u_{s,CNA}$ for suppressor and 
+$u = u_{o,CNA}$ for oncogene.
+
+So, the algorithm of CNA is as follow:
+
+    if ( runif(1) < m_dup + m_del ) then 'Generate CNA':
+      - define which event should occur - duplication or deletion using ratio m_dup/m_del like: 
+          event  <-  sample(c('dup', 'del'), 1, prob = c( m_dup, m_del )/sum(m_dup, m_del) )
+
+      - find randomly first position within the regions of genes of interest;
+      - find the length of CNA from geometrical distribution
+      - define with probability 0.5 is it the parental chromosome 1 or 2;
+      - define the list of genes in CNA;
+      - define with probabilty u = {u_o or u_s} is it malfunction for each gene;
+      - check overlap of position for other mutations (and if it's necessesary change their positions).
+
+
+The calculation of probabilities and hallmarks variables is not changed. 
+
+At the end of a simulation the VAF frequencies are calculated in accordance with formulation:
+
+$\LARGE VAF^i = \frac{(1-\rho)n^i_{B,N}+\sum_{s=1}^{\#sp} \tau_s n^i_{B,S}}{(1-\rho)(n^i_{A,N} + n^i_{B,N}) + \sum_{s=1}^{\#sp} \tau_s (n^i_{A,S} + n^i_{B,S}) }$,
+
+where:
+
+$i$ is position (site) index,
+
+$s$ is subpopulation index,
+
+$\tau$ is subpopulation fraction, 
+
+$\rho$ is tumor purity,
+
+$n$ is copy number,
+
+A denotes an original allele A, B - variant B, and N - normal.
+
+In usual application and in program we used for normal cells $n^i_{A,N} = 2$ and $n^i_{B,N} = 0$, so VAF is calculated as follow:
+
+$\LARGE VAF^i = \frac{\sum_{s=1}^{\#sp} \tau_s n^i_{B,S}}{2(1-\rho) + \sum_{s=1}^{\#sp} \tau_s (n^i_{A,S} + n^i_{B,S}) }$
+
+---
+

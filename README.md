@@ -38,6 +38,7 @@ The wide availability of recent cancer genomic data requires a coherent model th
 
 How to use **tugHall** and how to analyze data, kindly see user-guides in **Documentation** folder in prefered format *Rmd, pdf, html*.
 
+
 General changes
 ---
 
