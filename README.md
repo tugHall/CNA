@@ -49,7 +49,6 @@ Changes in comparison with tugHall v.2.1
 This version can calculate the copy number alterations (CNA) caused by deletions and duplications in comparison with version 2.1. 
 CNAs may malfunction genes and change variant allel frequences if the point mutations are located on CNAs.
 
-=======
 Changes in comparison with tugHall v.2.1
 ---
 
