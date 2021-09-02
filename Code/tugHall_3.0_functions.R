@@ -217,7 +217,7 @@ oncogene <- setRefClass(
                 }
             }
             
-            # Get length of CDS and RNA from gene_map:
+            # Get length of CDS and gene's length from gene_map:
             for ( i in 1:length(name0) ) {
                 w     =  which( gene_map$Gene == name0[ i ] )
                 cds0  =  c( cds0, sum( gene_map$End[w]  -  gene_map$Start[w] + 1 ) )
@@ -961,7 +961,7 @@ check_pnts  <-  function( gm_w1 ){
 ## data.frame( test = sapply(1:12 , FUN = function( x ) pnts_add_dlt( gm1[ x, ], dlt  =  -dlt ) ) )
 
 
-# The function to get length of CDS and RNA from gm (gene_map) and related probabilities:
+# The function to get length of CDS and of genes from gm (gene_map) and related probabilities:
 get_cds_rna  <-  function( gm ){
     
     name0  =  unique( gm$Gene )
@@ -1299,12 +1299,12 @@ write_geneout <- function(outfile, hall) {
 }
 
 write_header <- function(outfile, env, onco) {
-    header <- c('Time', 'N_cells', 'AvgOrIndx', 'ID', 'ParentID', 'Birthday', 'c', 'd', 'i', 'im', 'a',
+    header <- c('Time', 'N_cells', 'AvgOrIndx', 'ID', 'ParentID', 'Birth_time', 'c', 'd', 'i', 'im', 'a',
                 'k', 'E', 'N', 'Nmax', 'M', 'Ha', 'Him', 'Hi', 'Hd', 'Hb', 'type', 'mut_den',
                 # paste("PosDriver:", onco$name, sep=""), paste("PosPasngr:", onco$name, sep="") )      #   , 'Clone number', 'Passengers Clone number', 'Mix Clone number')
-                'onco_genes', 'passenger_genes', 
+                'driver_genes', 'passenger_genes', 
                 'PointMut_ID', 'CNA_ID' , 'onco_ID', 
-                paste('CDS_', onco$name, sep=''), paste('RNA_', onco$name, sep=''), 
+                paste('CDS_', onco$name, sep=''), paste('Len_', onco$name, sep=''), 
                 'p0', 'prob_point_mut', 'prob_del', 'prob_dup' )
     write(header, outfile, append=FALSE, ncolumn=length(header), sep="\t")
 }
@@ -1600,3 +1600,5 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     return( list( clones , onco_clones ) )
 }
 ########################################### END #####################################################
+
+
