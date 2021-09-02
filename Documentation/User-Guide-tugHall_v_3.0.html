@@ -889,7 +889,7 @@
 <th align="center">AvgOrIndx</th>
 <th align="center">ID</th>
 <th align="center">ParentID</th>
-<th align="center">Birthday</th>
+<th align="center">Birth_time</th>
 <th align="center">c</th>
 <th align="center">d</th>
 <th align="center">i</th>
@@ -1091,7 +1091,7 @@
 <li><strong>AvgOrIndx</strong> - “avg” or “index”: “avg” is for a line with averaged values across different (index) lines at the same time step; “index” shows the cell’s index at the current time step, e.g., avg, 4,7.</li>
 <li><strong>ID</strong> - the unique ID of clone, e.g., 1, 50.</li>
 <li><strong>Parent_ID</strong> - the parent index, e.g., 0, 45.</li>
-<li><strong>Birth_time</strong> - the birthday time step, e.g., 0, 5.</li>
+<li><strong>Birth_time</strong> - the time step of the clone’s birth, e.g., 0, 5.</li>
 <li><strong>c</strong> - the counter of cell divisions for the clone.</li>
 <li><strong>d</strong> - the probability of division for the cell, e.g., 0.1, 0.8.</li>
 <li><strong>i</strong> - the probability of immortalization for the cell, e.g., 0.1, 0.8.</li>
@@ -1103,7 +1103,7 @@
 <li><strong>Nmax</strong> - the theoretically maximal number of primary tumor cells, e.g., 10000, 5000.</li>
 <li><strong>M</strong> - the number of metastasis cells at this time step, e.g., 16, 15439.</li>
 </ol>
-<table style="width:100%;">
+<table>
 <caption><strong>Continuation of Table 5. </strong> Columns are from 17 to 28.</caption>
 <colgroup>
 <col width="4%" />
@@ -1115,7 +1115,7 @@
 <col width="7%" />
 <col width="4%" />
 <col width="7%" />
-<col width="9%" />
+<col width="10%" />
 <col width="13%" />
 <col width="10%" />
 <col width="6%" />
@@ -1131,7 +1131,7 @@
 <th align="center">Hb</th>
 <th align="center">type</th>
 <th align="center">mut_den</th>
-<th align="center">onco_genes</th>
+<th align="center">driver_genes</th>
 <th align="center">passenger_genes</th>
 <th align="center">PointMut_ID</th>
 <th align="center">CNA_ID</th>
@@ -1418,7 +1418,7 @@
 <li><strong>Hb</strong> - the value of the hallmark “Angiogenesis” for the cell, e.g., 0.1, 0.4444 .</li>
 <li><strong>type</strong> - the type of the cell: “0” is primary tumor cell, “1” is the metastatic cell, e.g., 0, 1.</li>
 <li><strong>mut_den</strong> - the density of mutations (tumor mutation burden) for the cell, e.g., 0, 0.32.</li>
-<li><strong>onco_genes</strong> - the binary numbers indicate the driver mutation at the gene related to order of genes in onco as well as order of the next columns with genes’ names.</li>
+<li><strong>driver_genes</strong> - the binary numbers indicate the driver mutation at the gene related to order of genes in onco as well as order of the next columns with genes’ names.</li>
 <li><strong>passenger_genes</strong> - the binary numbers indicate the passenger mutation at the gene related to order of genes in onco as well as order of the next columns with genes’ names.</li>
 <li><strong>PointMut_ID</strong> - the index of data row for point mutation data frame saved at the end of simulation in the file <strong>Point_mutations.txt</strong>, e.g., 23, 32.</li>
 <li><strong>CNA_ID</strong> - the index of data row for CNA data frame saved at the end of simulation in the file <strong>CNA.txt</strong>, e.g., 44, 21.</li>
@@ -1448,10 +1448,10 @@
 <th align="center">CDS_KRAS</th>
 <th align="center">CDS_TP53</th>
 <th align="center">CDS_PIK3CA</th>
-<th align="center">RNA_APC</th>
-<th align="center">RNA_KRAS</th>
-<th align="center">RNA_TP53</th>
-<th align="center">RNA_PIK3CA</th>
+<th align="center">Len_APC</th>
+<th align="center">Len_KRAS</th>
+<th align="center">Len_TP53</th>
+<th align="center">Len_PIK3CA</th>
 <th align="center">p0</th>
 <th align="center">prob_point_mut</th>
 <th align="center">prob_del</th>
@@ -1732,17 +1732,17 @@
 </tbody>
 </table>
 <ol start="28" style="list-style-type: decimal">
-<li><strong>onco_ID</strong> - the index of the data related to onco object at simulation that has info about lengths of RNA and CDS for each chromosome.</li>
+<li><strong>onco_ID</strong> - the index of the data related to onco object at simulation that has info about lengths of genes and genes’ CDS for each chromosome.</li>
 </ol>
 <p>29-32. <strong>CDS_(gene’s name)</strong>, for example <strong>CDS_APC</strong> - the length of CDS for each gene in the order of names of genes for ONLY FIRST chromosome of a clone.</p>
-<p>33-36. <strong>RNA_(gene’s name)</strong>, for example <strong>RNA_APC</strong> - the length of RNA for each gene in the order of names of genes for ONLY FIRST chromosome of a clone.</p>
+<p>33-36. <strong>Len_(gene’s name)</strong>, for example <strong>Len_APC</strong> - the length of gene in the order of names of genes for ONLY FIRST chromosome of a clone. The length of genes for second chromosome can be different.</p>
 <ol start="37" style="list-style-type: decimal">
-<li><p><strong>p0</strong> - the probability that during a trial, a cell of the clone has NO mutation. Applied to all cells in the clone.</p></li>
+<li><p><strong>p0</strong> - the probability that during a trial, a cell of the clone has <strong>NO</strong> mutation. Applied to all cells in the clone.</p></li>
 <li><p><strong>prob_point_mut</strong> - the conditional probability that if cell will have a mutation it should be a <strong>point mutation</strong>.</p></li>
 <li><p><strong>prob_del</strong> - the conditional probability that if cell will have a mutation it should be a <strong>deletion</strong>.</p></li>
 <li><p><strong>prob_dup</strong> - the conditional probability that if cell will have a mutation it should be a <strong>duplication</strong>.</p></li>
 </ol>
-<p>The information of the columns from 28 to 40 is related to <em>onco</em> object in simulation for a clone. Please, pay attention that probability of mutations depend on length of CDS and RNA of all chromosome but the table has information only for first chromosome.</p>
+<p>The information of the columns from 28 to 40 is related to <em>onco</em> object in simulation for a clone. Please, pay attention that probability of mutations depend on length of CDS and gene of all chromosome but the table has information only for first chromosome.</p>
 <table>
 <caption><strong>Table 6. </strong> Point mutation data frame which will be saved to the file <strong>Point_mutations.txt</strong> at the end of simulation.</caption>
 <colgroup>
@@ -2071,7 +2071,7 @@
 <li><strong>Delta</strong> - difference between the reference and physical positions.</li>
 <li><strong>Copy_number</strong> - the copy number of an allele.</li>
 <li><strong>Gene_name</strong> - the name of a gene.</li>
-<li><strong>MalfunctionedByPointMut</strong> - logical indicator of whether or not the gene is malfunctioned by the point mutation.</li>
+<li><strong>MalfunctionedByPointMut</strong> - logical indicator of whether or not the gene is malfunctioned by the point mutation. 10. <strong>mut_order</strong> - indicator of mutation order in the simulation, it’s used to detect order of mutations in the clone at each chromosome.</li>
 </ol>
 <table>
 <caption><strong>Table 7.</strong> CNA mutation data frame which will be saved to the file <strong>CNA.txt</strong> at the end of simulation.</caption>
@@ -2365,7 +2365,7 @@
 <li><strong>Reference_end</strong> - the reference position of the CNA end.</li>
 <li><strong>Gene_name</strong> - the name(s) of a gene(s).</li>
 <li><strong>MalfunctionedByCNA</strong> - logical indicator of whether or not the gene(s) is malfunctioned by the CNA.</li>
-<li><strong>mut_order</strong> - indicator of mutation order in the simulation, it’s used to detect order of mutations in the clone.</li>
+<li><strong>mut_order</strong> - indicator of mutation order in the simulation, it’s used to detect order of mutations in the clone at each chromosome.</li>
 </ol>
 <hr />
 <p><a name="run"></a></p>
@@ -2457,7 +2457,7 @@
 <p>Probabilities of CNA mutations are calculated in the same way as point mutations:</p>
 <ul>
 <li><p><span class="math inline">\(m_{point} = m_0 \times l_{CDS}\)</span> - for point mutation, where <span class="math inline">\(l_{CDS}\)</span> is the length of all exons of a gene and <span class="math inline">\(m_0\)</span> is a constant per base pairs defined by users;</p></li>
-<li><p><span class="math inline">\(m_{0,dup}\)</span> and <span class="math inline">\(m_{0,del}\)</span>, or we collectively call <span class="math inline">\(m_{0,CNA}\)</span>, indicate the first breakpoint event of a CNA and is a constant per base pairs defined by users. <span class="math inline">\(m_{CNA} = m_{0,CNA} \times l_{RNA}\)</span>, where <span class="math inline">\(l_{RNA}\)</span> is the total region size of all genes of interest which consists of exons as well as introns.</p></li>
+<li><p><span class="math inline">\(m_{0,dup}\)</span> and <span class="math inline">\(m_{0,del}\)</span>, or we collectively call <span class="math inline">\(m_{0,CNA}\)</span>, indicate the first breakpoint event of a CNA and is a constant per base pairs defined by users. <span class="math inline">\(m_{CNA} = m_{0,CNA} \times l_{genes}\)</span>, where <span class="math inline">\(l_{genes}\)</span> is the total region size of all genes of interest which consists of exons as well as introns.</p></li>
 <li><p>a length of CNA is calculated using geometrical distribution: <span class="math inline">\(l_{CNA} = rgeom(1,1 / \lambda_{CNA})\)</span>+1, where <span class="math inline">\(\lambda_{CNA}\)</span> is average base-pair length defined by users.</p></li>
 <li><p>probability of malfunctioning a gene <span class="math inline">\(u = u_{s,CNA}\)</span> for suppressor and <span class="math inline">\(u = u_{o,CNA}\)</span> for oncogene.</p></li>
 </ul>

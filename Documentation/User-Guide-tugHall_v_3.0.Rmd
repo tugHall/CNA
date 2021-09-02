@@ -334,6 +334,7 @@ x <- x[,c(1:16)]
 x[is.na(x)] <- ""
 library(stringr)
 x[] <- lapply(x, str_trunc, 6, ellipsis = "")
+names( x )[ 6 ] = 'Birth_time'
 knitr::kable(x, align = "c", caption = "**Table 5. Output data.** Example of output data for all clones. The names of columns are related to the description in the Tables 1,2 and *USER-GUIDE-Analysis_3*'s figures. Columns are from 1 to 16.")
 ```
 
@@ -342,7 +343,7 @@ knitr::kable(x, align = "c", caption = "**Table 5. Output data.** Example of out
 3. **AvgOrIndx** - "avg" or "index": "avg" is for a line with averaged values across different (index) lines at the same time step; "index" shows the cell's index at the current time step,  e.g., avg, 4,7.
 4. **ID** - the unique ID of clone, e.g., 1, 50.
 5. **Parent_ID** - the parent index,  e.g., 0, 45.
-6. **Birth_time** - the birthday time step,  e.g., 0, 5.
+6. **Birth_time** - the time step of the clone's birth,  e.g., 0, 5.
 7. **c** - the counter of cell divisions for the clone.
 8. **d**  - the probability of division for the cell, e.g., 0.1, 0.8.
 9. **i**  - the probability of immortalization for the cell, e.g., 0.1, 0.8.
@@ -360,6 +361,7 @@ x[is.na(x)] <- ""
 x <- x[,c(1,3,17:27)] 
 library(stringr)
 x[] <- lapply(x, str_trunc, 8, ellipsis = "")
+names(x)[10] = 'driver_genes'
 knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns are from 17 to 28.")
 ```
 
@@ -370,7 +372,7 @@ knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns ar
 21. **Hb** - the value of the hallmark "Angiogenesis" for the cell, e.g., 0.1, 0.4444 .
 22. **type** - the type of the cell: "0" is primary tumor cell, "1" is the metastatic cell, e.g., 0, 1.
 23. **mut_den** - the density of mutations (tumor mutation burden) for the cell, e.g., 0, 0.32.
-24. **onco_genes** - the binary numbers indicate the driver mutation at the gene related to order of genes in onco as well as order of the next columns with genes' names.
+24. **driver_genes** - the binary numbers indicate the driver mutation at the gene related to order of genes in onco as well as order of the next columns with genes' names.
 25. **passenger_genes** - the binary numbers indicate the passenger mutation at the gene related to order of genes in onco as well as order of the next columns with genes' names.
 26. **PointMut_ID** - the index of data row for point mutation data frame saved at the end of simulation in the file **Point_mutations.txt**, e.g., 23, 32.
 27. **CNA_ID** - the index of data row for CNA data frame saved at the end of simulation in the file **CNA.txt**, e.g., 44, 21.
@@ -383,15 +385,16 @@ x[is.na(x)] <- ""
 x <- x[,28:ncol(x)] 
 library(stringr)
 x[] <- lapply(x, str_trunc, 6, ellipsis = "")
+names( x )[6:9]  =  c( 'Len_APC', 'Len_KRAS', 'Len_TP53', 'Len_PIK3CA' )
 knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns are from 29 to end.")
 ```
-28. **onco_ID** - the index of the data related to onco object at simulation that has info about lengths of RNA and CDS for each chromosome.
+28. **onco_ID** - the index of the data related to onco object at simulation that has info about lengths of genes and genes' CDS for each chromosome.
 
 29-32. **CDS_(gene's name)**, for example **CDS_APC** - the length of CDS for each gene in the order of names of genes for ONLY FIRST chromosome of a clone. 
 
-33-36. **RNA_(gene's name)**, for example **RNA_APC** - the length of RNA for each gene in the order of names of genes for ONLY FIRST chromosome of a clone.
+33-36. **Len_(gene's name)**, for example **Len_APC** - the length of gene in the order of names of genes for ONLY FIRST chromosome of a clone. The length of genes for second chromosome can be different.  
 
-37. **p0** - the probability that during a trial, a cell of the clone has NO mutation. Applied to all cells in the clone.
+37. **p0** - the probability that during a trial, a cell of the clone has **NO** mutation. Applied to all cells in the clone.
 
 38. **prob_point_mut** - the conditional probability that if cell will have a mutation it should be a **point mutation**. 
 
@@ -400,7 +403,7 @@ knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns ar
 40. **prob_dup** - the conditional probability that if cell will have a mutation it should be a **duplication**. 
 
 The information of the columns from 28 to 40 is related to *onco* object in simulation for a clone.
-Please, pay attention that probability of mutations depend on length of CDS and RNA of all chromosome but the table has information only for first chromosome. 
+Please, pay attention that probability of mutations depend on length of CDS and gene of all chromosome but the table has information only for first chromosome. 
 
 ```{r, echo=FALSE, results='asis'}
 x <- read.csv(file = "../Output/point_mutations.txt",header = TRUE, sep = "\t", stringsAsFactors = FALSE)
@@ -418,7 +421,7 @@ knitr::kable(x, align = "c", caption = "**Table 6. ** Point mutation data frame 
 6. **Delta** - difference between the reference and physical positions.
 7. **Copy_number** - the copy number of an allele. 
 8. **Gene_name** - the name of a gene.
-9. **MalfunctionedByPointMut** - logical indicator of whether or not the gene is malfunctioned by the point mutation. 
+9. **MalfunctionedByPointMut** - logical indicator of whether or not the gene is malfunctioned by the point mutation. 10. **mut_order** - indicator of mutation order in the simulation, it's used to detect order of mutations in the clone at each chromosome.
 
 
 
@@ -437,7 +440,7 @@ knitr::kable(x, align = "c", caption = "**Table 7.** CNA mutation data frame whi
 6. **Reference_end** - the reference position of the CNA end.
 7. **Gene_name** - the name(s) of a gene(s).
 8. **MalfunctionedByCNA** - logical indicator of whether or not the gene(s) is malfunctioned by the CNA. 
-9. **mut_order** - indicator of mutation order in the simulation, it's used to detect order of mutations in the clone.
+9. **mut_order** - indicator of mutation order in the simulation, it's used to detect order of mutations in the clone at each chromosome.
 
 ---
 
@@ -543,12 +546,12 @@ Probabilities of CNA mutations are calculated in the same way as point mutations
 
 
 * $m_{0,dup}$ and $m_{0,del}$, or we collectively call $m_{0,CNA}$, indicate the first breakpoint event of a CNA and is a constant per base pairs defined by users. 
-$m_{CNA} = m_{0,CNA} \times l_{RNA}$, where $l_{RNA}$ is the total region size of all genes of interest which consists of exons as well as introns. 
+$m_{CNA} = m_{0,CNA} \times l_{genes}$, where $l_{genes}$ is the total region size of all genes of interest which consists of exons as well as introns. 
 
 
 * a length of CNA is calculated using geometrical distribution:
     $l_{CNA} = rgeom(1,1 / \lambda_{CNA})$+1, where $\lambda_{CNA}$ is average base-pair length defined by users.
-    
+
 * probability of malfunctioning a gene $u = u_{s,CNA}$ for suppressor and 
 $u = u_{o,CNA}$ for oncogene.
 
