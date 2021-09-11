@@ -172,21 +172,21 @@ cat('Check the modification of chromosomal locations due to duplication.
     The function add_duplication( ). ')
 test_that("Check the modification of chromosomal locations due to duplication. 
             The function add_duplication( ). : ", {
-              lst_dupl  =  lapply( X = 1:10, FUN = function( x ) {
-                    add_duplication( gm = gene_map, Ref_start = St_En_Chr$Start[ x ], 
-                                     Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
-                
-              chk_data = readRDS( file = './Tests/CNA/lst_dupl.txt')
-              print( 'Given the duplication for 10 sites: ')
-              print( St_En_Chr )
-              
-              expect_identical(chk_data, lst_dupl )
-              # expect_true(identical(chk_data, list_prob_len ))
-              
-          })
+      lst_dupl  =  lapply( X = 1:10, FUN = function( x ) {
+            add_duplication( gm = gene_map, Ref_start = St_En_Chr$Start[ x ], 
+                             Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
+        
+      chk_data = readRDS( file = './Tests/CNA/lst_dupl.txt')
+      print( 'Given the duplication for 10 sites: ')
+      print( St_En_Chr )
+      
+      expect_identical(chk_data, lst_dupl )
+      # expect_true(identical(chk_data, list_prob_len ))
+      
+})
 
 
-if ( TRUE ){
+if ( FALSE ){
     lst_del  =  lapply( X = 1:10, FUN = function( x ) {
         add_deletion( gm = gene_map, Ref_start = St_En_Chr$Start[ x ], 
                          Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
@@ -199,20 +199,97 @@ cat('Check the modification of chromosomal locations due to deletion
     The function add_deletion( ). ')
 test_that("Check the modification of chromosomal locations due to deletion. 
             The function add_deletion( ). : ", {
-                lst_del  =  lapply( X = 1:10, FUN = function( x ) {
-                    add_deletion( gm = gene_map, Ref_start = St_En_Chr$Start[ x ], 
-                                     Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
-                
-                chk_data = readRDS( file = './Tests/CNA/lst_deletion.txt')
-                print( 'Given the deletions for 10 sites: ')
-                print( St_En_Chr )
-                
-                expect_identical(chk_data, lst_del )
-                # expect_true(identical(chk_data, list_prob_len ))
-                
-            })
+        lst_del  =  lapply( X = 1:10, FUN = function( x ) {
+            add_deletion( gm = gene_map, Ref_start = St_En_Chr$Start[ x ], 
+                             Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
+        
+        chk_data = readRDS( file = './Tests/CNA/lst_deletion.txt')
+        print( 'Given the deletions for 10 sites: ')
+        print( St_En_Chr )
+        
+        expect_identical(chk_data, lst_del )
+})
 
 
+
+
+if ( FALSE ){
+    pos_pnts  =  1:10 * 5  +  gene_map$Start[2:11]
+    lst_pnts  =  lapply( X = 1:10, FUN = function( x ) {
+        add_pnt_mutation( gm = gene_map, pos_pnt = pos_pnts[x], Chr = '5' ) })
+    saveRDS( lst_pnts, file = './Tests/CNA/lst_pnts.txt' ) 
+}
+
+
+cat( 'Check the modification of chromosomal locations due to point mutation 
+    The function add_pnt_mutation( ). ' )
+test_that( "Check the modification of chromosomal locations due to point mutation 
+    The function add_pnt_mutation( ) : ", {
+        pos_pnts  =  1:10 * 5  +  gene_map$Start[2:11]
+        lst_pnts  =  lapply( X = 1:10, FUN = function( x ) {
+            add_pnt_mutation( gm = gene_map, pos_pnt = pos_pnts[ x ], Chr = '5' ) })
+        chk_data = readRDS( file = './Tests/CNA/lst_pnts.txt' )
+        print( 'Given the point mutations at 10 sites: ' )
+        print( pos_pnts )
+        
+        expect_identical( chk_data, lst_pnts )
+} )
+
+
+
+cat( 'Check the modification of chromosomal locations due to duplication after 
+        the point mutations. The function add_duplication( ). ' )
+test_that( "Check the modification of chromosomal locations due to duplication after 
+        the point mutations. The function add_duplication( ): ", {
+        pos_pnts  =  gene_map$End[2:11] - 1:10 * 5  
+        gm = gene_map
+        for( i in 1:10 ){
+            gm = add_pnt_mutation( gm = gm, pos_pnt = pos_pnts[ i ], Chr = '5' ) 
+        }
+        
+        lst_dup_and_pnts  =  lapply( X = 1:10, FUN = function( x ) {
+            add_duplication( gm = gm, Ref_start = St_En_Chr$Start[ x ], 
+                             Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
+        
+        # saveRDS( lst_dup_and_pnts, file = './Tests/CNA/lst_dup_and_pnts.txt' ) 
+        chk_data = readRDS( file = './Tests/CNA/lst_dup_and_pnts.txt')
+        
+        print( 'Given the point mutations at 10 sites: ' )
+        print( pos_pnts )
+        
+        print( 'And after that the different duplications: ')
+        print( St_En_Chr )
+
+        expect_identical( chk_data, lst_dup_and_pnts )
+    } )
+
+
+
+cat( 'Check the modification of chromosomal locations due to deletion after 
+        the point mutations. The function add_deletion( ). ' )
+test_that( "Check the modification of chromosomal locations due to deletion after 
+        the point mutations. The function add_deletion( ): ", {
+        pos_pnts  =  gene_map$End[2:11] - 1:10 * 5  
+        gm = gene_map
+        for( i in 1:10 ){
+            gm = add_pnt_mutation( gm = gm, pos_pnt = pos_pnts[ i ], Chr = '5' ) 
+        }
+        
+        lst_del_and_pnts  =  lapply( X = 1:10, FUN = function( x ) {
+            add_deletion( gm = gm, Ref_start = St_En_Chr$Start[ x ], 
+                             Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
+        
+        # saveRDS( lst_del_and_pnts, file = './Tests/CNA/lst_del_and_pnts.txt' ) 
+        chk_data = readRDS( file = './Tests/CNA/lst_del_and_pnts.txt')
+        
+        print( 'Given the point mutations at 10 sites: ' )
+        print( pos_pnts )
+        
+        print( 'And after that the different deletions: ')
+        print( St_En_Chr )
+        
+        expect_identical( chk_data, lst_del_and_pnts )
+} )
 
 
 

@@ -1,6 +1,7 @@
 
 ### LIBRARIES and SOURCES ------------------------------------------------
 
+
     ###  The simulation uses the functions and classes in the "Code/tugHall_2.1_functions.R" 
     
     library(stringr)   # to use string data in input files
@@ -61,9 +62,9 @@
     d0 <<-  0.35       # Initial probability to divide cells
     ### Additional parameters of simulation
     censore_n <<- 10^5       # Max cell number where the program forcibly stops
-    censore_t <<- 100         # Max time where the program forcibly stops
+    censore_t <<- 30         # Max time where the program forcibly stops
     ### New parameters for CNA:
-    m_dup  <<- 8E-8 # mutation probability for duplication
+    m_dup  <<- 1E-8 # mutation probability for duplication
     m_del  <<- 1E-9 # mutation probability for deletion 
     lambda_dup  <<- 5000  # CNA duplication average length (of the geometrical distribution for the length)
     lambda_del  <<- 7000  # CNA deletion average length
@@ -102,29 +103,30 @@
 ### Simulation of the cancer cell/clone evolution:
 smlt = model(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, censore_n, censore_t, d0)
 
-
 ### GET RESULTS ----------------------------------------------------------
 
-clones      <- smlt[[1]]
-onco_clones <- smlt[[2]] 
-
-write_pnt_clones( pnt_clones, file = 'Output/point_mutations.txt' )
-write_pnt_clones( cna_clones, file = 'Output/CNA_mutations.txt' )
-
-cn <- read.csv(file = 'Output/CNA_mutations.txt', sep = '\t')
-View(cn)
-pn <- read.csv(file = 'Output/point_mutations.txt', sep = '\t')
-View(pn)
-
-sapply(clones, FUN = function(x) x$field(name = 'id') ) 
-sapply(onco_clones, FUN = function(x) x$field(name = 'id') )
-
-unlist( sapply(clones, FUN = function(x) x$field(name = 'PointMut_ID') )  )
-unlist( sapply(clones, FUN = function(x) x$field(name = 'CNA_ID') )  )
-
-# check the CNA and point mutations
-unlist( sapply( clones, FUN = function(x) print( c(x$id, x$CNA_ID, x$PointMut_ID) ) ) )
-
+if ( FALSE ){
+    clones      <- smlt[[1]]
+    onco_clones <- smlt[[2]] 
+    
+    write_pnt_clones( pnt_clones, file = 'Output/point_mutations.txt' )
+    write_pnt_clones( cna_clones, file = 'Output/CNA_mutations.txt' )
+    
+    cn <- read.csv(file = 'Output/CNA_mutations.txt', sep = '\t')
+    View(cn)
+    pn <- read.csv(file = 'Output/point_mutations.txt', sep = '\t')
+    View(pn)
+    
+    sapply(clones, FUN = function(x) x$field(name = 'id') ) 
+    sapply(onco_clones, FUN = function(x) x$field(name = 'id') )
+    
+    unlist( sapply(clones, FUN = function(x) x$field(name = 'PointMut_ID') )  )
+    unlist( sapply(clones, FUN = function(x) x$field(name = 'CNA_ID') )  )
+    
+    # check the CNA and point mutations
+    unlist( sapply( clones, FUN = function(x) print( c(x$id, x$CNA_ID, x$PointMut_ID) ) ) )
+    
+}
 
 
 ### ANALYZE the RESULTS --------------------------------------------------
@@ -132,7 +134,7 @@ unlist( sapply( clones, FUN = function(x) print( c(x$id, x$CNA_ID, x$PointMut_ID
 
 # Note: if output files have no data to plot Code/Analysis.R produces errors during plotting
 
-source("Code/Analysis_clones.R")
+# source("Code/Analysis_clones.R")
 
 # In order to make report, please, use USER-GUIDE.Rmd to show results of simulation
 
