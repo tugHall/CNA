@@ -1,5 +1,6 @@
 
 ### TESTs for all functions including main function - 'model'
+### Part I. Tests for CNA and point mutation functions
 
 # References --------------------------------------------------------------
 
@@ -92,15 +93,14 @@ cat('Check the reading of chromosomal location from CCDS.current.txt
 test_that("Check the reading of chromosomal 
           location from CCDS.current.txt which was getting from CCDS database: ", {
     
-    chk_data  =  read.csv( file = './Tests/GENE_MAP/test_map.txt', 
-                           sep = '\t', stringsAsFactors = FALSE )
-    chk_data$Chr  =  as.character(chk_data$Chr )  
-    chk_data[1,4:6] = as.numeric( chk_data[1,4:6] )
+    chk_data  =  readRDS( file = './Tests/GENE_MAP/test_map.txt' ) 
+
+    # saveRDS( gene_map, file = './Tests/GENE_MAP/test_map.txt' ) 
     # print( 'The chromosomal locations for genes: ')
     print('Output: ')
     print( gene_map )
     expect_identical(chk_data, gene_map )
-    expect_true(identical(chk_data, gene_map ))
+    # expect_true(identical(chk_data, gene_map ))
     
 })
 
