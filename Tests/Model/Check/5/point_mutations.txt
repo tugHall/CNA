@@ -1,0 +1,7 @@
+"PointMut_ID"	"Parental_1or2"	"Chr"	"Ref_pos"	"Phys_pos"	"Delta"	"Copy_number"	"Gene_name"	"MalfunctionedByPointMut"	"mut_order"
+1	1	"3"	179201298	"[179201298]"	"[0]"	1	"PIK3CA"	TRUE	3
+1	2	"3"	179201298	"[NA]"	"[NA]"	1	"PIK3CA"	NA	3
+3	2	"17"	7676188	"[7676188]"	"[0]"	1	"TP53"	FALSE	40
+3	1	"17"	7676188	"[NA]"	"[NA]"	1	"TP53"	NA	40
+5	2	"5"	112840280	"[112840280]"	"[0]"	1	"APC"	FALSE	48
+5	1	"5"	112840280	"[NA]"	"[NA]"	1	"APC"	NA	48

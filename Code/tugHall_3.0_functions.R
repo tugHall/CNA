@@ -1362,14 +1362,17 @@ write_weights <- function(outfile, hall) {
 
 # write the point mutation info for all clones for all time steps:
 write_pnt_clones <- function(pnt_clones, file_out = 'Output/point_mutations.txt'){
+    # if ( is.null(pnt_clones) ) return( print( 'Empty data.' ) )
     pn  <-  NULL
-    for (i in 1:length(pnt_clones)) {
-        pnt1 <-  unlist( pnt_clones[[i]] )
-        pn1  <-  safe_pnt_mut( pnt1 )     ### pnt1$safe()
-        pn   <-  rbind( pn, pn1)
+    if ( !is.null( pnt_clones ) ){
+        for (i in 1:length(pnt_clones)) {
+            pnt1 <-  unlist( pnt_clones[[i]] )
+            pn1  <-  safe_pnt_mut( pnt1 )     ### pnt1$safe()
+            pn   <-  rbind( pn, pn1)
+        }
     }
     
-    write.table(pn, file = file_out, append=FALSE, sep="\t", row.names = FALSE)
+    write.table( pn, file = file_out, append=FALSE, sep="\t", row.names = FALSE)
 }
 
 # initial clone setting
@@ -1447,29 +1450,6 @@ init_onco_clones <- function( onco1, clones ) {
     return( as.list( onco_clones ) )
 }
 
-# Genetic recombination
-read_w <- function(file) {
-    if (!is.null(file) & !is.na(file)) {
-        data <- read.table(file, sep="\t")
-        w <- NULL
-        r = 1
-        start = 1
-        while (TRUE) {
-            window = ceiling(runif(1)*ncol(data))
-            if (start + window > ncol(data)) {
-                window = ncol(data) - start
-            }
-            w = c(w, data[r,start:(start+window)])
-            if (start+window == ncol(data)) {
-                break
-            }
-            start = start + window
-            r = ifelse(r==1,2,1)                  
-        }
-        hall$setW(w)
-    }
-}
-
 ### Function to calculate binominal distribution including BIG NUMBERS like 10^12 and more using approximation with normal distribution 
 calc_binom <- function(tr,n,p){
     if (n*p < 10^8){
@@ -1482,8 +1462,6 @@ calc_binom <- function(tr,n,p){
     
     return(  round( ou )  )
 }
-
-
 
 ### V)   MODEL: main function 'model' --------------------------------------------
 
@@ -1528,18 +1506,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     isFirst = TRUE
     write_cloneout( cloneoutfile, env, clones, isFirst, onco_clones )     #  write initial clones
 
-    
-    # The initialization for mutation process
-    # prob_CDS <<- vector(mode = "numeric",length = onco$len)
-    # sumCDS <<- sum(onco$cds)
-    # prob_CDS <<- onco$cds / sumCDS
-    # p0 <<- (1 - m0) ^ sumCDS
     print( paste0("The probability of an absence of the mutations is p0 = ", as.character(onco$p0_1) )) 
-    #if (p0 >= 0 && p0 < 1) print( paste0("The probability of an absence of the mutations is p0 = ", as.character(p0) )  ) 
-    #       else stop("The probability of an absence of the mutations is ", p0,  ", that is  incorrect!", call. = TRUE)
-    
-    index_gene <<- vector(mode = "numeric",length = onco$len)
-    for (i in 1:onco$len) index_gene[i] <<- i
     
     while(length(clones) > 0 && censore_n > cells_number && env$T < censore_t) {
 
@@ -1594,11 +1561,12 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
 
     }
     
-    ### write_pnt_clones( pnt_clones, file = 'Output/point_mutations.txt' )
-    ### write_pnt_clones( cna_clones, file = 'Output/CNA_mutations.txt' )
+    # write_pnt_clones( pnt_clones, file = 'Output/point_mutations.txt' )
+    # write_pnt_clones( cna_clones, file = 'Output/CNA_mutations.txt' )
     
     return( list( clones , onco_clones ) )
 }
+
 ########################################### END #####################################################
 
 
