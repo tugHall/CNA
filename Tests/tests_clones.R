@@ -23,7 +23,10 @@ library(binaryLogic)  # to convert integer to bunary
 source(file = "Code/tugHall_3.0_functions.R")
 source(file = "Code/read_maps.R")
 
-Print_output_data  =  FALSE 
+if ( !exists('Print_output_data') )  {
+  pk = readline(prompt="Print output data of the tests? Press key: 1 - Yes, any others - No. ")
+  if ( pk == '1' ) Print_output_data  =  TRUE else Print_output_data  =  FALSE
+}
 
 # Generate objects of simulation ------------------------------------------
 

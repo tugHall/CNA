@@ -21,6 +21,10 @@ library(actuar)    # to use BIG NUMBERS in N_cell variable
 source(file = "Code/tugHall_3.0_functions.R")
 source(file = "Code/read_maps.R")
 
+if ( !exists('Print_output_data') )  {
+  pk = readline(prompt="Print output data of the tests? Press key: 1 - Yes, any others - No. ")
+  if ( pk == '1' ) Print_output_data  =  TRUE else Print_output_data  =  FALSE
+}
 
 # Generate objects of simulation ------------------------------------------
 
@@ -97,8 +101,10 @@ test_that("Check the reading of chromosomal
 
     # saveRDS( gene_map, file = './Tests/GENE_MAP/test_map.txt' ) 
     # print( 'The chromosomal locations for genes: ')
-    print('Output: ')
-    print( gene_map )
+    if ( Print_output_data ){
+        print('Output: ')
+        print( gene_map )
+    }
     expect_identical(chk_data, gene_map )
     # expect_true(identical(chk_data, gene_map ))
     
@@ -112,8 +118,10 @@ test_that("Check the calculation of lengths of genes and their CDS length: ", {
               list_len_cds  =  get_len_cds_rna( gene_map )
               chk_data = readRDS( file = './Tests/GENE_MAP/length_CDS.txt')
               # print( 'The chromosomal locations for genes: ')
-              print('Output: ')
-              print( list_len_cds )
+              if ( Print_output_data ){
+                  print('Output: ')
+                  print( list_len_cds )
+              }
               expect_identical(chk_data, list_len_cds )
               expect_true(identical(chk_data, list_len_cds ))
               
@@ -133,14 +141,16 @@ test_that("Check the calculation of probabilities based on lengths of genes and
           their CDS lengths. The function get_cds_rna( gm ): ", {
     list_prob_len  =  get_cds_rna( gm = gene_map ) 
     chk_data = readRDS( file = './Tests/CNA/prob_length.txt')
-    print( 'Given probabilities for each site: ')
-    print( paste0('m0 = ', as.character( m0 ) ) )
-    print( paste0('m_dup = ', as.character( m_dup ) ) )
-    print( paste0('m_del = ', as.character( m_del ) ) )
     
-    print('Output: ')
-    print( list_prob_len )
-    
+    if ( Print_output_data ){
+        print( 'Given probabilities for each site: ')
+        print( paste0('m0 = ', as.character( m0 ) ) )
+        print( paste0('m_dup = ', as.character( m_dup ) ) )
+        print( paste0('m_del = ', as.character( m_del ) ) )
+        
+        print('Output: ')
+        print( list_prob_len )
+    }
     expect_identical(chk_data, list_prob_len )
     # expect_true(identical(chk_data, list_prob_len ))
     
@@ -177,9 +187,10 @@ test_that("Check the modification of chromosomal locations due to duplication.
                              Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
         
       chk_data = readRDS( file = './Tests/CNA/lst_dupl.txt')
-      print( 'Given the duplication for 10 sites: ')
-      print( St_En_Chr )
-      
+      if ( Print_output_data ){
+          print( 'Given the duplication for 10 sites: ')
+          print( St_En_Chr )
+      }
       expect_identical(chk_data, lst_dupl )
       # expect_true(identical(chk_data, list_prob_len ))
       
@@ -204,9 +215,10 @@ test_that("Check the modification of chromosomal locations due to deletion.
                              Ref_end = St_En_Chr$End[ x ], Chr = St_En_Chr$Chr[ x ] ) })
         
         chk_data = readRDS( file = './Tests/CNA/lst_deletion.txt')
-        print( 'Given the deletions for 10 sites: ')
-        print( St_En_Chr )
-        
+        if ( Print_output_data ){
+            print( 'Given the deletions for 10 sites: ')
+            print( St_En_Chr )
+        }
         expect_identical(chk_data, lst_del )
 })
 
@@ -229,9 +241,10 @@ test_that( "Check the modification of chromosomal locations due to point mutatio
         lst_pnts  =  lapply( X = 1:10, FUN = function( x ) {
             add_pnt_mutation( gm = gene_map, pos_pnt = pos_pnts[ x ], Chr = '5' ) })
         chk_data = readRDS( file = './Tests/CNA/lst_pnts.txt' )
-        print( 'Given the point mutations at 10 sites: ' )
-        print( pos_pnts )
-        
+        if ( Print_output_data ){
+            print( 'Given the point mutations at 10 sites: ' )
+            print( pos_pnts )
+        }
         expect_identical( chk_data, lst_pnts )
 } )
 
@@ -253,13 +266,13 @@ test_that( "Check the modification of chromosomal locations due to duplication a
         
         # saveRDS( lst_dup_and_pnts, file = './Tests/CNA/lst_dup_and_pnts.txt' ) 
         chk_data = readRDS( file = './Tests/CNA/lst_dup_and_pnts.txt')
+        if ( Print_output_data ){
+            print( 'Given the point mutations at 10 sites: ' )
+            print( pos_pnts )
         
-        print( 'Given the point mutations at 10 sites: ' )
-        print( pos_pnts )
-        
-        print( 'And after that the different duplications: ')
-        print( St_En_Chr )
-
+            print( 'And after that the different duplications: ')
+            print( St_En_Chr )
+        }
         expect_identical( chk_data, lst_dup_and_pnts )
     } )
 
@@ -281,13 +294,13 @@ test_that( "Check the modification of chromosomal locations due to deletion afte
         
         # saveRDS( lst_del_and_pnts, file = './Tests/CNA/lst_del_and_pnts.txt' ) 
         chk_data = readRDS( file = './Tests/CNA/lst_del_and_pnts.txt')
+        if ( Print_output_data ){
+            print( 'Given the point mutations at 10 sites: ' )
+            print( pos_pnts )
         
-        print( 'Given the point mutations at 10 sites: ' )
-        print( pos_pnts )
-        
-        print( 'And after that the different deletions: ')
-        print( St_En_Chr )
-        
+            print( 'And after that the different deletions: ')
+            print( St_En_Chr )
+        }
         expect_identical( chk_data, lst_del_and_pnts )
 } )
 
