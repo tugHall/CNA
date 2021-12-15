@@ -1,5 +1,4 @@
 
-################################################################
 ### The code to read maps of genes using CCDS code of genes  ###
 
 library(stringr)   # to use string data in input files
@@ -93,7 +92,7 @@ get_len_cds_rna  <-  function( gene_map){
     rna0   =  rna0[w]
     cds0   =  cds0[w]
 
-    return( list( name0, cds0, rna0 ) )
+    return( list( Name = name0, CDS = cds0, LEN_Genes = rna0 ) )
 }
 
 
