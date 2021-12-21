@@ -11,71 +11,6 @@
     source(file = "Code/read_maps.R")
     
 
-### Define the FOLDERS and files' names ---------------------------------------------------
-    ## Create folders:  /Input, /Output and /Figures 
-define_files_names  <-  function(){    
-    mainDir <- getwd()
-    subDir <- "Output"
-    if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
-    
-    subDir <- "Input"
-    if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
-    
-    subDir <- "Figures"
-    if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
-    
-    
-    ### Files to output and input data
-    genefile <<- 'Input/gene_hallmarks.txt'    # gene file 
-    clonefile <<- 'Input/cloneinit.txt'     # initial Cells 
-    
-    ### Output files
-    geneoutfile <<- 'Output/geneout.txt'  # Gene Out file with Hallmarks 
-    cloneoutfile <<- 'Output/cloneout.txt'  # output information of simulation
-    logoutfile <<-  'Output/log.txt'      # log file to save the input information of simulation - "log.txt"
-    ### Output/Weights.txt               # file with gene weights for hallmarks
-}    
-### Define the gene map - chromosomal locations --------------------------
-
-define_gene_location  <-  function( file_input  =  'Input/CCDS.current.txt',
-                                    genes_list  =  c( 'CCDS4107.1', 'CCDS8702.1', 
-                                                      'CCDS43171.1', 'CCDS11118.1' ) ){    
-    ### Make a map of genes with sorting of start position for each chromosome:
-    gene_map  <<-   make_map(f_out    =  'Input/gene_map.txt', 
-                             ls   =  genes_list, 
-                             f_in =  file_input )
-    gene_map  <<-  order_gene_map( gene_map )  ### We have to be sure in the sorting of start position for each chromosome
-    
-    write.table(gene_map, file = 'Output/gene_MAP.txt', col.names = TRUE, 
-                            sep = "\t", row.names = FALSE)                
-}
-
-### Define the PARAMETERS ------------------------------------------------
-
-    # Probabilities of processes
-define_paramaters  <-  function(){   
-    E0 <<-  1E-4       # parameter in the division probability  
-    F0 <<-  10         # parameter in the division probability  
-    m0 <<-  1E-6       # mutation probability  
-    uo <<-  0.9        # oncogene mutation probability  
-    us <<-  0.9        # suppressor mutation probability  
-    s0 <<-  10         # parameter in the sigmoid function  
-    k0 <<-  0.2        # Environmental death probability  
-    d0 <<-  0.35       # Initial probability to divide cells
-    ### Additional parameters of simulation
-    censore_n <<- 10^5       # Max cell number where the program forcibly stops
-    censore_t <<- 80         # Max time where the program forcibly stops
-    ### New parameters for CNA:
-    m_dup  <<- 1E-8 # mutation probability for duplication
-    m_del  <<- 1E-9 # mutation probability for deletion 
-    lambda_dup  <<- 5000  # CNA duplication average length (of the geometrical distribution for the length)
-    lambda_del  <<- 7000  # CNA deletion average length
-    uo_dup  <<- 0.8 # Gene malfunction probability by CNA duplication for oncogene
-    us_dup  <<- 0.5   # Gene malfunction probability by CNA duplication for suppressor
-    uo_del  <<- 0   # Gene malfunction probability by CNA deletion    for oncogene
-    us_del  <<- 0.8 # Gene malfunction probability by CNA deletion    for suppressor
-}    
-    
 
 ### MAKE INPUT CLONES ----------------------------------------------------
 
@@ -103,7 +38,8 @@ define_paramaters  <-  function(){
 
 ### SIMULATION -----------------------------------------------------------
 ### Simulation of the cancer cell/clone evolution:
-if ( FALSE ){    
+  
+    # source('./tugHall_3.0.R')
     define_files_names()    
     define_gene_location()
     define_paramaters()
@@ -115,38 +51,13 @@ if ( FALSE ){
     
     write_pnt_clones( pnt_clones, file = 'Output/point_mutations.txt' )
     write_pnt_clones( cna_clones, file = 'Output/CNA_mutations.txt' )
-    
-}
-### GET RESULTS ----------------------------------------------------------
-
-if ( FALSE ){
+    # rm(list = ls())
 
     
-    cn <- read.csv(file = 'Output/CNA_mutations.txt', sep = '\t')
-    View(cn)
-    pn <- read.csv(file = 'Output/point_mutations.txt', sep = '\t')
-    View(pn)
+### Get VAF data    
+    source("Code/Functions_clones.R")
+    get_flow_data(cloneoutfile, genefile )
     
-    sapply(clones, FUN = function(x) x$field(name = 'id') ) 
-    sapply(onco_clones, FUN = function(x) x$field(name = 'id') )
-    
-    unlist( sapply(clones, FUN = function(x) x$field(name = 'PointMut_ID') )  )
-    unlist( sapply(clones, FUN = function(x) x$field(name = 'CNA_ID') )  )
-    
-    # check the CNA and point mutations
-    unlist( sapply( clones, FUN = function(x) print( c(x$id, x$CNA_ID, x$PointMut_ID) ) ) )
-    
-}
-
-
-### ANALYZE the RESULTS --------------------------------------------------
-#### Analysis of the output data:
-
-# Note: if output files have no data to plot Code/Analysis.R produces errors during plotting
-
-# source("Code/Analysis_clones.R")
-
-# In order to make report, please, use USER-GUIDE.Rmd to show results of simulation
-
-# In order to improve the output plot, please, use Code/Functions.R and Code/Analysis.R scripts
-
+    ### Also VAF data in the file 'Output/VAF_data.txt'
+    vf = get_VAF()
+ 

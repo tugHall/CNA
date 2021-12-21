@@ -51,7 +51,7 @@
 <p>R version <strong>3.6.0</strong> or later</p>
 <p>libraries: <strong>stringr, actuar, tidyr</strong></p>
 <p><strong>tugHall</strong> is a tool based on the model described in the paper <a href="https://doi.org/10.1093/bioinformatics/btaa182">Iurii S Nagornov, Mamoru Kato. tugHall: a simulator of cancer-cell evolution based on the hallmarks of cancer and tumor-related genes. Bioinformatics, V.36, N11, June 2020, pp. 3597–3599</a>. The parameters of the model are described in the Supplementary materials of the paper.</p>
-<p>Note that the program has two different procedures in general: the first is the simulation and the second is the analysis of the simulation results. Please, pay attention that the requirements for these procedures are <strong>different</strong>. This User-Guide pertains to the <strong>simulation procedure</strong> alone.</p>
+<p>Note that the program has two different procedures in general: the first is the simulation and the second is the analysis of the simulation results. Please, pay attention that the requirements for these procedures are <strong>different</strong>. This User-Guide pertains to the <strong>simulation procedure</strong> alone. Please, also note that plots and tables of this document are related to the data files from <strong>/Documentation/Example/</strong> folder.</p>
 <p><br /></p>
 </div>
 <div id="table-of-contents" class="section level1">
@@ -74,7 +74,7 @@
 <li>Save the <strong>/tugHall_2_2_CNA/</strong> directory to the working folder;</li>
 <li>Run <strong>tugHall_3.0.R</strong>.</li>
 </ul>
-<p>The code has its initial input parameters and input files in the <strong>/Input/</strong> folder. After the simulation the user can see results of the simulation (please, see <strong>User-Guide-Analysis_3</strong> for details) in the dialogue box, which will save to the <strong>/Output/</strong> and <strong>/Figures/</strong> folders. Note that the analysis procedure requires additional libraries and a higher version of R - 3.6.0.</p>
+<p>The code has its initial input parameters and input files in the <strong>/Input/</strong> folder. After the simulation the user can see results of the simulation (please, see <strong>User-Guide-Analysis_3</strong> for details), which will save to the <strong>/Output/</strong> and <strong>/Figures/</strong> folders. Note that the analysis procedure requires additional libraries and a higher version of R - 3.6.0.</p>
 <p><a name="directories"></a></p>
 </div>
 <div id="structure-of-directories" class="section level1">
@@ -93,6 +93,7 @@
 <p>dir <strong>/Input/</strong> - the folder with the input files.</p>
 <p>dir <strong>/Output/</strong> - the folder with the output files.</p>
 <p>dir <strong>/Figures/</strong> - the folder with the plot figures.</p>
+<p>dir <strong>/Documentation/</strong> - the folder with documentation and example of a simulation.</p>
 <p><br /></p>
 </div>
 <div id="code-directory" class="section level3">
@@ -127,6 +128,10 @@
 <div id="figures-directory" class="section level3">
 <h3><strong>/Figures/</strong> directory</h3>
 <p>In the <strong>/Figures/</strong> directory there are figures in *.jpg format, which appear after the analysis of the simulation results. See <strong>USER-GUIDE-Analysis_3</strong>.</p>
+</div>
+<div id="documentation-directory-1" class="section level3">
+<h3><strong>/Documentation/</strong> directory</h3>
+<p>Here there are files of the documentation with example of the data from a simulation in the folder <strong>/Documentation/Example/</strong>.</p>
 <p><a name="inputs"></a></p>
 </div>
 </div>
@@ -136,7 +141,7 @@
 <h2>Input of hallmark variables and gene weights</h2>
 <p>The file <strong>tugHall/Input/gene_hallmarks.txt</strong> defines the hallmark variables and weights:</p>
 <table>
-<caption><strong>Table 1. Input file for genes.</strong> Example of input file for hallmarks and weights in the file <em><strong>tugHall_2_2_CNA/Input/gene_hallmarks.txt</strong></em>.</caption>
+<caption><strong>Table 1. Input file for genes.</strong> Example of input file for hallmarks and weights in the file <em><strong>tugHall_3_0_CNA/Tests/Input/gene_hallmarks.txt</strong></em>.</caption>
 <thead>
 <tr class="header">
 <th align="center">Genes</th>
@@ -277,7 +282,7 @@
 <hr />
 <p>After that, the program defines all the weights. <strong>Unspecified weights</strong> are set to 0. Program performs normalization so that the sum of all weights should be equal to 1 for each column. The <strong>tugHall/Output/Weights.txt</strong> file saves these final input weights for the simulation. Only the first 10 lines are presented here:</p>
 <table>
-<caption><strong>Table 2. Weights for hallmarks.</strong> Example of weights for hallmarks and genes from <em><strong>tugHall/Output/Weights.txt</strong></em> file. Unspecified values equal 0.</caption>
+<caption><strong>Table 2. Weights for hallmarks.</strong> Example of weights for hallmarks and genes from <em><strong>tugHall/Documentation/Example/Weights.txt</strong></em> file. Unspecified values equal 0.</caption>
 <colgroup>
 <col width="6%" />
 <col width="13%" />
@@ -343,7 +348,7 @@
 </div>
 <div id="input-the-probabilities" class="section level2">
 <h2>Input the probabilities</h2>
-<p>The input of the probabilities used in the model is possible in the code for parameter value settings, <strong>“tugHall_3_0.R”</strong>:</p>
+<p>The input of the probabilities used in the model is possible in the code for parameter value settings, see function <strong>define_paramaters()</strong> in the file <strong>“tugHall_3_0.R”</strong>:</p>
 <table>
 <colgroup>
 <col width="33%" />
@@ -439,6 +444,16 @@
 <td align="left">per time-step</td>
 </tr>
 <tr class="odd">
+<td align="left"><strong>censore_n &lt;- 30000 </strong></td>
+<td align="left">Max cell number where the program forcibly stops</td>
+<td align="left">number of cells</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>censore_t &lt;- 200</strong></td>
+<td align="left">Max time where the program forcibly stops</td>
+<td align="left">in time-steps</td>
+</tr>
+<tr class="odd">
 <td align="left"><img width="160/"></td>
 <td align="left"><img width="340/"></td>
 <td align="left"><img width="200/"></td>
@@ -450,7 +465,7 @@
 </div>
 <div id="filename-input" class="section level2">
 <h2>Filename input</h2>
-<p>Also in the code <strong>“tugHall_3_3.R”</strong> user can define names of input and output files, and additional parameters of simulation:</p>
+<p>Also in the code <strong>“tugHall_3_3.R”</strong> user can define names of input and output files using function <strong>define_files_names()</strong>:</p>
 <table>
 <colgroup>
 <col width="50%" />
@@ -488,14 +503,6 @@
 <td align="left">Log file to save the input information of simulation</td>
 </tr>
 <tr class="odd">
-<td align="left"><strong>censore_n &lt;- 30000 </strong></td>
-<td align="left">Max cell number where the program forcibly stops</td>
-</tr>
-<tr class="even">
-<td align="left"><strong>censore_t &lt;- 200</strong></td>
-<td align="left">Max time where the program forcibly stops</td>
-</tr>
-<tr class="odd">
 <td align="left"><img width="200/"></td>
 <td align="left"><img width="350/"></td>
 </tr>
@@ -505,7 +512,7 @@
 </div>
 <div id="input-of-the-initial-clones" class="section level2">
 <h2>Input of the initial clones</h2>
-<p><strong>Pay attention, it does not work yet, and it will be working.</strong></p>
+<p><strong>Please, pay attention, it works for point mutation only.</strong></p>
 <p>The initial states of cells are defined in <strong>“tugHall_3_0_CNA/Input/cloneinit.txt”</strong> file:</p>
 <table>
 <thead>
@@ -566,7 +573,7 @@
 </div>
 <div id="input-of-the-genes-maps" class="section level2">
 <h2>Input of the genes’ maps</h2>
-<p>This new version of <strong>tugHall</strong> allows to calculate CNAs in the genome. The breakpoints of CNAs may fall on genic regions consisting of exons and introns. That’s why it’s needed to enter information about gene’s map. In the <strong>/Input/</strong> directory you can find <strong>CCDS.current.txt</strong>, which was getting from <a href="https://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/">CCDS database</a> at the National Center for Biotechnology Information and has information about genes. At the beginning of simulation, the program reads this file and extracts genes’ map, which is put into <strong>“tugHall_2_clones/Input/gene_map.txt”</strong>. For example, the map is shown as follow:</p>
+<p>This new version of <strong>tugHall</strong> allows to calculate CNAs in the genome. The breakpoints of CNAs may fall on genic regions consisting of exons and introns. That’s why it’s needed to enter information about gene’s map. In the <strong>/Input/</strong> directory you can find <strong>CCDS.current.txt</strong>, which was getting from <a href="https://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/">CCDS database</a> at the National Center for Biotechnology Information and has information about genes. At the beginning of simulation, the program reads this file and extracts genes’ map using function <strong>define_gene_location()</strong>, which is put into <strong>“tugHall_2_clones/Input/gene_map.txt”</strong>. For example, the map is shown as follow:</p>
 <table>
 <thead>
 <tr class="header">
@@ -722,11 +729,11 @@
 </tr>
 <tr class="odd">
 <td align="center">uo</td>
-<td align="center">0.5</td>
+<td align="center">0.9</td>
 </tr>
 <tr class="even">
 <td align="center">us</td>
-<td align="center">0.5</td>
+<td align="center">0.9</td>
 </tr>
 <tr class="odd">
 <td align="center">s</td>
@@ -758,7 +765,7 @@
 </tr>
 <tr class="even">
 <td align="center">us_dup</td>
-<td align="center">0</td>
+<td align="center">0.5</td>
 </tr>
 <tr class="odd">
 <td align="center">uo_del</td>
@@ -774,7 +781,7 @@
 </tr>
 <tr class="even">
 <td align="center">censore_t</td>
-<td align="center">30</td>
+<td align="center">100</td>
 </tr>
 <tr class="odd">
 <td align="center">d0</td>
@@ -971,32 +978,32 @@
 <td align="center">-</td>
 <td align="center">-</td>
 <td align="center">-</td>
-<td align="center">0.2216</td>
-<td align="center">0.2535</td>
-<td align="center">1</td>
-<td align="center">0.0008</td>
+<td align="center">0.2490</td>
+<td align="center">0.2531</td>
+<td align="center">0.9995</td>
+<td align="center">0.0018</td>
 <td align="center">0.0066</td>
 <td align="center">0.2</td>
 <td align="center">9.9922</td>
-<td align="center">970</td>
-<td align="center">10031.</td>
+<td align="center">983</td>
+<td align="center">10033.</td>
 <td align="center">0</td>
 </tr>
 <tr class="even">
 <td align="center">1</td>
-<td align="center">967</td>
+<td align="center">978</td>
 <td align="center">1</td>
 <td align="center">1</td>
 <td align="center">0</td>
 <td align="center">0</td>
-<td align="center">0.2216</td>
-<td align="center">0.253</td>
+<td align="center">0.2490</td>
+<td align="center">0.2517</td>
 <td align="center">1</td>
 <td align="center">0</td>
 <td align="center">0.0066</td>
 <td align="center">0.2</td>
 <td align="center">1e-04</td>
-<td align="center">970</td>
+<td align="center">983</td>
 <td align="center">10000</td>
 <td align="center">0</td>
 </tr>
@@ -1007,33 +1014,33 @@
 <td align="center">2</td>
 <td align="center">1</td>
 <td align="center">0</td>
-<td align="center">0.2216</td>
-<td align="center">0.5634</td>
-<td align="center">1</td>
-<td align="center">0.4259</td>
-<td align="center">0</td>
-<td align="center">0.2</td>
-<td align="center">2.4874</td>
-<td align="center">970</td>
-<td align="center">40201.</td>
-<td align="center">0</td>
-</tr>
-<tr class="even">
-<td align="center">1</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">3</td>
-<td align="center">1</td>
-<td align="center">0</td>
-<td align="center">0.2216</td>
-<td align="center">0.5239</td>
+<td align="center">0.2490</td>
+<td align="center">0.5226</td>
 <td align="center">1</td>
 <td align="center">0.4445</td>
 <td align="center">0</td>
 <td align="center">0.2</td>
 <td align="center">1e-04</td>
-<td align="center">970</td>
+<td align="center">983</td>
 <td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">3</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2490</td>
+<td align="center">0.5646</td>
+<td align="center">0.5264</td>
+<td align="center">0.0529</td>
+<td align="center">0</td>
+<td align="center">0.2</td>
+<td align="center">2.3449</td>
+<td align="center">983</td>
+<td align="center">42645.</td>
 <td align="center">0</td>
 </tr>
 <tr class="odd">
@@ -1043,14 +1050,50 @@
 <td align="center">4</td>
 <td align="center">1</td>
 <td align="center">0</td>
-<td align="center">0.2216</td>
-<td align="center">0.253</td>
+<td align="center">0.2490</td>
+<td align="center">0.5226</td>
 <td align="center">1</td>
+<td align="center">0.4445</td>
 <td align="center">0</td>
-<td align="center">0.0066</td>
 <td align="center">0.2</td>
 <td align="center">1e-04</td>
-<td align="center">970</td>
+<td align="center">983</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">5</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2490</td>
+<td align="center">0.5226</td>
+<td align="center">1</td>
+<td align="center">0.4445</td>
+<td align="center">0</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">983</td>
+<td align="center">10000</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">6</td>
+<td align="center">6</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.2490</td>
+<td align="center">0.5226</td>
+<td align="center">1</td>
+<td align="center">0.4445</td>
+<td align="center">0</td>
+<td align="center">0.2</td>
+<td align="center">1e-04</td>
+<td align="center">983</td>
 <td align="center">10000</td>
 <td align="center">0</td>
 </tr>
@@ -1061,51 +1104,15 @@
 <td align="center">-</td>
 <td align="center">-</td>
 <td align="center">-</td>
-<td align="center">0.4741</td>
-<td align="center">0.2554</td>
-<td align="center">1</td>
-<td align="center">0.0004</td>
+<td align="center">0.5142</td>
+<td align="center">0.2542</td>
+<td align="center">0.9994</td>
+<td align="center">0.0027</td>
 <td align="center">0.0066</td>
 <td align="center">0.2</td>
-<td align="center">1e-04</td>
-<td align="center">948</td>
-<td align="center">10000</td>
-<td align="center">0</td>
-</tr>
-<tr class="odd">
-<td align="center">2</td>
-<td align="center">945</td>
-<td align="center">1</td>
-<td align="center">1</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0.4746</td>
-<td align="center">0.2552</td>
-<td align="center">1</td>
-<td align="center">0</td>
-<td align="center">0.0066</td>
-<td align="center">0.2</td>
-<td align="center">1e-04</td>
-<td align="center">948</td>
-<td align="center">10000</td>
-<td align="center">0</td>
-</tr>
-<tr class="even">
-<td align="center">2</td>
-<td align="center">1</td>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">1</td>
-<td align="center">0</td>
-<td align="center">0.2216</td>
-<td align="center">0.5261</td>
-<td align="center">1</td>
-<td align="center">0.4445</td>
-<td align="center">0</td>
-<td align="center">0.2</td>
-<td align="center">1e-04</td>
-<td align="center">948</td>
-<td align="center">10000</td>
+<td align="center">9.9834</td>
+<td align="center">978</td>
+<td align="center">10099.</td>
 <td align="center">0</td>
 </tr>
 </tbody>
@@ -1135,15 +1142,15 @@
 <col width="8%" />
 <col width="7%" />
 <col width="7%" />
-<col width="3%" />
+<col width="7%" />
 <col width="7%" />
 <col width="7%" />
 <col width="4%" />
 <col width="7%" />
 <col width="10%" />
-<col width="13%" />
-<col width="10%" />
-<col width="6%" />
+<col width="12%" />
+<col width="9%" />
+<col width="5%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1196,13 +1203,13 @@
 <tr class="odd">
 <td align="center">1</td>
 <td align="center">avg</td>
-<td align="center">0.000561</td>
-<td align="center">0.000897</td>
+<td align="center">0.001253</td>
+<td align="center">0.001862</td>
+<td align="center">0.000481</td>
+<td align="center">0.001344</td>
+<td align="center">0.000332</td>
 <td align="center">0</td>
-<td align="center">0.000524</td>
-<td align="center">0.000311</td>
-<td align="center">0</td>
-<td align="center">0.000515</td>
+<td align="center">0.001271</td>
 <td align="center">-</td>
 <td align="center">-</td>
 <td align="center">-</td>
@@ -1225,81 +1232,6 @@
 </tr>
 <tr class="odd">
 <td align="center">1</td>
-<td align="center">2</td>
-<td align="center">0.288171</td>
-<td align="center">0.425906</td>
-<td align="center">0</td>
-<td align="center">0.237535</td>
-<td align="center">0.302013</td>
-<td align="center">0</td>
-<td align="center">0.25</td>
-<td align="center">0 0 0 1</td>
-<td align="center">0 0 0 0</td>
-<td align="center">1</td>
-<td align="center">0</td>
-</tr>
-<tr class="even">
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">0.256550</td>
-<td align="center">0.444554</td>
-<td align="center">0</td>
-<td align="center">0.270991</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0.25</td>
-<td align="center">1 0 0 0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">3</td>
-<td align="center">0</td>
-</tr>
-<tr class="odd">
-<td align="center">1</td>
-<td align="center">4</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">1 0 0 0</td>
-<td align="center">5</td>
-<td align="center">0</td>
-</tr>
-<tr class="even">
-<td align="center">2</td>
-<td align="center">avg</td>
-<td align="center">0.000270</td>
-<td align="center">0.000468</td>
-<td align="center">0</td>
-<td align="center">0.000285</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0.000263</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-</tr>
-<tr class="odd">
-<td align="center">2</td>
-<td align="center">1</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-</tr>
-<tr class="even">
-<td align="center">2</td>
 <td align="center">2</td>
 <td align="center">0.256550</td>
 <td align="center">0.444554</td>
@@ -1310,117 +1242,57 @@
 <td align="center">0.25</td>
 <td align="center">1 0 0 0</td>
 <td align="center">0 0 0 0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">0.205882</td>
+<td align="center">0.052983</td>
+<td align="center">0.473568</td>
+<td align="center">0.237718</td>
+<td align="center">0.326450</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">0 1 0 0</td>
+<td align="center">0 0 0 0</td>
 <td align="center">3</td>
 <td align="center">0</td>
 </tr>
 <tr class="odd">
-<td align="center">2</td>
-<td align="center">3</td>
+<td align="center">1</td>
+<td align="center">4</td>
+<td align="center">0.256550</td>
+<td align="center">0.444554</td>
+<td align="center">0</td>
+<td align="center">0.270991</td>
 <td align="center">0</td>
 <td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0 0 0 0</td>
+<td align="center">0.25</td>
 <td align="center">1 0 0 0</td>
+<td align="center">0 0 0 0</td>
 <td align="center">5</td>
 <td align="center">0</td>
 </tr>
 <tr class="even">
-<td align="center">2</td>
-<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">0.256550</td>
+<td align="center">0.444554</td>
+<td align="center">0</td>
+<td align="center">0.270991</td>
 <td align="center">0</td>
 <td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0 0 0 0</td>
+<td align="center">0.25</td>
 <td align="center">1 0 0 0</td>
+<td align="center">0 0 0 0</td>
 <td align="center">7</td>
 <td align="center">0</td>
 </tr>
 <tr class="odd">
-<td align="center">3</td>
-<td align="center">avg</td>
-<td align="center">0.001973</td>
-<td align="center">0.003263</td>
-<td align="center">0</td>
-<td align="center">0.001942</td>
-<td align="center">0.000641</td>
-<td align="center">0</td>
-<td align="center">0.001857</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-</tr>
-<tr class="even">
-<td align="center">3</td>
 <td align="center">1</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-</tr>
-<tr class="odd">
-<td align="center">3</td>
-<td align="center">2</td>
-<td align="center">0.256550</td>
-<td align="center">0.444554</td>
-<td align="center">0</td>
-<td align="center">0.270991</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0.25</td>
-<td align="center">1 0 0 0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">3</td>
-<td align="center">0</td>
-</tr>
-<tr class="even">
-<td align="center">3</td>
-<td align="center">3</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">1 0 0 0</td>
-<td align="center">5</td>
-<td align="center">0</td>
-</tr>
-<tr class="odd">
-<td align="center">3</td>
-<td align="center">4</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">0 0 0 0</td>
-<td align="center">1 0 0 0</td>
-<td align="center">7</td>
-<td align="center">0</td>
-</tr>
-<tr class="even">
-<td align="center">3</td>
-<td align="center">5</td>
+<td align="center">6</td>
 <td align="center">0.256550</td>
 <td align="center">0.444554</td>
 <td align="center">0</td>
@@ -1432,6 +1304,141 @@
 <td align="center">0 0 0 0</td>
 <td align="center">9</td>
 <td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">avg</td>
+<td align="center">0.001893</td>
+<td align="center">0.002767</td>
+<td align="center">0.000538</td>
+<td align="center">0.001853</td>
+<td align="center">0.000997</td>
+<td align="center">0</td>
+<td align="center">0.001789</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">0.256550</td>
+<td align="center">0.444554</td>
+<td align="center">0</td>
+<td align="center">0.270991</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">11</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">0.288171</td>
+<td align="center">0.425906</td>
+<td align="center">0</td>
+<td align="center">0.237535</td>
+<td align="center">0.302013</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">0 0 0 1</td>
+<td align="center">0 0 0 0</td>
+<td align="center">13</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">4</td>
+<td align="center">0.256550</td>
+<td align="center">0.444554</td>
+<td align="center">0</td>
+<td align="center">0.270991</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">15</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">0.256550</td>
+<td align="center">0.444554</td>
+<td align="center">0</td>
+<td align="center">0.270991</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">17</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">6</td>
+<td align="center">0.537567</td>
+<td align="center">0.502462</td>
+<td align="center">0.526431</td>
+<td align="center">0.491290</td>
+<td align="center">0.673549</td>
+<td align="center">0</td>
+<td align="center">0.5</td>
+<td align="center">0 0 1 1</td>
+<td align="center">0 0 0 0</td>
+<td align="center">19, 21</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">7</td>
+<td align="center">0.256550</td>
+<td align="center">0.444554</td>
+<td align="center">0</td>
+<td align="center">0.270991</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0.25</td>
+<td align="center">1 0 0 0</td>
+<td align="center">0 0 0 0</td>
+<td align="center">23</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">avg</td>
+<td align="center">0.002420</td>
+<td align="center">0.004118</td>
+<td align="center">0</td>
+<td align="center">0.002487</td>
+<td align="center">0.000312</td>
+<td align="center">0</td>
+<td align="center">0.002326</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
 </tr>
 </tbody>
 </table>
@@ -1450,7 +1457,7 @@
 </ol>
 <p>There are two columns (24th and 25th) with the indexes of point mutations and CNAs in Table 5. Each index corresponds to index in the related data frames for point mutations and for CNAs (Tables 6 and 7 respectively).</p>
 <table>
-<caption><strong>Continuation of Table 5. </strong> Columns are from 29 to end.</caption>
+<caption><strong>Continuation of Table 5. </strong> Columns are from 28 to end.</caption>
 <colgroup>
 <col width="6%" />
 <col width="6%" />
@@ -1590,66 +1597,6 @@
 <td align="center">0.1091</td>
 </tr>
 <tr class="even">
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-</tr>
-<tr class="odd">
-<td align="center">1</td>
-<td align="center">8532</td>
-<td align="center">567</td>
-<td align="center">1182</td>
-<td align="center">3207</td>
-<td align="center">89236</td>
-<td align="center">35590</td>
-<td align="center">6986</td>
-<td align="center">35539</td>
-<td align="center">0.9847</td>
-<td align="center">0.8799</td>
-<td align="center">0.0109</td>
-<td align="center">0.1091</td>
-</tr>
-<tr class="even">
-<td align="center">3</td>
-<td align="center">8532</td>
-<td align="center">567</td>
-<td align="center">1182</td>
-<td align="center">3207</td>
-<td align="center">89236</td>
-<td align="center">35590</td>
-<td align="center">6986</td>
-<td align="center">35539</td>
-<td align="center">0.9847</td>
-<td align="center">0.8799</td>
-<td align="center">0.0109</td>
-<td align="center">0.1091</td>
-</tr>
-<tr class="odd">
-<td align="center">4</td>
-<td align="center">8532</td>
-<td align="center">567</td>
-<td align="center">1182</td>
-<td align="center">3207</td>
-<td align="center">89236</td>
-<td align="center">35590</td>
-<td align="center">6986</td>
-<td align="center">35539</td>
-<td align="center">0.9847</td>
-<td align="center">0.8799</td>
-<td align="center">0.0109</td>
-<td align="center">0.1091</td>
-</tr>
-<tr class="even">
 <td align="center">5</td>
 <td align="center">8532</td>
 <td align="center">567</td>
@@ -1665,81 +1612,6 @@
 <td align="center">0.1091</td>
 </tr>
 <tr class="odd">
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-<td align="center">-</td>
-</tr>
-<tr class="even">
-<td align="center">1</td>
-<td align="center">8532</td>
-<td align="center">567</td>
-<td align="center">1182</td>
-<td align="center">3207</td>
-<td align="center">89236</td>
-<td align="center">35590</td>
-<td align="center">6986</td>
-<td align="center">35539</td>
-<td align="center">0.9847</td>
-<td align="center">0.8799</td>
-<td align="center">0.0109</td>
-<td align="center">0.1091</td>
-</tr>
-<tr class="odd">
-<td align="center">3</td>
-<td align="center">8532</td>
-<td align="center">567</td>
-<td align="center">1182</td>
-<td align="center">3207</td>
-<td align="center">89236</td>
-<td align="center">35590</td>
-<td align="center">6986</td>
-<td align="center">35539</td>
-<td align="center">0.9847</td>
-<td align="center">0.8799</td>
-<td align="center">0.0109</td>
-<td align="center">0.1091</td>
-</tr>
-<tr class="even">
-<td align="center">4</td>
-<td align="center">8532</td>
-<td align="center">567</td>
-<td align="center">1182</td>
-<td align="center">3207</td>
-<td align="center">89236</td>
-<td align="center">35590</td>
-<td align="center">6986</td>
-<td align="center">35539</td>
-<td align="center">0.9847</td>
-<td align="center">0.8799</td>
-<td align="center">0.0109</td>
-<td align="center">0.1091</td>
-</tr>
-<tr class="odd">
-<td align="center">5</td>
-<td align="center">8532</td>
-<td align="center">567</td>
-<td align="center">1182</td>
-<td align="center">3207</td>
-<td align="center">89236</td>
-<td align="center">35590</td>
-<td align="center">6986</td>
-<td align="center">35539</td>
-<td align="center">0.9847</td>
-<td align="center">0.8799</td>
-<td align="center">0.0109</td>
-<td align="center">0.1091</td>
-</tr>
-<tr class="even">
 <td align="center">6</td>
 <td align="center">8532</td>
 <td align="center">567</td>
@@ -1753,6 +1625,141 @@
 <td align="center">0.8799</td>
 <td align="center">0.0109</td>
 <td align="center">0.1091</td>
+</tr>
+<tr class="even">
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9847</td>
+<td align="center">0.8799</td>
+<td align="center">0.0109</td>
+<td align="center">0.1091</td>
+</tr>
+<tr class="even">
+<td align="center">7</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9847</td>
+<td align="center">0.8799</td>
+<td align="center">0.0109</td>
+<td align="center">0.1091</td>
+</tr>
+<tr class="odd">
+<td align="center">8</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9847</td>
+<td align="center">0.8799</td>
+<td align="center">0.0109</td>
+<td align="center">0.1091</td>
+</tr>
+<tr class="even">
+<td align="center">9</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9847</td>
+<td align="center">0.8799</td>
+<td align="center">0.0109</td>
+<td align="center">0.1091</td>
+</tr>
+<tr class="odd">
+<td align="center">10</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9847</td>
+<td align="center">0.8799</td>
+<td align="center">0.0109</td>
+<td align="center">0.1091</td>
+</tr>
+<tr class="even">
+<td align="center">11</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9847</td>
+<td align="center">0.8799</td>
+<td align="center">0.0109</td>
+<td align="center">0.1091</td>
+</tr>
+<tr class="odd">
+<td align="center">12</td>
+<td align="center">8532</td>
+<td align="center">567</td>
+<td align="center">1182</td>
+<td align="center">3207</td>
+<td align="center">89236</td>
+<td align="center">35590</td>
+<td align="center">6986</td>
+<td align="center">35539</td>
+<td align="center">0.9847</td>
+<td align="center">0.8799</td>
+<td align="center">0.0109</td>
+<td align="center">0.1091</td>
+</tr>
+<tr class="even">
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
 </tr>
 </tbody>
 </table>
@@ -1800,49 +1807,49 @@
 <tbody>
 <tr class="odd">
 <td align="center">1</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">179219710</td>
-<td align="center">[179219710]</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112766358</td>
+<td align="center">[112766358]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
-<td align="center">PIK3CA</td>
+<td align="center">APC</td>
 <td align="center">TRUE</td>
 <td align="center">1</td>
 </tr>
 <tr class="even">
 <td align="center">1</td>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">179219710</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112766358</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
-<td align="center">PIK3CA</td>
+<td align="center">APC</td>
 <td align="center">NA</td>
 <td align="center">1</td>
 </tr>
 <tr class="odd">
 <td align="center">3</td>
-<td align="center">1</td>
-<td align="center">5</td>
-<td align="center">112754952</td>
-<td align="center">[112754952]</td>
+<td align="center">2</td>
+<td align="center">12</td>
+<td align="center">25227294</td>
+<td align="center">[25227294]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
-<td align="center">APC</td>
+<td align="center">KRAS</td>
 <td align="center">TRUE</td>
 <td align="center">2</td>
 </tr>
 <tr class="even">
 <td align="center">3</td>
-<td align="center">2</td>
-<td align="center">5</td>
-<td align="center">112754952</td>
+<td align="center">1</td>
+<td align="center">12</td>
+<td align="center">25227294</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
-<td align="center">APC</td>
+<td align="center">KRAS</td>
 <td align="center">NA</td>
 <td align="center">2</td>
 </tr>
@@ -1850,19 +1857,19 @@
 <td align="center">5</td>
 <td align="center">1</td>
 <td align="center">5</td>
-<td align="center">112843098</td>
-<td align="center">[112843098]</td>
+<td align="center">112834962</td>
+<td align="center">[112834962]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
 <td align="center">APC</td>
-<td align="center">FALSE</td>
+<td align="center">TRUE</td>
 <td align="center">3</td>
 </tr>
 <tr class="even">
 <td align="center">5</td>
 <td align="center">2</td>
 <td align="center">5</td>
-<td align="center">112843098</td>
+<td align="center">112834962</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
@@ -1874,19 +1881,19 @@
 <td align="center">7</td>
 <td align="center">1</td>
 <td align="center">5</td>
-<td align="center">112842741</td>
-<td align="center">[112842741]</td>
+<td align="center">112838048</td>
+<td align="center">[112838048]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
 <td align="center">APC</td>
-<td align="center">FALSE</td>
+<td align="center">TRUE</td>
 <td align="center">4</td>
 </tr>
 <tr class="even">
 <td align="center">7</td>
 <td align="center">2</td>
 <td align="center">5</td>
-<td align="center">112842741</td>
+<td align="center">112838048</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
@@ -1898,8 +1905,8 @@
 <td align="center">9</td>
 <td align="center">2</td>
 <td align="center">5</td>
-<td align="center">112839275</td>
-<td align="center">[112839275]</td>
+<td align="center">112819291</td>
+<td align="center">[112819291]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
 <td align="center">APC</td>
@@ -1910,7 +1917,7 @@
 <td align="center">9</td>
 <td align="center">1</td>
 <td align="center">5</td>
-<td align="center">112839275</td>
+<td align="center">112819291</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
@@ -1922,19 +1929,19 @@
 <td align="center">11</td>
 <td align="center">2</td>
 <td align="center">5</td>
-<td align="center">112819085</td>
-<td align="center">[112819085]</td>
+<td align="center">112828919</td>
+<td align="center">[112828919]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
 <td align="center">APC</td>
-<td align="center">FALSE</td>
+<td align="center">TRUE</td>
 <td align="center">6</td>
 </tr>
 <tr class="even">
 <td align="center">11</td>
 <td align="center">1</td>
 <td align="center">5</td>
-<td align="center">112819085</td>
+<td align="center">112828919</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
@@ -1945,98 +1952,98 @@
 <tr class="odd">
 <td align="center">13</td>
 <td align="center">2</td>
-<td align="center">17</td>
-<td align="center">7675218</td>
-<td align="center">[7675218]</td>
+<td align="center">3</td>
+<td align="center">179221099</td>
+<td align="center">[179221099]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
-<td align="center">TP53</td>
-<td align="center">FALSE</td>
+<td align="center">PIK3CA</td>
+<td align="center">TRUE</td>
 <td align="center">7</td>
 </tr>
 <tr class="even">
 <td align="center">13</td>
 <td align="center">1</td>
-<td align="center">17</td>
-<td align="center">7675218</td>
+<td align="center">3</td>
+<td align="center">179221099</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
-<td align="center">TP53</td>
+<td align="center">PIK3CA</td>
 <td align="center">NA</td>
 <td align="center">7</td>
 </tr>
 <tr class="odd">
 <td align="center">15</td>
 <td align="center">1</td>
-<td align="center">3</td>
-<td align="center">179201413</td>
-<td align="center">[179201413]</td>
+<td align="center">5</td>
+<td align="center">112840163</td>
+<td align="center">[112840163]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
-<td align="center">PIK3CA</td>
+<td align="center">APC</td>
 <td align="center">TRUE</td>
 <td align="center">8</td>
 </tr>
 <tr class="even">
 <td align="center">15</td>
 <td align="center">2</td>
-<td align="center">3</td>
-<td align="center">179201413</td>
+<td align="center">5</td>
+<td align="center">112840163</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
-<td align="center">PIK3CA</td>
+<td align="center">APC</td>
 <td align="center">NA</td>
 <td align="center">8</td>
 </tr>
 <tr class="odd">
 <td align="center">17</td>
-<td align="center">2</td>
-<td align="center">3</td>
-<td align="center">179234351</td>
-<td align="center">[179234351]</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">112838486</td>
+<td align="center">[112838486]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
-<td align="center">PIK3CA</td>
-<td align="center">FALSE</td>
+<td align="center">APC</td>
+<td align="center">TRUE</td>
 <td align="center">9</td>
 </tr>
 <tr class="even">
 <td align="center">17</td>
-<td align="center">1</td>
-<td align="center">3</td>
-<td align="center">179234351</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">112838486</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
-<td align="center">PIK3CA</td>
+<td align="center">APC</td>
 <td align="center">NA</td>
 <td align="center">9</td>
 </tr>
 <tr class="odd">
 <td align="center">19</td>
 <td align="center">2</td>
-<td align="center">5</td>
-<td align="center">112844078</td>
-<td align="center">[112844078]</td>
+<td align="center">17</td>
+<td align="center">7670695</td>
+<td align="center">[7670695]</td>
 <td align="center">[0]</td>
 <td align="center">1</td>
-<td align="center">APC</td>
+<td align="center">TP53</td>
 <td align="center">TRUE</td>
-<td align="center">11</td>
+<td align="center">10</td>
 </tr>
 <tr class="even">
 <td align="center">19</td>
 <td align="center">1</td>
-<td align="center">5</td>
-<td align="center">112844078</td>
+<td align="center">17</td>
+<td align="center">7670695</td>
 <td align="center">[NA]</td>
 <td align="center">[NA]</td>
 <td align="center">1</td>
-<td align="center">APC</td>
+<td align="center">TP53</td>
 <td align="center">NA</td>
-<td align="center">11</td>
+<td align="center">10</td>
 </tr>
 </tbody>
 </table>
@@ -2049,7 +2056,8 @@
 <li><strong>Delta</strong> - difference between the reference and physical positions.</li>
 <li><strong>Copy_number</strong> - the copy number of an allele.</li>
 <li><strong>Gene_name</strong> - the name of a gene.</li>
-<li><strong>MalfunctionedByPointMut</strong> - logical indicator of whether or not the gene is malfunctioned by the point mutation. 10. <strong>mut_order</strong> - indicator of mutation order in the simulation, it’s used to detect order of mutations in the clone at each chromosome.</li>
+<li><strong>MalfunctionedByPointMut</strong> - logical indicator of whether or not the gene is malfunctioned by the point mutation.</li>
+<li><strong>mut_order</strong> - indicator of mutation order in the simulation, it’s used to detect order of mutations in the clone at each chromosome.</li>
 </ol>
 <table style="width:100%;">
 <caption><strong>Table 7.</strong> CNA mutation data frame which will be saved to the file <strong>CNA.txt</strong> at the end of simulation.</caption>
@@ -2082,144 +2090,221 @@
 <td align="center">1</td>
 <td align="center">2</td>
 <td align="center">dup</td>
-<td align="center">5</td>
-<td align="center">112841196</td>
-<td align="center">112844125</td>
-<td align="center">APC</td>
-<td align="center">FALSE</td>
-<td align="center">10</td>
+<td align="center">17</td>
+<td align="center">7673823</td>
+<td align="center">7675369</td>
+<td align="center">TP53</td>
+<td align="center">TRUE</td>
+<td align="center">27</td>
 </tr>
 <tr class="even">
 <td align="center">2</td>
 <td align="center">2</td>
 <td align="center">dup</td>
-<td align="center">12</td>
-<td align="center">25225656</td>
-<td align="center">25226397</td>
-<td align="center">KRAS</td>
+<td align="center">17</td>
+<td align="center">7676055</td>
+<td align="center">7676471</td>
+<td align="center">TP53</td>
 <td align="center">TRUE</td>
-<td align="center">23</td>
+<td align="center">37</td>
 </tr>
 <tr class="odd">
 <td align="center">3</td>
-<td align="center">2</td>
+<td align="center">1</td>
 <td align="center">dup</td>
-<td align="center">17</td>
-<td align="center">7676033</td>
-<td align="center">7676593</td>
-<td align="center">TP53</td>
-<td align="center">FALSE</td>
-<td align="center">27</td>
+<td align="center">12</td>
+<td align="center">25225639</td>
+<td align="center">25227411</td>
+<td align="center">KRAS</td>
+<td align="center">TRUE</td>
+<td align="center">43</td>
 </tr>
 <tr class="even">
 <td align="center">4</td>
 <td align="center">2</td>
 <td align="center">dup</td>
 <td align="center">5</td>
-<td align="center">112842698</td>
+<td align="center">112838709</td>
 <td align="center">112844125</td>
 <td align="center">APC</td>
 <td align="center">FALSE</td>
-<td align="center">28</td>
+<td align="center">51</td>
 </tr>
 <tr class="odd">
 <td align="center">5</td>
 <td align="center">2</td>
 <td align="center">dup</td>
 <td align="center">5</td>
-<td align="center">112840690</td>
-<td align="center">112843329</td>
+<td align="center">112841364</td>
+<td align="center">112843137</td>
 <td align="center">APC</td>
-<td align="center">FALSE</td>
-<td align="center">39</td>
+<td align="center">TRUE</td>
+<td align="center">85</td>
 </tr>
 <tr class="even">
 <td align="center">6</td>
-<td align="center">1</td>
+<td align="center">2</td>
 <td align="center">dup</td>
-<td align="center">5</td>
-<td align="center">112842076</td>
-<td align="center">112843362</td>
-<td align="center">APC</td>
-<td align="center">FALSE</td>
-<td align="center">47</td>
+<td align="center">3</td>
+<td align="center">179201302</td>
+<td align="center">179203498</td>
+<td align="center">PIK3CA</td>
+<td align="center">TRUE</td>
+<td align="center">104</td>
 </tr>
 <tr class="odd">
 <td align="center">7</td>
-<td align="center">1</td>
+<td align="center">2</td>
 <td align="center">dup</td>
 <td align="center">5</td>
-<td align="center">112841388</td>
-<td align="center">112843278</td>
+<td align="center">112775653</td>
+<td align="center">112777935</td>
 <td align="center">APC</td>
 <td align="center">FALSE</td>
-<td align="center">64</td>
+<td align="center">111</td>
 </tr>
 <tr class="even">
 <td align="center">8</td>
-<td align="center">1</td>
-<td align="center">del</td>
-<td align="center">3</td>
-<td align="center">179210492</td>
-<td align="center">179211181</td>
-<td align="center">PIK3CA</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112841049</td>
+<td align="center">112842339</td>
+<td align="center">APC</td>
 <td align="center">FALSE</td>
-<td align="center">103</td>
+<td align="center">113</td>
 </tr>
 <tr class="odd">
 <td align="center">9</td>
 <td align="center">1</td>
 <td align="center">dup</td>
-<td align="center">3</td>
-<td align="center">179234284</td>
-<td align="center">179234363</td>
-<td align="center">PIK3CA</td>
-<td align="center">TRUE</td>
-<td align="center">105</td>
+<td align="center">5</td>
+<td align="center">112841320</td>
+<td align="center">112842011</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">129</td>
 </tr>
 <tr class="even">
 <td align="center">10</td>
-<td align="center">1</td>
+<td align="center">2</td>
 <td align="center">dup</td>
-<td align="center">17</td>
-<td align="center">7676183</td>
-<td align="center">7676593</td>
-<td align="center">TP53</td>
-<td align="center">FALSE</td>
-<td align="center">136</td>
+<td align="center">3</td>
+<td align="center">179229384</td>
+<td align="center">179230375</td>
+<td align="center">PIK3CA</td>
+<td align="center">TRUE</td>
+<td align="center">135</td>
 </tr>
 <tr class="odd">
 <td align="center">11</td>
 <td align="center">2</td>
 <td align="center">dup</td>
 <td align="center">5</td>
-<td align="center">112841807</td>
+<td align="center">112838578</td>
 <td align="center">112844125</td>
 <td align="center">APC</td>
 <td align="center">FALSE</td>
-<td align="center">141</td>
+<td align="center">147</td>
 </tr>
 <tr class="even">
 <td align="center">12</td>
-<td align="center">2</td>
+<td align="center">1</td>
 <td align="center">dup</td>
-<td align="center">5</td>
-<td align="center">112837602</td>
-<td align="center">112837738</td>
-<td align="center">APC</td>
-<td align="center">FALSE</td>
-<td align="center">145</td>
+<td align="center">17</td>
+<td align="center">7673772</td>
+<td align="center">7675235</td>
+<td align="center">TP53</td>
+<td align="center">TRUE</td>
+<td align="center">151</td>
 </tr>
 <tr class="odd">
 <td align="center">13</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">3</td>
+<td align="center">179229408</td>
+<td align="center">179234363</td>
+<td align="center">PIK3CA</td>
+<td align="center">TRUE</td>
+<td align="center">162</td>
+</tr>
+<tr class="even">
+<td align="center">14</td>
 <td align="center">1</td>
-<td align="center">del</td>
+<td align="center">dup</td>
+<td align="center">12</td>
+<td align="center">25225685</td>
+<td align="center">25225783</td>
+<td align="center">KRAS</td>
+<td align="center">TRUE</td>
+<td align="center">164</td>
+</tr>
+<tr class="odd">
+<td align="center">15</td>
+<td align="center">1</td>
+<td align="center">dup</td>
 <td align="center">5</td>
-<td align="center">112842750</td>
-<td align="center">112842976</td>
+<td align="center">112843111</td>
+<td align="center">112844125</td>
 <td align="center">APC</td>
 <td align="center">TRUE</td>
-<td align="center">154</td>
+<td align="center">185</td>
+</tr>
+<tr class="even">
+<td align="center">16</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112838661</td>
+<td align="center">112842642</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">193</td>
+</tr>
+<tr class="odd">
+<td align="center">17</td>
+<td align="center">2</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112819194</td>
+<td align="center">112823466</td>
+<td align="center">APC</td>
+<td align="center">TRUE</td>
+<td align="center">211</td>
+</tr>
+<tr class="even">
+<td align="center">18</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112841949</td>
+<td align="center">112844125</td>
+<td align="center">APC</td>
+<td align="center">FALSE</td>
+<td align="center">218</td>
+</tr>
+<tr class="odd">
+<td align="center">19</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112838238</td>
+<td align="center">112840157</td>
+<td align="center">APC</td>
+<td align="center">TRUE</td>
+<td align="center">229</td>
+</tr>
+<tr class="even">
+<td align="center">20</td>
+<td align="center">1</td>
+<td align="center">dup</td>
+<td align="center">5</td>
+<td align="center">112840847</td>
+<td align="center">112843418</td>
+<td align="center">APC</td>
+<td align="center">TRUE</td>
+<td align="center">248</td>
 </tr>
 </tbody>
 </table>
@@ -2249,7 +2334,7 @@
 <p><code>R --vanilla &lt; tugHall_3_0.R</code></p>
 <p>or using the line by line procedure in <strong>R Studio</strong>. In this case we have:</p>
 <ul>
-<li><strong><code>load library(stringr)</code></strong> and <strong><code>source(file = &quot;Code/tugHall_2.2_functions.R&quot;)</code></strong>;</li>
+<li><strong><code>load library(stringr)</code></strong> and <strong><code>source(file = &quot;Code/tugHall_3.0_functions.R&quot;)</code></strong>;</li>
 <li>create the Output and Figures directories, if needed;</li>
 <li>define the simulation parameters;</li>
 <li>make the input file for initial cells, if needed;</li>
@@ -2257,7 +2342,7 @@
 <li>run <strong><code>source(&quot;Code/Analysis_clone.R&quot;)</code></strong> in order to analyze the results and plot the figures in the dialogue box (see <strong>User-Guide-Analysis_v3.0</strong>).</li>
 </ul>
 <ol start="4" style="list-style-type: decimal">
-<li>To obtain analysis reports of the simulation, please refer to <strong>User-Guide-Analysis_v3.0.RMD</strong>. In <strong>User-Guide-Analysis_v3.0.RMD</strong>, commands are embedded to include files under <strong>Output/</strong> and <strong>Figure/</strong>. So, after analysis with tugHall, you can generate analysis reports automatically from <strong>User-Guide-Analysis_v3.0.RMD</strong>. For more details, please refer to “Writing reproducible reports in R” on the github (<a href="https://nicercode.github.io/guides/reports/" class="uri">https://nicercode.github.io/guides/reports/</a>).</li>
+<li>To obtain analysis reports of the simulation, please refer to <strong>User-Guide-Analysis_v3.0.RMD</strong>. In <strong>User-Guide-Analysis_v3.0.RMD</strong>, commands are embedded to include files under <strong>Documentation/Example/</strong>. So, after analysis with tugHall, you can generate analysis reports automatically from <strong>User-Guide-Analysis_v3.0.RMD</strong> changing directories of the table and figures files. For more details, please refer to “Writing reproducible reports in R” on the github (<a href="https://nicercode.github.io/guides/reports/" class="uri">https://nicercode.github.io/guides/reports/</a>).</li>
 </ol>
 <p><a name="new"></a></p>
 </div>

@@ -1,4 +1,81 @@
 
+### Define the FOLDERS and files' names ---------------------------------------------------
+## Create folders:  /Input, /Output and /Figures 
+define_files_names  <-  function(){    
+  mainDir <- getwd()
+  subDir <- "Output"
+  if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
+  
+  subDir <- "Input"
+  if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
+  
+  subDir <- "Figures"
+  if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
+  
+  
+  ### Files to output and input data
+  genefile <<- 'Input/gene_hallmarks.txt'    # gene file 
+  clonefile <<- 'Input/cloneinit.txt'     # initial Cells 
+  
+  ### Output files
+  geneoutfile <<- 'Output/geneout.txt'  # Gene Out file with Hallmarks 
+  cloneoutfile <<- 'Output/cloneout.txt'  # output information of simulation
+  logoutfile <<-  'Output/log.txt'      # log file to save the input information of simulation - "log.txt"
+  ### Output/Weights.txt               # file with gene weights for hallmarks
+}    
+### Define the gene map - chromosomal locations --------------------------
+
+define_gene_location  <-  function( file_input  =  'Input/CCDS.current.txt',
+                                    genes_list  =  c( 'CCDS4107.1', 'CCDS8702.1', 
+                                                      'CCDS43171.1', 'CCDS11118.1' ) ){    
+  ### Make a map of genes with sorting of start position for each chromosome:
+  gene_map  <<-   make_map(f_out    =  'Input/gene_map.txt', 
+                           ls   =  genes_list, 
+                           f_in =  file_input )
+  gene_map  <<-  order_gene_map( gene_map )  ### We have to be sure in the sorting of start position for each chromosome
+  
+  write.table(gene_map, file = 'Output/gene_MAP.txt', col.names = TRUE, 
+              sep = "\t", row.names = FALSE)                
+}
+
+### Define the PARAMETERS ------------------------------------------------
+
+# Probabilities of processes
+define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us =  0.9, 
+                                 s0 =  10, k0 =  0.12, d0 =  0.4, censore_n = 10^5,
+                                 censore_t = 50, m_dup  = 1E-8, m_del  = 1E-8,
+                                 lambda_dup  = 5000, lambda_del  = 7000, 
+                                 uo_dup  = 0.8, us_dup  = 0.5, uo_del  = 0, us_del  = 0.8,
+                                 CF  =  TRUE,  model  =  'WEAK' ){  
+    # Model definition:
+    Compaction_factor  <<-  CF 
+    model_name         <<-  model 
+    # Parameters:
+    E0 <<-  E0       # parameter in the division probability  
+    F0 <<-  F0         # parameter in the division probability  
+    m0 <<-  m0      # mutation probability  
+    uo <<-  uo        # oncogene mutation probability  
+    us <<-  us        # suppressor mutation probability  
+    s0 <<-  s0         # parameter in the sigmoid function  
+    k0 <<-  k0        # Environmental death probability  
+    d0 <<-  d0       # Initial probability to divide cells
+    ### Additional parameters of simulation
+    censore_n <<- censore_n       # Max cell number where the program forcibly stops
+    censore_t <<- censore_t         # Max time where the program forcibly stops
+    ### New parameters for CNA:
+    m_dup  <<- m_dup # mutation probability for duplication
+    m_del  <<- m_del # mutation probability for deletion 
+    lambda_dup  <<- lambda_dup  # CNA duplication average length (of the geometrical distribution for the length)
+    lambda_del  <<- lambda_del  # CNA deletion average length
+    uo_dup  <<- uo_dup # Gene malfunction probability by CNA duplication for oncogene
+    us_dup  <<- us_dup   # Gene malfunction probability by CNA duplication for suppressor
+    uo_del  <<- uo_del   # Gene malfunction probability by CNA deletion    for oncogene
+    us_del  <<- us_del # Gene malfunction probability by CNA deletion    for suppressor
+}    
+
+
+#### The code:
+
 #### I)  Define CLONE'S CLASSES ----------------------------------------------------------
 
 
@@ -79,9 +156,9 @@ clone <- setRefClass(
                 gene <<- gene
             }
             if (is.null(pasgene)) {
-              pasgene <<- rep(0, gene_size)
+                pasgene <<- rep(0, gene_size)
             } else {
-              pasgene <<- pasgene
+                pasgene <<- pasgene
             }
             # if (is.null(posdriver)) {
             #    posdriver <<- rep("", gene_size)
@@ -107,16 +184,16 @@ clone <- setRefClass(
 #                a2 = 1/(1+exp(s*(mutden - 0.5)))
 #                a <<- a - (a1 - a2)
 
-          mutden <<- sum(gene)/length(gene)
-          a <<- 1/(1+exp(-1*s*(mutden - 0.5)))
-                if (a < 0) {
-                    a <<- 0
-                }
+          mutden <<- sum(gene) / length(gene)
+          a <<- 1 / ( 1 + exp( -1 * s * ( mutden - 0.5 ) ) )
+          if ( a < 0 ) {
+              a <<- 0
+          }
 
         },
         # Aggregate
         calcMutden = function() {
-            mutden <<- sum(gene)/length(gene)
+            mutden <<- sum( gene ) / length( gene )
         }
     )
 )
@@ -265,7 +342,7 @@ hallmark <- setRefClass(
     # 
     methods = list(
         # 
-        read = function(file, names) {
+        read = function(file, names, normalization  =  !Compaction_factor ) {
             data <- read.table(file, sep="\t")
             Ha0 = NULL
             Hi0 = NULL
@@ -358,52 +435,61 @@ hallmark <- setRefClass(
                 Him0_w = random[Him_rnd]
             }
             # Total by genetic mode 
-            Ha_sum = sum(Ha0_w)
-            Hi_sum = sum(Hi0_w)
-            Hd_sum = sum(Hd0_w)
-            Hb_sum = sum(Hb0_w)
-            Him_sum = sum(Him0_w)
-            Ha_w <<- Ha0_w/Ha_sum
-            Hi_w <<- Hi0_w/Hi_sum
-            Hd_w <<- Hd0_w/Hd_sum
-            Hb_w <<- Hb0_w/Hb_sum
-            Him_w <<- Him0_w/Him_sum
+            if ( normalization ){
+                Ha_sum = sum(Ha0_w)
+                Hi_sum = sum(Hi0_w)
+                Hd_sum = sum(Hd0_w)
+                Hb_sum = sum(Hb0_w)
+                Him_sum = sum(Him0_w)
+            } else {
+                Ha_sum = 1
+                Hi_sum = 1
+                Hd_sum = 1
+                Hb_sum = 1
+                Him_sum = 1
+            }
+            
+            Ha_w <<- Ha0_w / Ha_sum
+            Hi_w <<- Hi0_w / Hi_sum
+            Hd_w <<- Hd0_w / Hd_sum
+            Hb_w <<- Hb0_w / Hb_sum
+            Him_w <<- Him0_w / Him_sum
         },
         # Change the cell variables
         # mode = 2 Corresponding (Hallmark) Gene Mode
         updateClone = function(clone1, F) {
           # Apoptosis
           clone1$calcApoptosis()
-          clone1$Ha = sum(clone1$gene[Ha]*Ha_w)
-          clone1$a =  clone1$a - clone1$Ha
-            if (clone1$a < 0) {
+          clone1$Ha  =  sum( clone1$gene[Ha] * Ha_w )
+          clone1$a   =  clone1$a - clone1$Ha
+          if ( clone1$a < 0 ) {
               clone1$a = 0
-            }
-            # Not dead - Immortalized
-          clone1$Hi = sum(clone1$gene[Hi]*Hi_w)
+          }
+          # Not dead - Immortalized
+          clone1$Hi = sum( clone1$gene[Hi] * Hi_w )
           clone1$i = 1 - clone1$Hi
-            if (clone1$i < 0) {
+          if ( clone1$i < 0 ) {
               clone1$i = 0
-            }
-            # Angiogenesis
-          clone1$Hb = sum(clone1$gene[Hb]*Hb_w)
-            
-          clone1$E = E0 / (1 + F * clone1$Hb)
-          clone1$Nmax = 1.0 / clone1$E
-            
-            # Cancer gene, tumor suppressor gene
-          clone1$Hd = sum(clone1$gene[Hd]*Hd_w)
-          clone1$Him = sum(clone1$gene[Him]*Him_w)
-            
-          clone1$d = clone1$Hd + d0     # d0 is defined in tugHall_2.1.R file 
-                if (clone1$d > 1) {clone1$d = 1}
-            if (!clone1$invasion) {
+          }
+          # Angiogenesis
+          clone1$Hb = sum( clone1$gene[Hb] * Hb_w )
+          
+          clone1$E     =  E0  / (1 + F * clone1$Hb)
+          clone1$Nmax  =  1.0 / clone1$E
+          
+          # Cancer gene, tumor suppressor gene
+          clone1$Hd  = sum( clone1$gene[Hd] * Hd_w )
+          clone1$Him = sum( clone1$gene[Him] * Him_w )
+          
+          clone1$d = clone1$Hd + d0     # d0 is defined in parameters 
+          if ( clone1$d > 1 ) { clone1$d = 1 }
+          if ( !clone1$invasion ) {
               clone1$d = clone1$d - clone1$E * env$N
-              if (clone1$d < 0) {clone1$d = 0}
-            }
+              if ( clone1$d < 0 ) { clone1$d = 0 }
+          }
 
                 # Invasion metastasis
-                if (!clone1$invasion) {
+                if ( !clone1$invasion ) {
                   clone1$im = clone1$Him 
             } else {
               clone1$im = 1
@@ -649,6 +735,32 @@ generate_pnt  <-  function( prntl, gene, pos, onco1, Chr ) {
     pnt1  =  copy_pnt_no_mutation( pnt0 )
     pnt_clones <<- c( pnt_clones, pnt1 )
 
+    return( pnt0 )
+}
+
+# the function to generate pnt with coping all information from input pnt
+generate_to_copy_pnt  <-  function( pnt ) {
+    ### The function to generate object of point mutation pnt with data from input pnt
+    pnt0 = Point_Mutations$new()
+    pnt0$Gene_name = pnt$Gene_name
+    pnt0$PointMut_ID =  ifelse( length(pnt_clones) == 0, 1, 
+                                pnt_clones[[ length(pnt_clones) ]]$PointMut_ID + 2 ) 
+    pnt0$Allele = pnt$Allele
+    pnt0$Parental_1or2  =  pnt$Parental_1or2
+    pnt0$Chr = pnt$Chr
+    pnt0$Ref_pos  = pnt$Ref_pos
+    pnt0$Phys_pos = pnt$Phys_pos
+    pnt0$Delta = pnt$Delta
+    pnt0$Copy_number = pnt$Copy_number
+    pnt0$MalfunctionedByPointMut  =  pnt$MalfunctionedByPointMut
+    
+    pnt0$mut_order  =  pnt$mut_order
+    
+    pnt_clones <<- c( pnt_clones, pnt0 )
+    
+    pnt1  =  copy_pnt_no_mutation( pnt0 )
+    pnt_clones <<- c( pnt_clones, pnt1 )
+    
     return( pnt0 )
 }
 
@@ -1056,16 +1168,20 @@ number_N_M <- function(clone1) {
 trial <- function( clone1, onco1 ) { 
     
     # trial for Environmental death of cell 
-    N_die = calc_binom(1, clone1$N_cells, clone1$k)   # The number of cells to die due to the Environmental death of cells in clone
+    N_die  =  calc_binom( 1, clone1$N_cells, clone1$k )   # The number of cells to die due to the Environmental death of cells in clone
     
     # Apoptosis trial
-    N_die =  N_die + calc_binom(1, clone1$N_cells, clone1$a) 
+    N_die  =  calc_binom( 1, clone1$N_cells, clone1$a ) 
     
     # invasion / metastasis trial 
     if (clone1$im > 0) {
         if (!clone1$invasion) {
-            N_die = N_die + calc_binom(1, clone1$N_cells, (1 - clone1$im))
-            clone1$invasion = ifelse(clone1$im == 1,TRUE,FALSE)
+            N_die = calc_binom( 1, clone1$N_cells, ( 1 - clone1$im ) )
+            if ( model_name == 'WEAK') {
+                clone1$invasion = ifelse( clone1$im > 0, TRUE, FALSE )  # condition here is related to the model
+            } else {
+                clone1$invasion = ifelse( clone1$im != 1, TRUE, FALSE )  
+            }
         }
     }
     
@@ -1080,8 +1196,7 @@ trial <- function( clone1, onco1 ) {
     }
     
     # Divide trial
-    
-    N_new = calc_binom(1, N_new, clone1$d)   # The ! FINAL ! number of cells to split, this number is the output value of function "trial"
+    N_new = calc_binom( 1, N_new, clone1$d )   # The ! FINAL ! number of cells to split, this number is the output value of function "trial"
     
     if ( clone1$N_cells > 0 ) clone1$c = clone1$c + N_new / clone1$N_cells  # How to calculate the counter of division ? - As an average value of the counters for all cells !  
     
@@ -1092,9 +1207,9 @@ trial <- function( clone1, onco1 ) {
     # p = clone1$m * sum(onco$cds) 
     # if (p < 1) N_new_clones = calc_binom(1, 2 * N_new, p ) else N_new_clones = 2 * N_new
     
-    N_new_clones = calc_binom(1, 2 * N_new, 1 - (onco1$p0_1 + onco1$p0_2)/2 )   # 1 and 2 chr
+    N_new_clones = calc_binom( 1, 2 * N_new, 1 - (onco1$p0_1 + onco1$p0_2 ) / 2  )   # 1 and 2 chr
     
-    clone1$N_cells = ifelse( (clone1$N_cells - N_new_clones) > 0, (clone1$N_cells - N_new_clones) , 0)
+    clone1$N_cells = ifelse( ( clone1$N_cells - N_new_clones ) > 0, ( clone1$N_cells - N_new_clones ) , 0 )
     
     return( N_new_clones )
 }
@@ -1108,7 +1223,7 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
     
     ### if (sum(mut1) == 0) stop("The mutation is zero, that is incorrect", call. = TRUE)    # We have known that mutation must occur 
     type_events  =  sample( x = c('point_mut', 'del', 'dup' ), size = num_mut,
-                                replace = TRUE, prob = (onco1$prob_1 + onco1$prob_2)/2 )
+                                replace = TRUE, prob = (onco1$prob_1 + onco1$prob_2) / 2 )
     gm  =  modify_gene_map( clone1 , onco1 )
     # print( gm[[1]] )
     # print( gm[[2]] )
@@ -1158,17 +1273,43 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
                     gm[[ prntl ]]  <-     add_deletion( gm = gm[[ prntl ]], Ref_start = start_end[1], Ref_end = start_end[2], Chr = Chr )  ) 
             
             ### Check what point mutations match into the CNA 
-            sp = FALSE
+            sp   = FALSE
+            sp_A = FALSE
             if ( clone1$PointMut_ID != 0 ){
-            sp = sapply( clone1$PointMut_ID , FUN = function( x )  {
-                              chk_pnt_mut( pnt1  =  pnt_clones[[ x ]], Ref_start = start_end[1], Ref_end = start_end[2], Chr = Chr, prntl  =  prntl )
+                sp = sapply( clone1$PointMut_ID , FUN = function( x )  {
+                              chk_pnt_mut( pnt1  =  pnt_clones[[ x ]], Ref_start = start_end[1], 
+                                           Ref_end = start_end[2], Chr = Chr, prntl  =  prntl )
                           })
+                ### to check original allele A do/don't match into CNA:
+                prntl_inv  =  ifelse( prntl  ==  1, 2, 1 )
+                sp_A = sapply( clone1$PointMut_ID , FUN = function( x )  {
+                  chk_pnt_mut( pnt1  =  pnt_clones[[ x ]], Ref_start = start_end[1], 
+                               Ref_end = start_end[2], Chr = Chr, prntl  =  prntl_inv )
+                })
+                
+                
             }
             
-            if ( any( sp ) ){
+            if ( any( sp ) | any( sp_A ) ){
+                ### Before changing point mutation for NEW clone
+                ### we have to copy it and avoid any changes in OTHER (parental) clones
+                
+                ### Copy pnt mutations matched into CNA
+                
+                ### circle and function to copy pnt for a NEW clone
+                for( q in clone1$PointMut_ID[ sp | sp_A ] ){
+                    # pnt_clone is generated in the generate_to_copy_pnt function
+                    pnt0 = generate_to_copy_pnt( pnt = pnt_clones[[ q ]] )
+                    x  =  which( clone1$PointMut_ID == q )
+                    clone1$PointMut_ID[ x ]  =  pnt0$PointMut_ID
+                }
+                ### end of the new part of the code
+                
                 sapply( clone1$PointMut_ID[ sp ], 
                         FUN = function( x ) change_pnt_by_cna( pnt1  =  pnt_clones[[x]], start_end, t )  )
-                ###  print( clone1$PointMut_ID[ sp ] )
+                sapply( clone1$PointMut_ID[ sp_A ], 
+                        FUN = function( x ) change_allele_A_by_cna( pnt1  =  pnt_clones[[x+1]], start_end, t )  )
+                
             }
             
         }
@@ -1200,6 +1341,14 @@ change_pnt_by_cna  <-  function( pnt1, start_end, t ) {
 
 }
 
+### The function to change copy number of the allele A 
+###     of the point mutation at the allele B due to CNA:
+change_allele_A_by_cna  <-  function( pnt1, start_end, t ) {
+    if ( pnt1$Copy_number != 0 )  {
+        pn_cn  =  pnt1$Copy_number + ifelse(t == 'dup', 1, -1 )
+        pnt1$Copy_number  =  ifelse( pn_cn >= 0, pn_cn, 0 )
+    }
+}
 
 ### The function to update onco1 after mutation ( used in trial_mutagenesis )
 onco_update  <-  function( onco1, gm ){
@@ -1475,7 +1624,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     onco = oncogene$new()        # make the vector onco about the hallmarks
     onco$read(genefile)          # read the input info to the onco from genefile - 'gene_cds2.txt'
     hall = hallmark$new()        # make a vector hall with hallmarks parameters
-    hall$read(genefile, onco$name)     # read from the genefile - 'gene_hallmarks.txt'
+    hall$read( genefile, onco$name, normalization = FALSE )     # read from the genefile - 'gene_hallmarks.txt'
     env = environ$new(F0)               # new vector for average values of cells
     pnt = Point_Mutations$new()
     pnt_clones = NULL

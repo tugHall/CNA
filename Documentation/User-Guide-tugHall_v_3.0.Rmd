@@ -35,6 +35,7 @@ libraries: **stringr, actuar, tidyr**
 Note that the program has two different procedures in general: the first is the simulation and the second is the analysis of the simulation results.
 Please, pay attention that the requirements for these procedures are **different**.
 This User-Guide pertains to the **simulation procedure** alone. 
+Please, also note that plots and tables of this document are related to the data files from **/Documentation/Example/** folder. 
 
 <br />
 
@@ -57,8 +58,7 @@ The simplest way to run tugHall:
 - Save the **/tugHall_2_2_CNA/** directory to the working folder;
 - Run **tugHall_3.0.R**.
 
-The code has its initial input parameters and input files in the **/Input/** folder. After the simulation the user can see results of the simulation (please, see **User-Guide-Analysis_3** for details) in the dialogue box, which will save to the **/Output/** and **/Figures/** folders. Note that the analysis procedure requires additional libraries and a higher version of R - 3.6.0.
-
+The code has its initial input parameters and input files in the **/Input/** folder. After the simulation the user can see results of the simulation (please, see **User-Guide-Analysis_3** for details), which will save to the **/Output/** and **/Figures/** folders. Note that the analysis procedure requires additional libraries and a higher version of R - 3.6.0.
 
 <a name="directories"></a>
 
@@ -86,6 +86,8 @@ dir **/Input/** - the folder with the input files.
 dir **/Output/** - the folder with the output files.
 
 dir **/Figures/** - the folder with the plot figures.  
+
+dir **/Documentation/** - the folder with documentation and example of a simulation. 
 
 <br />
 
@@ -142,6 +144,10 @@ dir **/Figures/** - the folder with the plot figures.
 In the **/Figures/** directory there are figures in \*.jpg format, which appear after the analysis of the simulation results. See **USER-GUIDE-Analysis_3**.
 
 
+### **/Documentation/** directory
+
+Here there are files of the documentation with example of the data from a simulation in the folder **/Documentation/Example/**. 
+
 <a name="inputs"></a>
 
 # 3. Inputs 
@@ -151,9 +157,9 @@ In the **/Figures/** directory there are figures in \*.jpg format, which appear 
 The file **tugHall/Input/gene_hallmarks.txt** defines the hallmark variables and weights:
 
 ```{r, echo=FALSE, results='asis'}
-x <- read.csv(file = "../Input/gene_hallmarks.txt",header = FALSE, sep = "\t" )
+x <- read.csv(file = "../Tests/Input/gene_hallmarks.txt",header = FALSE, sep = "\t" )
 x <- data.frame( x[ , 1], x[ , 3], x[ , 2], x[ , 4] )
-knitr::kable(x, col.names = c("Genes", "Suppressor or Oncogene", "Hallmark", "Weights"), align = "c", caption = "**Table 1. Input file for genes.** Example of input file for hallmarks and weights in the file _**tugHall_2_2_CNA/Input/gene_hallmarks.txt**_.")
+knitr::kable(x, col.names = c("Genes", "Suppressor or Oncogene", "Hallmark", "Weights"), align = "c", caption = "**Table 1. Input file for genes.** Example of input file for hallmarks and weights in the file _**tugHall_3_0_CNA/Tests/Input/gene_hallmarks.txt**_.")
 ```
 
 1. **Genes**  - name of gene, e.g., TP53, KRAS. The names must be typed carefully. The program detects all the unique gene names.
@@ -184,9 +190,9 @@ Note that "invasion" is related to "invasion/metastasis" hallmark.
 After that, the program defines all the weights. **Unspecified  weights** are set to 0. Program performs normalization so that the sum of all weights should be equal to 1 for each column. The **tugHall/Output/Weights.txt** file saves these final input weights for the simulation. Only the first 10 lines are presented here:
 
 ```{r, echo=FALSE, results='asis'}
-x <- read.csv(file = "../Output/Weights.txt", header = TRUE, sep = "\t", nrows = 10)
+x <- read.csv(file = "../Documentation/Example/Weights.txt", header = TRUE, sep = "\t", nrows = 10)
 knitr::kable(x,  col.names = c("Genes", "Apoptosis, $H_a$", "Angiogenesis, $H_b$", "Growth / Anti-growth, $H_d$", "Immortalization, $H_i$", 
-                               "Invasion / Metastasis, $H_{im}$"), align = "c", caption = "**Table 2. Weights for hallmarks.** Example of weights for hallmarks and genes from _**tugHall/Output/Weights.txt**_ file. Unspecified values equal 0.")
+                               "Invasion / Metastasis, $H_{im}$"), align = "c", caption = "**Table 2. Weights for hallmarks.** Example of weights for hallmarks and genes from _**tugHall/Documentation/Example/Weights.txt**_ file. Unspecified values equal 0.")
 ```
 
 1. **Genes** - name of genes.
@@ -205,7 +211,7 @@ knitr::kable(x,  col.names = c("Genes", "Apoptosis, $H_a$", "Angiogenesis, $H_b$
 
 ## Input the probabilities
 
-The input of the probabilities used in the model is possible in the code for parameter value settings, **"tugHall_3_0.R"**:
+The input of the probabilities used in the model is possible in the code for parameter value settings, see function **define_paramaters()** in the file **"tugHall_3_0.R"**:
 
 |  Probability variable and value | Description  |  Units  |
 |:---|:---|:---|
@@ -224,19 +230,19 @@ The input of the probabilities used in the model is possible in the code for par
 | **us,dup <- 0**     | Gene malfunction probability by CNA duplication for suppressor, $u_{s,dup}$. Currently, 0 is assumed. | per mutation  |
 | **uo,del <- 0**     | Gene malfunction probability by CNA deletion for oncogene $u_{o,del}$. Currently, 0 is assumed. | per mutation  |
 | **us,del <- 0.8**     | Gene malfunction probability by CNA deletion for suppressor, $u_{s,del}$.  | per mutation  |
-| **d0 <- 0.35**     |  Initial division rate  | per time-step  |
+| **d0 <- 0.35**     |  Initial division rate  | per time-step  | 
+| **censore_n <- 30000 **     | Max cell number where the program forcibly stops  | number of cells |
+| **censore_t <- 200**        | Max time where the program forcibly stops  | in time-steps |
 | <img width=160/> | <img width=340/> |  <img width=200/> |
 
 $^*$ [see Suplementary materials in Bioinformatics,V.36,N11,2020,p.3597](https://doi.org/10.1093/bioinformatics/btaa182)
 
 
-
 ---
-
 
 ## Filename input
 
-Also in the code **"tugHall_3_3.R"** user can define names of input and output files, and additional parameters of simulation:
+Also in the code **"tugHall_3_3.R"** user can define names of input and output files using function **define_files_names()**:
 
 |  Variables and file names  | Description  |
 |:---|:---|
@@ -246,8 +252,6 @@ Also in the code **"tugHall_3_3.R"** user can define names of input and output f
 | **geneoutfile <- 'geneout.txt'**    | Gene Out file with hallmarks  |
 | **cloneoutfile <- 'cloneout.txt'**   | Output information of simulation  |
 | **logoutfile <-  'log.txt'**       | Log file to save the input information of simulation  |
-| **censore_n <- 30000 **     | Max cell number where the program forcibly stops  |
-| **censore_t <- 200**        | Max time where the program forcibly stops  |
 | <img width=200/> | <img width=350/> |
 
 
@@ -256,7 +260,7 @@ Also in the code **"tugHall_3_3.R"** user can define names of input and output f
 
 ## Input of the initial clones
 
-**Pay attention, it does not work yet, and it will be working.**
+**Please, pay attention, it works for point mutation only.**
 
 The initial states of cells are defined in **"tugHall_3_0_CNA/Input/cloneinit.txt"** file:
 
@@ -282,7 +286,7 @@ The initial states of cells are defined in **"tugHall_3_0_CNA/Input/cloneinit.tx
 
 This new version of **tugHall** allows to calculate CNAs in the genome. The breakpoints of CNAs may fall on genic regions consisting of exons and introns. That's why it's needed to enter information about gene's map.
 In the **/Input/** directory you can find **CCDS.current.txt**, which was getting from [CCDS database](https://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/) at the National Center for Biotechnology Information and has information about genes. 
-At the beginning of simulation, the program reads this file and extracts genes’ map, which is put into 
+At the beginning of simulation, the program reads this file and extracts genes’ map using function **define_gene_location()**, which is put into 
  **"tugHall_2_clones/Input/gene_map.txt"**. For example, the map is shown as follow:
 
 ```{r, echo=FALSE, results='asis'}
@@ -314,7 +318,7 @@ The output data consists of several files after the simulation.
 The file **"log.txt"** contains information about probabilities and file names. These variables are explained in the ["Inputs"](#inputs). 
 
 ```{r, echo=FALSE, results='asis'}
-x <- read.csv(file = "../Output/log.txt",header = FALSE, sep = "\t", col.names = c("Variable","Value"), stringsAsFactors = FALSE )
+x <- read.csv(file = "../Documentation/Example/log.txt",header = FALSE, sep = "\t", col.names = c("Variable","Value"), stringsAsFactors = FALSE )
 x[is.na(x)] <- ""
 x[ c(6,7) , 1 ] =  c( 'E0' , 'F0' )
 knitr::kable(x, align = "c", caption = "**Table 3. log.txt file.** Example of log.txt file.")
@@ -325,7 +329,7 @@ knitr::kable(x, align = "c", caption = "**Table 3. log.txt file.** Example of lo
 The file **"geneout.txt"** contains input information about the weights that connect the hallmarks and genes, which are defined by the user. These variables also are explained in the ["Inputs"](#inputs). 
 
 ```{r, echo=FALSE, results='asis'}
-x <- read.csv(file = "../Output/geneout.txt",header = FALSE, sep = "\t", col.names = c("Gene_name","Hallmark_name", "Weight", "Suppressor_or_oncogene"))
+x <- read.csv(file = "../Documentation/Example/geneout.txt",header = FALSE, sep = "\t", col.names = c("Gene_name","Hallmark_name", "Weight", "Suppressor_or_oncogene"))
 x[is.na(x)] <- ""
 knitr::kable(x, align = "c", caption = "**Table 4. geneout.txt file.** Given below is an example of the geneout.txt file.")
 ```
@@ -336,7 +340,7 @@ knitr::kable(x, align = "c", caption = "**Table 4. geneout.txt file.** Given bel
 The file **"cloneout.txt"** contains the results of the simulation and includes the evolution data: all the output data for each clone at each time step (only the first 10 lines are presented): 
 
 ```{r, echo=FALSE, results='asis'}
-x <- read.csv(file = "../Output/cloneout.txt",header = TRUE, sep = "\t", nrows = 10)
+x <- read.csv(file = "../Documentation/Example/cloneout.txt",header = TRUE, sep = "\t", nrows = 10)
 x <- x[,c(1:16)] 
 # library(stringr)
 # library(tidyr)
@@ -365,7 +369,7 @@ knitr::kable(x, align = "c", caption = "**Table 5. Output data.** Example of out
 16. **M** - the number of metastasis cells at this time step, e.g., 16, 15439.
 
 ```{r, echo=FALSE, results='asis'}
-x <- read.csv(file = "../Output/cloneout.txt",header = TRUE, sep = "\t", nrows = 18)
+x <- read.csv(file = "../Documentation/Example/cloneout.txt",header = TRUE, sep = "\t", nrows = 18)
 x[is.na(x)] <- ""
 x <- x[,c(1,3,17:27)] 
 library(stringr)
@@ -389,13 +393,13 @@ knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns ar
 There are two columns (24th and 25th) with the indexes of point mutations and CNAs in Table 5. Each index corresponds to index in the related data frames for point mutations and for CNAs (Tables 6 and 7 respectively).
 
 ```{r, echo=FALSE, results='asis'}
-x <- read.csv(file = "../Output/cloneout.txt",header = TRUE, sep = "\t", nrows = 18, stringsAsFactors = FALSE)
+x <- read.csv(file = "../Documentation/Example/cloneout.txt",header = TRUE, sep = "\t", nrows = 18, stringsAsFactors = FALSE)
 x[is.na(x)] <- ""
 x <- x[,28:ncol(x)] 
 library(stringr)
 x[] <- lapply(x, str_trunc, 6, ellipsis = "")
 names( x )[6:9]  =  c( 'Len_APC', 'Len_KRAS', 'Len_TP53', 'Len_PIK3CA' )
-knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns are from 29 to end.")
+knitr::kable(x, align = "c", caption = "**Continuation of Table 5. ** Columns are from 28 to end.")
 ```
 28. **onco_ID** - the index of the data related to onco object at simulation that has info about lengths of genes and genes' CDS for each chromosome.
 
@@ -417,7 +421,7 @@ The information of the columns from 28 to 40 is related to *onco* object in simu
 Please, pay attention that probability of mutations depend on length of CDS and gene of all chromosome but the table has information only for first chromosome. 
 
 ```{r, echo=FALSE, results='asis'}
-x <- read.csv(file = "../Output/point_mutations.txt",header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+x <- read.csv(file = "../Documentation/Example/point_mutations.txt",header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 # x[is.na(x)] <- ""
 x = x[ 1 : 20, ]
 knitr::kable(x, align = "c", caption = "**Table 6. ** Point mutation data frame which will be saved to the file **Point_mutations.txt** at the end of simulation.")
@@ -432,14 +436,15 @@ knitr::kable(x, align = "c", caption = "**Table 6. ** Point mutation data frame 
 6. **Delta** - difference between the reference and physical positions.
 7. **Copy_number** - the copy number of an allele. 
 8. **Gene_name** - the name of a gene.
-9. **MalfunctionedByPointMut** - logical indicator of whether or not the gene is malfunctioned by the point mutation. 10. **mut_order** - indicator of mutation order in the simulation, it's used to detect order of mutations in the clone at each chromosome.
+9. **MalfunctionedByPointMut** - logical indicator of whether or not the gene is malfunctioned by the point mutation. 
+10. **mut_order** - indicator of mutation order in the simulation, it's used to detect order of mutations in the clone at each chromosome.
 
 
 
 ```{r, echo=FALSE, results='asis'}
 x <- read.csv(file = "../Output/CNA_mutations.txt",header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 # x[is.na(x)] <- ""
-# x = x[ 200 : 220, ]
+x = x[ 1 : 20, ]
 knitr::kable(x, align = "c", caption = "**Table 7.** CNA mutation data frame which will be saved to the file **CNA.txt** at the end of simulation.")
 ```
 
@@ -471,7 +476,7 @@ In order to make the simulation, please follow the procedure:
 
 or using the line by line procedure in **R Studio**. In this case we have:
 
-  - **`load library(stringr)`** and **`source(file = "Code/tugHall_2.2_functions.R")`**;
+  - **`load library(stringr)`** and **`source(file = "Code/tugHall_3.0_functions.R")`**;
   - create the Output and Figures directories, if needed;
   - define the simulation parameters; 
   - make the input file for initial cells, if needed;
@@ -479,7 +484,7 @@ or using the line by line procedure in **R Studio**. In this case we have:
   - run **`source("Code/Analysis_clone.R")`** in order to analyze the results and plot the figures in the dialogue box (see **User-Guide-Analysis_v3.0**).
   
 4. To obtain analysis reports of the simulation, please refer to **User-Guide-Analysis_v3.0.RMD**. 
-In **User-Guide-Analysis_v3.0.RMD**, commands are embedded to include files under **Output/** and **Figure/**. So, after analysis with tugHall, you can generate analysis reports automatically from **User-Guide-Analysis_v3.0.RMD**. For more details, please refer to "Writing reproducible reports in R" on the github (https://nicercode.github.io/guides/reports/).
+In **User-Guide-Analysis_v3.0.RMD**, commands are embedded to include files under **Documentation/Example/**. So, after analysis with tugHall, you can generate analysis reports automatically from **User-Guide-Analysis_v3.0.RMD** changing directories of the table and figures files. For more details, please refer to "Writing reproducible reports in R" on the github (https://nicercode.github.io/guides/reports/).
 
 
 <a name="new"></a>
