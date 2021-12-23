@@ -60,4 +60,13 @@
     
     ### Also VAF data in the file 'Output/VAF_data.txt'
     vf = get_VAF()
- 
+    
+    VAF  =  get_rho_VAF( vf = vf, rho = c( 0.1, 0.2, 0.5, 0.7, 0.9, 1 ) , file_name = './Output/VAF.txt' )
+    
+    
+    
+    
+    
+    
+    
+    

@@ -222,3 +222,44 @@ get_VAF  <-  function(){
     return( VAF )
 }
 
+
+get_rho_VAF  <-  function( vf = NULL, rho = c( 0.5, 1 ) , file_name = './Output/VAF.txt' ){
+    # rho is a tumor purity, it can be vector of numbers
+    # vf is a VAF data getting from get_VAF function
+    # hist_VAF is logical indicator to plot histogram of VAF
+    # file_name is a initial part of file names for histogram and row data of VAF
+    
+    if ( min(rho) < 0 | max(rho) >1 ) return( NULL )
+    nq_i  =  unique( vf$Ref_pos )
+    if ( length(nq_i) < 1 ) return( NULL )
+    
+    N_total  =  vf$N_total[1]
+    M_total  =  vf$M_total[1]
+    
+    VAF  =  NULL 
+    for( i in nq_i ){
+        w  =  which( vf$Ref_pos == i )
+        # for primary tumor cells 
+        numinator_N    =  sum( vf[ w , 'N'] * vf[ w, 'Copy_number'] ) / N_total
+        denumerator_N  =  sum( vf[ w , 'N'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_total
+        # for metastatic cells 
+        numinator_M    =  sum( vf[ w , 'M'] * vf[ w, 'Copy_number'] ) / M_total
+        denumerator_M  =  sum( vf[ w , 'M'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / M_total
+        VAF_N_rho  =  numinator_N / ( 2*( 1 - rho ) + denumerator_N )
+        VAF_M_rho  =  numinator_M / ( 2*( 1 - rho ) + denumerator_M )
+        # save to data.frame:
+        VAF_1 = data.frame( site = i, Chr = vf[ w[1], 'Chr' ] ,
+                            gene = vf[ w[1], 'Gene_name' ] )
+        for( k in 1:length( rho ) ){
+            VAF_1[ 1, paste0( 'VAF_primary_rho_',    rho[ k ] ) ]  =  VAF_N_rho[ k ]
+            VAF_1[ 1, paste0( 'VAF_metastatic_rho_', rho[ k ] ) ]  =  VAF_M_rho[ k ]
+        }
+        VAF_1[ is.na.data.frame( VAF_1 ) ]  =  0  #  division by 0 if rho = 1 
+        VAF  =  rbind( VAF, VAF_1 )
+    }
+    write.table( VAF, file = file_name, append = FALSE, sep = '\t', 
+                    row.names = FALSE, col.names = TRUE )
+    cat( paste0( ' VAF is saved in the file ', file_name ) )
+    return( VAF )
+}
+
