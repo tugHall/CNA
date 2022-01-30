@@ -65,4 +65,4 @@ Content of package
 * **/Figures/** is the folder with figures of plots of last simulation, which are used in user-guides also. 
 * **/TESTs/** is the directory with tests and it's results. Description of tests is in the folder. 
 
-
+* ** .../**
