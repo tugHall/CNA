@@ -42,7 +42,7 @@
     # source('./tugHall_3.0.R')
     define_files_names()    
     define_gene_location()
-    define_paramaters()
+    define_paramaters( read_fl = TRUE , file_name = './Input/parameters.txt' )
     
     smlt = model(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, censore_n, censore_t, d0)
     
@@ -62,7 +62,6 @@
     vf = get_VAF()
     
     VAF  =  get_rho_VAF( vf = vf, rho = c( 0.1, 0.2, 0.5, 0.7, 0.9, 1 ) , file_name = './Output/VAF.txt' )
-    
     
     
     

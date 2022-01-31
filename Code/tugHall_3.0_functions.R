@@ -46,31 +46,95 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
                                  censore_t = 50, m_dup  = 1E-8, m_del  = 1E-8,
                                  lambda_dup  = 5000, lambda_del  = 7000, 
                                  uo_dup  = 0.8, us_dup  = 0.5, uo_del  = 0, us_del  = 0.8,
-                                 CF  =  TRUE,  model  =  'WEAK' ){  
-    # Model definition:
-    Compaction_factor  <<-  CF 
-    model_name         <<-  model 
-    # Parameters:
-    E0 <<-  E0       # parameter in the division probability  
-    F0 <<-  F0         # parameter in the division probability  
-    m0 <<-  m0      # mutation probability  
-    uo <<-  uo        # oncogene mutation probability  
-    us <<-  us        # suppressor mutation probability  
-    s0 <<-  s0         # parameter in the sigmoid function  
-    k0 <<-  k0        # Environmental death probability  
-    d0 <<-  d0       # Initial probability to divide cells
-    ### Additional parameters of simulation
-    censore_n <<- censore_n       # Max cell number where the program forcibly stops
-    censore_t <<- censore_t         # Max time where the program forcibly stops
-    ### New parameters for CNA:
-    m_dup  <<- m_dup # mutation probability for duplication
-    m_del  <<- m_del # mutation probability for deletion 
-    lambda_dup  <<- lambda_dup  # CNA duplication average length (of the geometrical distribution for the length)
-    lambda_del  <<- lambda_del  # CNA deletion average length
-    uo_dup  <<- uo_dup # Gene malfunction probability by CNA duplication for oncogene
-    us_dup  <<- us_dup   # Gene malfunction probability by CNA duplication for suppressor
-    uo_del  <<- uo_del   # Gene malfunction probability by CNA deletion    for oncogene
-    us_del  <<- us_del # Gene malfunction probability by CNA deletion    for suppressor
+                                 CF  =  TRUE,  model  =  'WEAK', time_stop = 120, 
+                                 read_fl = FALSE, file_name ='./Input/parameters.txt' ){  
+    if ( read_fl ){
+        data_log  =  read.table( file = file_name, sep = '\t', stringsAsFactors = FALSE )
+        names( data_log )  =  c( 'var', 'value' )
+        # Model definition
+        Compaction_factor  <<-  as.logical( data_log[ which( data_log$var == 'Compaction_factor' ), 2 ] )
+        model_name         <<-  data_log[ which( data_log$var == 'model_name' ), 2 ]  
+        # Parameters:
+        time_stop          <<-  as.numeric( data_log[ which( data_log$var == 'time_stop' ), 2 ] )  # max time in seconds
+        E0 <<-  as.numeric( data_log[ which( data_log$var == 'E' ), 2 ] )       # parameter in the division probability  
+        F0 <<-  as.numeric( data_log[ which( data_log$var == 'F' ), 2 ] )       # parameter in the division probability  
+        m0 <<-  as.numeric( data_log[ which( data_log$var == 'm0' ), 2 ] )     # mutation probability  
+        uo <<-  as.numeric( data_log[ which( data_log$var == 'uo' ), 2 ] )        # oncogene mutation probability  
+        us <<-  as.numeric( data_log[ which( data_log$var == 'us' ), 2 ] )        # suppressor mutation probability  
+        s0 <<-  as.numeric( data_log[ which( data_log$var == 's' ), 2 ] )         # parameter in the sigmoid function  
+        k0 <<-  as.numeric( data_log[ which( data_log$var == 'k' ), 2 ] )        # Environmental death probability  
+        d0 <<-  as.numeric( data_log[ which( data_log$var == 'd0' ), 2 ] )      # Initial probability to divide cells
+        ### Additional parameters of simulation
+        censore_n <<- as.numeric( data_log[ which( data_log$var == 'censore_n' ), 2 ] )       # Max cell number where the program forcibly stops
+        censore_t <<- as.numeric( data_log[ which( data_log$var == 'censore_t' ), 2 ] )       # Max time where the program forcibly stops
+        ### New parameters for CNA:
+        m_dup  <<- as.numeric( data_log[ which( data_log$var == 'm_dup' ), 2 ] ) # mutation probability for duplication
+        m_del  <<- as.numeric( data_log[ which( data_log$var == 'm_del' ), 2 ] ) # mutation probability for deletion 
+        lambda_dup  <<- as.numeric( data_log[ which( data_log$var == 'lambda_dup' ), 2 ] )  # CNA duplication average length (of the geometrical distribution for the length)
+        lambda_del  <<- as.numeric( data_log[ which( data_log$var == 'lambda_del' ), 2 ] )  # CNA deletion average length
+        uo_dup  <<- as.numeric( data_log[ which( data_log$var == 'uo_dup' ), 2 ] ) # Gene malfunction probability by CNA duplication for oncogene
+        us_dup  <<- as.numeric( data_log[ which( data_log$var == 'us_dup' ), 2 ] )   # Gene malfunction probability by CNA duplication for suppressor
+        uo_del  <<- as.numeric( data_log[ which( data_log$var == 'uo_del' ), 2 ] )   # Gene malfunction probability by CNA deletion    for oncogene
+        us_del  <<- as.numeric( data_log[ which( data_log$var == 'us_del' ), 2 ] ) # Gene malfunction probability by CNA deletion    for suppressor
+        
+    } else {
+        
+        # Model definition:
+        Compaction_factor  <<-  CF 
+        model_name         <<-  model 
+        # Parameters:
+        E0 <<-  E0       # parameter in the division probability  
+        F0 <<-  F0         # parameter in the division probability  
+        m0 <<-  m0      # mutation probability  
+        uo <<-  uo        # oncogene mutation probability  
+        us <<-  us        # suppressor mutation probability  
+        s0 <<-  s0         # parameter in the sigmoid function  
+        k0 <<-  k0        # Environmental death probability  
+        d0 <<-  d0       # Initial probability to divide cells
+        ### Additional parameters of simulation
+        censore_n <<- censore_n       # Max cell number where the program forcibly stops
+        censore_t <<- censore_t         # Max time where the program forcibly stops
+        ### New parameters for CNA:
+        m_dup  <<- m_dup # mutation probability for duplication
+        m_del  <<- m_del # mutation probability for deletion 
+        lambda_dup  <<- lambda_dup  # CNA duplication average length (of the geometrical distribution for the length)
+        lambda_del  <<- lambda_del  # CNA deletion average length
+        uo_dup  <<- uo_dup # Gene malfunction probability by CNA duplication for oncogene
+        us_dup  <<- us_dup   # Gene malfunction probability by CNA duplication for suppressor
+        uo_del  <<- uo_del   # Gene malfunction probability by CNA deletion    for oncogene
+        us_del  <<- us_del # Gene malfunction probability by CNA deletion    for suppressor
+        time_stop  <<-  time_stop
+    }
+    
+    msg  =  c(
+                'Model definition:  \n ' ,
+                'Compaction factor = ', Compaction_factor, '\n',
+                'model name  =  ', model_name, '\n', 
+                'Parameters:  \n', 
+                'parameter of the division probability E0 =  ', E0, '\n', 
+                'another parameter of the division probability F0  = ',  F0, '\n',
+                'mutation probability m0 =  ', m0, '\n', 
+                'oncogene mutation probability uo = ', uo, '\n',   
+                'suppressor mutation probability  us  =  ', us, '\n',  
+                'parameter in the sigmoid function  s0  =  ', s0, '\n',   
+                'Environmental death probability  k0 =  ',  k0, '\n', 
+                'Initial probability to divide cells  d0  =  ',  d0, '\n', 
+                'Additional parameters of simulation  \n ',
+                'Max cell number where the program forcibly stops  censore_n  = ',  censore_n,  '\n',  
+                'Max time steps where the program forcibly stops  censore_t  = ',  censore_t,  '\n',
+                'Max time (in seconds) where the program forcibly stops time_stop  =  ',  time_stop,  '\n',
+                'New parameters for CNA:  \n', 
+                'mutation probability for duplication  m_dup  =  ', m_dup ,  '\n',  
+                'mutation probability for deletion',  m_del,  '\n',  
+                'CNA duplication average length (of the geometrical distribution for the length)  lambda_dup  =  ', lambda_dup ,  '\n',  
+                'CNA deletion average length  lambda_del  = ', lambda_del ,  '\n',  
+                'Gene malfunction probability by CNA duplication for oncogene  uo_dup  =  ', uo_dup ,  '\n',  
+                'Gene malfunction probability by CNA duplication for suppressor  us_dup  =  ', us_dup ,  '\n',  
+                'Gene malfunction probability by CNA deletion for oncogene  uo_del  = ', uo_del ,  '\n',  
+                'Gene malfunction probability by CNA deletion for suppressor  us_del  = ', us_del,  '\n'
+        )
+    cat( paste0( msg, collapse = ' ' ) )
+    
 }    
 
 
@@ -711,7 +775,27 @@ get_point_mutation <- function( onco1, gm_1_2 ){
     return( list( prntl, gene, pos, Chr ) )
 }
 
-generate_pnt  <-  function( prntl, gene, pos, onco1, Chr ) {
+### Generation point mutation info for the particular gene
+get_point_mutation_for_gene <- function( onco1, gm_1_2, gene ){
+  ### The function to get position of point mutation related to gene_map info for each chr
+  prntl  =   sample( c(1,2), size = 1, replace = TRUE, prob = c( sum(onco1$cds_1), sum(onco1$cds_2) ))
+  
+  gm     =   gm_1_2[[ prntl ]]
+  
+  ### get position for  gene !!! + CNA later!!!
+  sp  =  which( gm$Gene == gene)   ### get the name of related gene 
+  cds =  ifelse( prntl == 1, 
+                 onco1$cds_1[ which(onco1$name == gene ) ],
+                 onco1$cds_2[ which(onco1$name == gene ) ] ) ### get CDS for the related gene
+  p   =  sample( sp, size = 1, replace = TRUE, 
+                 prob = gm[sp,'Len'] / sum( gm[sp,'Len'] ) )   ### get the block in gene_map
+  pos =  sample( gm$Start[p]:gm$End[p], 1, replace=FALSE) 
+  Chr =  gm$Chr[p]
+  
+  return( list( prntl, gene, pos, Chr ) )
+}
+
+generate_pnt  <-  function( prntl, gene, pos, onco1, Chr, mutation = NA ) {
     ### The function to generate object of point mutation pnt
     pnt0 = Point_Mutations$new()
     pnt0$Gene_name = gene
@@ -725,8 +809,11 @@ generate_pnt  <-  function( prntl, gene, pos, onco1, Chr ) {
     pnt0$Delta = 0
     pnt0$Copy_number = 1
     u = ifelse( onco1$onsp[ which(onco1$name == gene) ] == 'o', uo, us)
-    pnt0$MalfunctionedByPointMut  =  ifelse( (runif(1) < u), TRUE, FALSE )
-    
+    if ( is.na( mutation ) ) {
+        pnt0$MalfunctionedByPointMut  =  ifelse( (runif(1) < u), TRUE, FALSE )
+    } else {
+        pnt0$MalfunctionedByPointMut  =  TRUE 
+    }
     mut_order  <<-  mut_order  +  1
     pnt0$mut_order  =  mut_order
     
@@ -1319,7 +1406,37 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
 
 }
 
-
+init_pnt_clones   <- function( clones, onco_clones ) {
+    
+    if ( is.null( clones ) )  return( NULL )
+    
+    for( i in 1:length( clones ) ){
+        clone1  =  clones[[ i ]]
+        onco1   =  onco_clones[[ i ]]
+        
+        genes  =  onco1$name[ clone1$gene == 1 ]
+        gm  =  modify_gene_map( clone1 , onco1 )
+        
+        if ( length( genes ) == 0 ) return( stop('Length of mutated genes should be non-zero ') )
+        
+        for( gene in genes ){
+            
+            pm  =   get_point_mutation_for_gene( onco1, gm_1_2 = gm, gene )   #  get_point_mutation( onco1, gm )
+            prntl = unlist( pm[[1]] )
+            # gene  = unlist( pm[[2]] )
+            pos   = unlist( pm[[3]] )
+            Chr   = unlist( pm[[4]] )
+            pnt0 = generate_pnt( prntl, gene, pos, onco1, Chr, mutation = TRUE )
+            
+            ### Add pnt mutation ID to a clone:
+            if ( (clone1$PointMut_ID == 0)[1] ) {
+              id   =  pnt_clones[[ length(pnt_clones) ]]$PointMut_ID
+            } else  id   =  c( clone1$PointMut_ID, pnt_clones[[ length(pnt_clones) ]]$PointMut_ID )
+            clone1$PointMut_ID  =  id
+        }
+    }
+    
+}
 
 ### The function to change the point mutation due to CNA:
 change_pnt_by_cna  <-  function( pnt1, start_end, t ) {
@@ -1419,17 +1536,17 @@ write_log <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile
                       E0, F0, m0, uo, us, s=10, k, 
                       m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
                       uo_dup, us_dup, uo_del, us_del,       # CNA parameters
-                      censore_n, censore_t, d0) {
+                      censore_n, censore_t, d0, Compaction_factor, model_name, time_stop ) {
     data <- c("genefile", "clonefile", "geneoutfile", "cloneoutfile", "logoutfile",
               "E", "F", "m0", "uo", "us", "s", "k", 
               "m_dup", "m_del", "lambda_dup", "lambda_del",
               "uo_dup", "us_dup", "uo_del", "us_del",
-              "censore_n", "censore_t", "d0")
+              "censore_n", "censore_t", "d0", 'Compaction_factor', 'model_name', 'time_stop')
     data <- rbind( data, c(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, 
                              E0, F0, m0, uo, us, s, k, 
                              m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
                              uo_dup, us_dup, uo_del, us_del,       # CNA parameters
-                             censore_n, censore_t, d0) )
+                             censore_n, censore_t, d0, Compaction_factor, model_name, time_stop ) )
     write(data, logoutfile, ncolumn=2, sep="\t")
 }
 
@@ -1620,7 +1737,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
               E0, F0, m0, uo, us, s=10, k=k0, 
               m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
               uo_dup, us_dup, uo_del, us_del,       # CNA parameters
-              censore_n, censore_t, d0)   # write input parameters
+              censore_n, censore_t, d0, Compaction_factor, model_name, time_stop)   # write input parameters
     onco = oncogene$new()        # make the vector onco about the hallmarks
     onco$read(genefile)          # read the input info to the onco from genefile - 'gene_cds2.txt'
     hall = hallmark$new()        # make a vector hall with hallmarks parameters
@@ -1650,6 +1767,8 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     write_header( cloneoutfile, env, onco )                   # 
     
     cells_number <- sum_N_M(env, clones)                 # to calculate cells numbers - N,M 
+    init_pnt_clones( clones, onco_clones )              # initialization of pnt_clones for point mutations
+    
     lapply(clones,update_Hallmarks)                     # to calculate the Hallmarks and probabilities for initial cells
     hall$updateEnviron(env, clones)                     # make averaging for cells 
     isFirst = TRUE
@@ -1715,7 +1834,4 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     
     return( list( clones , onco_clones ) )
 }
-
-########################################### END #####################################################
-
 
