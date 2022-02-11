@@ -46,16 +46,18 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
                                  censore_t = 50, m_dup  = 1E-8, m_del  = 1E-8,
                                  lambda_dup  = 5000, lambda_del  = 7000, 
                                  uo_dup  = 0.8, us_dup  = 0.5, uo_del  = 0, us_del  = 0.8,
-                                 CF  =  TRUE,  model  =  'WEAK', time_stop = 120, 
-                                 read_fl = FALSE, file_name ='./Input/parameters.txt' ){  
+                                 CF  =  TRUE,  model  =  'proportional_metastatic', time_stop = 120, 
+                                 read_fl = FALSE, file_name ='./Input/parameters.txt', 
+                                 n_repeat = 1000 ){  
     if ( read_fl ){
         data_log  =  read.table( file = file_name, sep = '\t', stringsAsFactors = FALSE )
         names( data_log )  =  c( 'var', 'value' )
         # Model definition
         Compaction_factor  <<-  as.logical( data_log[ which( data_log$var == 'Compaction_factor' ), 2 ] )
         model_name         <<-  data_log[ which( data_log$var == 'model_name' ), 2 ]  
-        # Parameters:
         time_stop          <<-  as.numeric( data_log[ which( data_log$var == 'time_stop' ), 2 ] )  # max time in seconds
+        n_repeat           <<-  as.numeric( data_log[ which( data_log$var == 'n_repeat' ), 2 ] )  # max number of repetitions
+        # Parameters:
         E0 <<-  as.numeric( data_log[ which( data_log$var == 'E' ), 2 ] )       # parameter in the division probability  
         F0 <<-  as.numeric( data_log[ which( data_log$var == 'F' ), 2 ] )       # parameter in the division probability  
         m0 <<-  as.numeric( data_log[ which( data_log$var == 'm0' ), 2 ] )     # mutation probability  
@@ -94,6 +96,8 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         ### Additional parameters of simulation
         censore_n <<- censore_n       # Max cell number where the program forcibly stops
         censore_t <<- censore_t         # Max time where the program forcibly stops
+        time_stop  <<-  time_stop     # Max time in seconds of running after that the program forcibly stops
+        n_repeat     <<-   n_repeat     # Max number of repetition of the program until the NON-ZERO output will be getting
         ### New parameters for CNA:
         m_dup  <<- m_dup # mutation probability for duplication
         m_del  <<- m_del # mutation probability for deletion 
@@ -103,40 +107,66 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         us_dup  <<- us_dup   # Gene malfunction probability by CNA duplication for suppressor
         uo_del  <<- uo_del   # Gene malfunction probability by CNA deletion    for oncogene
         us_del  <<- us_del # Gene malfunction probability by CNA deletion    for suppressor
-        time_stop  <<-  time_stop
     }
-    
-    msg  =  c(
-                'Model definition:  \n ' ,
-                'Compaction factor = ', Compaction_factor, '\n',
-                'model name  =  ', model_name, '\n', 
-                'Parameters:  \n', 
-                'parameter of the division probability E0 =  ', E0, '\n', 
-                'another parameter of the division probability F0  = ',  F0, '\n',
-                'mutation probability m0 =  ', m0, '\n', 
-                'oncogene mutation probability uo = ', uo, '\n',   
-                'suppressor mutation probability  us  =  ', us, '\n',  
-                'parameter in the sigmoid function  s0  =  ', s0, '\n',   
-                'Environmental death probability  k0 =  ',  k0, '\n', 
-                'Initial probability to divide cells  d0  =  ',  d0, '\n', 
-                'Additional parameters of simulation  \n ',
-                'Max cell number where the program forcibly stops  censore_n  = ',  censore_n,  '\n',  
-                'Max time steps where the program forcibly stops  censore_t  = ',  censore_t,  '\n',
-                'Max time (in seconds) where the program forcibly stops time_stop  =  ',  time_stop,  '\n',
-                'New parameters for CNA:  \n', 
-                'mutation probability for duplication  m_dup  =  ', m_dup ,  '\n',  
-                'mutation probability for deletion',  m_del,  '\n',  
-                'CNA duplication average length (of the geometrical distribution for the length)  lambda_dup  =  ', lambda_dup ,  '\n',  
-                'CNA deletion average length  lambda_del  = ', lambda_del ,  '\n',  
-                'Gene malfunction probability by CNA duplication for oncogene  uo_dup  =  ', uo_dup ,  '\n',  
-                'Gene malfunction probability by CNA duplication for suppressor  us_dup  =  ', us_dup ,  '\n',  
-                'Gene malfunction probability by CNA deletion for oncogene  uo_del  = ', uo_del ,  '\n',  
-                'Gene malfunction probability by CNA deletion for suppressor  us_del  = ', us_del,  '\n'
-        )
-    cat( paste0( msg, collapse = ' ' ) )
-    
 }    
 
+# function to print GLOBAL parameters:
+print_parameters  <-  function(){
+
+    msg  =  c(
+        'Model definition:  \n ' ,
+        'Compaction_factor = ', Compaction_factor, '\n',
+        'model_name  =  ', model_name, '\n', 
+        'Parameters:  \n', 
+        'parameter of the division probability E0 =  ', E0, '\n', 
+        'another parameter of the division probability F0  = ',  F0, '\n',
+        'mutation probability m0 =  ', m0, '\n', 
+        'oncogene mutation probability uo = ', uo, '\n',   
+        'suppressor mutation probability  us  =  ', us, '\n',  
+        'parameter in the sigmoid function  s0  =  ', s0, '\n',   
+        'Environmental death probability  k0 =  ',  k0, '\n', 
+        'Initial probability to divide cells  d0  =  ',  d0, '\n', 
+        'Additional parameters of simulation  \n ',
+        'Max cell number where the program forcibly stops  censore_n  = ',  censore_n,  '\n',  
+        'Max time steps where the program forcibly stops  censore_t  = ',  censore_t,  '\n',
+        'Max time (in seconds) where the program forcibly stops time_stop  =  ',  time_stop,  '\n',
+        'Max number of repetition of the program until the NON-ZERO output will be getting, n_repeat  =  ', n_repeat ,   '\n', 
+        'New parameters for CNA:  \n', 
+        'mutation probability for duplication  m_dup  =  ', m_dup ,  '\n',  
+        'mutation probability for deletion',  m_del,  '\n',  
+        'CNA duplication average length (of the geometrical distribution for the length)  lambda_dup  =  ', lambda_dup ,  '\n',  
+        'CNA deletion average length  lambda_del  = ', lambda_del ,  '\n',  
+        'Gene malfunction probability by CNA duplication for oncogene  uo_dup  =  ', uo_dup ,  '\n',  
+        'Gene malfunction probability by CNA duplication for suppressor  us_dup  =  ', us_dup ,  '\n',  
+        'Gene malfunction probability by CNA deletion for oncogene  uo_del  = ', uo_del ,  '\n',  
+        'Gene malfunction probability by CNA deletion for suppressor  us_del  = ', us_del,  '\n',
+        'Compaction factor is applied if variable Compaction_factor ==  TRUE \n',
+        'Compaction factor for apoptosis hallmark CF$Ha = ', CF$Ha, ' \n', 
+        'Compaction factor for angiogenesis hallmark CF$Hb = ', CF$Hb, ' \n', 
+        'Compaction factor for growth/antigrowth hallmark CF$Hd = ', CF$Hd, ' \n', 
+        'Compaction factor for immortalization hallmark CF$Hi = ', CF$Hi, ' \n', 
+        'Compaction factor for invasion/metastasis hallmark CF$Him = ', CF$Him 
+    )
+    
+    cat( paste0( msg, collapse = ' ' ) )
+}
+
+define_compaction_factor  <-  function( cf = data.frame( Ha = 1, Hb = 1, Hd = 1,
+                                                         Hi = 1, Him = 1 ), 
+                                        read_fl = TRUE , file_name = './Input/CF.txt' ){
+    if ( read_fl ){
+        data_log  =  read.table( file = file_name, sep = '\t', stringsAsFactors = FALSE )
+        names( data_log )  =  c( 'var', 'value' )
+        
+        cf$Ha   =  data_log$value[ data_log$var == 'apoptosis' ]
+        cf$Hb   =  data_log$value[ data_log$var == 'angiogenesis' ]
+        cf$Hd   =  data_log$value[ data_log$var == 'growth' ]
+        cf$Hi   =  data_log$value[ data_log$var == 'immortalization' ]
+        cf$Him  =  data_log$value[ data_log$var == 'invasion' ]
+    }
+    
+    CF  <<-  cf
+}
 
 #### The code:
 
@@ -406,7 +436,8 @@ hallmark <- setRefClass(
     # 
     methods = list(
         # 
-        read = function(file, names, normalization  =  !Compaction_factor ) {
+        read = function(file, names, normalization  =  TRUE ) {
+            # normalization is an indicator to normalize all Hallmarks values
             data <- read.table(file, sep="\t")
             Ha0 = NULL
             Hi0 = NULL
@@ -518,6 +549,16 @@ hallmark <- setRefClass(
             Hd_w <<- Hd0_w / Hd_sum
             Hb_w <<- Hb0_w / Hb_sum
             Him_w <<- Him0_w / Him_sum
+            
+            if ( Compaction_factor ){
+                Ha_w  <<-  CF$Ha  * Ha_w
+                Hi_w  <<-  CF$Hi  * Hi_w
+                Hd_w  <<-  CF$Hd  * Hd_w
+                Hb_w  <<-  CF$Hb  * Hb_w
+                Him_w <<-  CF$Him * Him_w
+                
+            }
+            
         },
         # Change the cell variables
         # mode = 2 Corresponding (Hallmark) Gene Mode
@@ -1264,7 +1305,7 @@ trial <- function( clone1, onco1 ) {
     if (clone1$im > 0) {
         if (!clone1$invasion) {
             N_die = calc_binom( 1, clone1$N_cells, ( 1 - clone1$im ) )
-            if ( model_name == 'WEAK') {
+            if ( model_name == 'proportional_metastatic') {
                 clone1$invasion = ifelse( clone1$im > 0, TRUE, FALSE )  # condition here is related to the model
             } else {
                 clone1$invasion = ifelse( clone1$im != 1, TRUE, FALSE )  
@@ -1741,7 +1782,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     onco = oncogene$new()        # make the vector onco about the hallmarks
     onco$read(genefile)          # read the input info to the onco from genefile - 'gene_cds2.txt'
     hall = hallmark$new()        # make a vector hall with hallmarks parameters
-    hall$read( genefile, onco$name, normalization = FALSE )     # read from the genefile - 'gene_hallmarks.txt'
+    hall$read( genefile, onco$name, normalization = TRUE )     # read from the genefile - 'gene_hallmarks.txt'
     env = environ$new(F0)               # new vector for average values of cells
     pnt = Point_Mutations$new()
     pnt_clones = NULL
@@ -1775,8 +1816,11 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     write_cloneout( cloneoutfile, env, clones, isFirst, onco_clones )     #  write initial clones
 
     print( paste0("The probability of an absence of the mutations is p0 = ", as.character(onco$p0_1) )) 
-    
-    while(length(clones) > 0 && censore_n > cells_number && env$T < censore_t) {
+    time_start  =  Sys.time()
+    time_current  =  Sys.time()
+    while(length(clones) > 0 && censore_n > cells_number && 
+          env$T < censore_t  && 
+          ( as.numeric( time_current - time_start ) < time_stop ) ){
 
         k_old = length(clones)          # the number of clones from last step
         
@@ -1826,6 +1870,8 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
         
         write_cloneout( cloneoutfile, env, clones, isFirst, onco_clones )
         #print(c(env$T,env$N,env$M,env$last_id, length(clones), "N_clones_new = ", N_clones_new))
+        
+        time_current  =  Sys.time()
 
     }
     

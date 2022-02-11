@@ -22,5 +22,6 @@ censore_n	1e+05
 censore_t	50
 d0	0.4
 Compaction_factor	TRUE
-model_name	WEAK
-time_stop	120
+model_name	proportional_metastatic
+time_stop	60
+n_repeat	1000
