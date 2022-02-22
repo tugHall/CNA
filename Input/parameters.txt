@@ -1,5 +1,5 @@
 genefile	Input/gene_hallmarks.txt
-clonefile	Input/cloneinit.txt
+clonefile	Input/cloneinit_case1.txt
 geneoutfile	Output/geneout.txt
 cloneoutfile	Output/cloneout.txt
 logoutfile	Output/log.txt
