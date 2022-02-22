@@ -1592,17 +1592,24 @@ write_log <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile
 }
 
 
-write_geneout <- function(outfile, hall) {
-    data <- c(onco$name[hall$Ha], onco$name[hall$Hi], onco$name[hall$Hd], onco$name[hall$Hb], onco$name[hall$Him])
-    data <- rbind(data, c(rep("apoptosis", length(onco$name[hall$Ha])),
-                          rep("immortalization", length(onco$name[hall$Hi])),
-                          rep("growth|anti-growth", length(onco$name[hall$Hd])),
-                          rep("angiogenesis", length(onco$name[hall$Hb])),
-                          rep("invasion", length(onco$name[hall$Him]))))
-    data <- rbind(data, c(hall$Ha_w, hall$Hi_w, hall$Hd_w, hall$Hb_w, hall$Him_w))
-    data <- rbind(data, c(onco$onsp[hall$Ha], onco$onsp[hall$Hi], onco$onsp[hall$Hd], onco$onsp[hall$Hb], 
-                          onco$onsp[hall$Him]))
-    write(data, outfile, ncolumn=4, sep="\t")
+write_geneout <- function(outfile, hall, Compaction_factor, CF) {
+    gene <- c(onco$name[hall$Ha], onco$name[hall$Hi], onco$name[hall$Hd], onco$name[hall$Hb], onco$name[hall$Him])
+    hall_mark <- c(rep("apoptosis", length(onco$name[hall$Ha])),
+                   rep("immortalization", length(onco$name[hall$Hi])),
+                   rep("growth|anti-growth", length(onco$name[hall$Hd])),
+                   rep("angiogenesis", length(onco$name[hall$Hb])),
+                   rep("invasion", length(onco$name[hall$Him])))
+    weight_CF <- c(hall$Ha_w, hall$Hi_w, hall$Hd_w, hall$Hb_w, hall$Him_w)
+    if ( Compaction_factor ) {
+        weight <- c(hall$Ha_w / CF$Ha, hall$Hi_w / CF$Hi, hall$Hd_w / CF$Hd, hall$Hb_w / CF$Hb, hall$Him_w / CF$Him)
+    }
+    else {
+        weight <- weight_CF
+    }
+    sup_or_onc <- c(onco$onsp[hall$Ha], onco$onsp[hall$Hi], onco$onsp[hall$Hd], onco$onsp[hall$Hb], 
+                    onco$onsp[hall$Him])
+    df <- data.frame(gene=gene, hall_mark=hall_mark, weight=weight, weight_CF=weight_CF, sup_or_onc=sup_or_onc)
+    write.table(df, outfile, quote=F, row.names=F, sep='\t')
 }
 
 write_header <- function(outfile, env, onco) {
@@ -1803,7 +1810,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
                      m=m0, s=s0, k=k0, E=E0)          # clone1  -  empty object of clone
     clones = init_clones(clonefile, clone1)           # clones - the clones with hallmarks from cellfile - cellinit.txt - initial cells  
     onco_clones = init_onco_clones( onco, clones )    # onco_clones - the onco related to each clone in clones
-    write_geneout(geneoutfile, hall)                  # write the geneout.txt file with initial hallmarks 
+    write_geneout(geneoutfile, hall, Compaction_factor, CF)                  # write the geneout.txt file with initial hallmarks 
     write_weights("Output/Weights.txt", hall)                 # write the weights of genes for hallmarks 
     write_header( cloneoutfile, env, onco )                   # 
     
