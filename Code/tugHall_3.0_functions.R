@@ -1292,23 +1292,23 @@ number_N_M <- function(clone1) {
 
 
 # trial function
-# The resul is a number of new cells, if N_New < 0 it means that the number is decreased.
+# The result is a number of new cells, if N_New < 0 it means that the number is decreased.
 trial <- function( clone1, onco1 ) { 
     
     # trial for Environmental death of cell 
     N_die  =  calc_binom( 1, clone1$N_cells, clone1$k )   # The number of cells to die due to the Environmental death of cells in clone
     
     # Apoptosis trial
-    N_die  =  calc_binom( 1, clone1$N_cells, clone1$a ) 
+    N_die  =  N_die + calc_binom( 1, clone1$N_cells, clone1$a ) 
     
     # invasion / metastasis trial 
     if (clone1$im > 0) {
         if (!clone1$invasion) {
-            N_die = calc_binom( 1, clone1$N_cells, ( 1 - clone1$im ) )
+            N_die  =  N_die + calc_binom( 1, clone1$N_cells, ( 1 - clone1$im ) )
             if ( model_name == 'proportional_metastatic') {
                 clone1$invasion = ifelse( clone1$im > 0, TRUE, FALSE )  # condition here is related to the model
             } else {
-                clone1$invasion = ifelse( clone1$im != 1, TRUE, FALSE )  
+                clone1$invasion = ifelse( clone1$im == 1, TRUE, FALSE )  
             }
         }
     }
