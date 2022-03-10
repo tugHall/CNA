@@ -20,7 +20,7 @@ uo_del	0
 us_del	0.8
 censore_n	1e+05
 censore_t	50
-d0	0.4
+d0	240
 Compaction_factor	TRUE
 model_name	proportional_metastatic
 time_stop	60
