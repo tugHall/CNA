@@ -24,4 +24,4 @@ d0	0.4
 Compaction_factor	TRUE
 model_name	proportional_metastatic
 time_stop	60
-n_repeat	1000
+n_repeat	1
