@@ -64,8 +64,14 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         uo <<-  as.numeric( data_log[ which( data_log$var == 'uo' ), 2 ] )        # oncogene mutation probability  
         us <<-  as.numeric( data_log[ which( data_log$var == 'us' ), 2 ] )        # suppressor mutation probability  
         s0 <<-  as.numeric( data_log[ which( data_log$var == 's' ), 2 ] )         # parameter in the sigmoid function  
-        k0 <<-  as.numeric( data_log[ which( data_log$var == 'k' ), 2 ] )        # Environmental death probability  
         d0 <<-  as.numeric( data_log[ which( data_log$var == 'd0' ), 2 ] )      # Initial probability to divide cells
+        k0_str <- as.character( data_log[ which( data_log$var == 'k' ), 2 ] )   # Environmental death probability  
+        if ( k0 _str == "NA" ) {
+            k0 <<- 1 - (1 + d0) ^ (-1)
+        }
+        else {
+            k0 <<-  as.numeric( k0 _str )
+        }
         ### Additional parameters of simulation
         censore_n <<- as.numeric( data_log[ which( data_log$var == 'censore_n' ), 2 ] )       # Max cell number where the program forcibly stops
         censore_t <<- as.numeric( data_log[ which( data_log$var == 'censore_t' ), 2 ] )       # Max time where the program forcibly stops

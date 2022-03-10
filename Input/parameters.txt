@@ -9,7 +9,7 @@ m0	1e-07
 uo	0.9
 us	0.9
 s	10
-k	0.12
+k0	NA
 m_dup	1e-08
 m_del	1e-08
 lambda_dup	5000
