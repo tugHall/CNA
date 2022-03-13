@@ -1,5 +1,5 @@
 genefile	Input/gene_hallmarks.txt
-clonefile	Input/cloneinit.txt
+clonefile	Input/cloneinit_case1.txt
 geneoutfile	Output/geneout.txt
 cloneoutfile	Output/cloneout.txt
 logoutfile	Output/log.txt
@@ -9,7 +9,7 @@ m0	1e-07
 uo	0.9
 us	0.9
 s	10
-k	0.12
+k0	NA
 m_dup	1e-08
 m_del	1e-08
 lambda_dup	5000
@@ -20,8 +20,8 @@ uo_del	0
 us_del	0.8
 censore_n	1e+05
 censore_t	50
-d0	0.4
+d0	0.5
 Compaction_factor	TRUE
 model_name	proportional_metastatic
 time_stop	60
-n_repeat	1000
+n_repeat	1

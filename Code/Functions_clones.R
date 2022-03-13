@@ -245,26 +245,33 @@ get_rho_VAF  <-  function( vf = NULL, rho = c( 0.5, 1 ) , file_name = './Output/
     M_total  =  vf$M_total[1]
     
     VAF  =  NULL 
-    for( i in nq_i ){
-        w  =  which( vf$Ref_pos == i )
-        # for primary tumor cells 
-        numinator_N    =  sum( vf[ w , 'N'] * vf[ w, 'Copy_number'] ) / N_total
-        denumerator_N  =  sum( vf[ w , 'N'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_total
-        # for metastatic cells 
-        numinator_M    =  sum( vf[ w , 'M'] * vf[ w, 'Copy_number'] ) / M_total
-        denumerator_M  =  sum( vf[ w , 'M'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / M_total
-        VAF_N_rho  =  numinator_N / ( 2*( 1 - rho ) + denumerator_N )
-        VAF_M_rho  =  numinator_M / ( 2*( 1 - rho ) + denumerator_M )
-        # save to data.frame:
-        VAF_1 = data.frame( site = i, Chr = vf[ w[1], 'Chr' ] ,
-                            gene = vf[ w[1], 'Gene_name' ] )
-        for( k in 1:length( rho ) ){
-            VAF_1[ 1, paste0( 'VAF_primary_rho_',    rho[ k ] ) ]  =  VAF_N_rho[ k ]
-            VAF_1[ 1, paste0( 'VAF_metastatic_rho_', rho[ k ] ) ]  =  VAF_M_rho[ k ]
+    for( k in 1:length( rho ) ){
+        for( i in nq_i ){
+            w  =  which( vf$Ref_pos == i )
+                                        # for primary tumor cells 
+            numinator_N    =  sum( vf[ w , 'N'] * vf[ w, 'Copy_number'] ) / N_total
+            denumerator_N  =  sum( vf[ w , 'N'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_total
+                                        # for metastatic cells 
+            numinator_M    =  sum( vf[ w , 'M'] * vf[ w, 'Copy_number'] ) / M_total
+            denumerator_M  =  sum( vf[ w , 'M'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / M_total
+            VAF_N_rho  =  numinator_N / ( 2*( 1 - rho[ k ] ) + denumerator_N )
+            VAF_M_rho  =  numinator_M / ( 2*( 1 - rho[ k ] ) + denumerator_M )
+                                        # save to data.frame:
+            VAF_1 = data.frame(site = i,
+                               Chr = vf[ w[1], 'Chr' ] ,
+                               gene = vf[ w[1], 'Gene_name' ] ,
+                               rho = rho[ k ],
+                               VAF_primary = VAF_N_rho,
+                               VAF_primary_numerator = numinator_N,
+                               VAF_primary_denominator = ( 2*( 1 - rho[ k ] ) + denumerator_N ),
+                               VAF_metastatic = VAF_M_rho,
+                               VAF_metastatic_numerator = numinator_M,
+                               VAF_metastatic_denominator = ( 2*( 1 - rho[ k ] ) + denumerator_M ))
+            VAF_1[ is.na.data.frame( VAF_1 ) ]  =  0  #  division by 0 if rho = 1 
+            VAF  =  rbind( VAF, VAF_1 )
         }
-        VAF_1[ is.na.data.frame( VAF_1 ) ]  =  0  #  division by 0 if rho = 1 
-        VAF  =  rbind( VAF, VAF_1 )
     }
+
     write.table( VAF, file = file_name, append = FALSE, sep = '\t', 
                     row.names = FALSE, col.names = TRUE )
     cat( paste0( ' VAF is saved in the file ', file_name ) )
