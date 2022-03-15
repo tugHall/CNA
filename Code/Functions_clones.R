@@ -43,7 +43,7 @@ get_flow_data <- function(cloneoutfile, genefile ) {
     # data without averaging - flow data
     data_flow  <<-  data_out[ which( !data_out$AvgOrIndx == "avg" ), ]
     
-    data_flow[ , c( 1:23, 29:40 ) ]  <<-  sapply( X = c( 1:23, 29:40 ), 
+    data_flow[ , c( 1:22, 24, 30:41 ) ]  <<-  sapply( X = c( 1:22, 24, 30:41 ), 
               FUN = function( x ) {
                   as.numeric( data_flow[ , x ] )
     } )

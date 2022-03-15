@@ -212,6 +212,7 @@ clone <- setRefClass(
         CNA_ID       =  "numeric", # ID of CNA mutation in object CNA
         mutden = "numeric",      # gene mutation density
         invasion = "logical",    # Wetting/Displacement flag:    TRUE: Wetting/Displacement      FALSE: Limited pattern
+        primary  = "logical",    # Logical variable is clone primary tumor or not  
         birthday = "numeric"    # time step of birth of cell
         # lenCDS      = "numeric"     # length of all oncogenes of interest
         # lenRNA      = "numeric"      # length of all oncogenes of interest including introns
@@ -224,7 +225,7 @@ clone <- setRefClass(
                               mutden=0, a=0, k=k0, E=E0, Nmax=0, gene=NULL, pasgene=NULL,
                               PointMut_ID = 0, CNA_ID = 0,
                               # deleted: posdriver=NULL, pospasngr=NULL, 
-                              invasion=FALSE, s=s0, birthday=0) {
+                              invasion=FALSE, primary=FALSE, s=s0, birthday=0) {
             id <<- id
             parent <<- parent
             N_cells <<- N_cells
@@ -270,9 +271,10 @@ clone <- setRefClass(
             # } else {
             #     pospasngr <<- pospasngr
             # }
-            PointMut_ID <<- PointMut_ID
-            CNA_ID     <<- CNA_ID
-            invasion   <<- invasion
+            PointMut_ID <<-  PointMut_ID
+            CNA_ID     <<-  CNA_ID
+            invasion   <<-  invasion
+            primary    <<-  primary
             # lenCDS     <<-  sum( onco$cds )
             # lenRNA     <<-  integer(0)
         },
@@ -306,13 +308,14 @@ environ <- setRefClass(
     # Fields
     fields = list(
         T = "numeric",           # time counter
-        N = "numeric",           # localized clones number
-        M = "numeric",           # number of infiltrting / metastatic clones
-        F = "numeric",           # a coeffitient (Nmax = F/E) that determines the maximal number of cells 
+        N = "numeric",           # number of normal cells
+        P = "numeric",           # number of primary tumor cells
+        M = "numeric",           # number of infiltrating / metastatic cells
+        F = "numeric",           # a coefficient (Nmax = F/E) that determines the maximal number of cells 
                                  # that can exist in the primary tumor when the hallmark is engraved  
         c = "numeric",           # average number of divisions 
-        d = "numeric",           # mean value of spliting probability
-        i = "numeric",           # average value of spliting probability
+        d = "numeric",           # mean value of splitting probability
+        i = "numeric",           # average value of splitting probability
         a = "numeric",           # average value of apoptosis probability
         k = "numeric",           # average probability of cell death
         E = "numeric",           # average value of coefficients of friction term proportional to N, for splitting probability
@@ -338,6 +341,7 @@ environ <- setRefClass(
             T <<- 0
             N <<- 0
             M <<- 0
+            P <<- 0
             F <<- F0
         }
     )
@@ -1233,24 +1237,25 @@ get_cds_rna  <-  function( gm ){
 sum_cell <- function(env, clones) {
   if (length(clones) > 0) {
     avg = apply(matrix(unlist(lapply(clones, sum_mutation)),ncol=length(clones)),1,sum)  #  /length(clones)
-    env$c = avg[1] / (env$N + env$M)
-    env$d = avg[2] / (env$N + env$M)
-    env$i = avg[3] / (env$N + env$M)
-    env$a = avg[4] / (env$N + env$M)
-    env$k = avg[5] / (env$N + env$M)
-    env$E = avg[6] / (env$N + env$M)
-    env$Nmax = avg[7] / (env$N + env$M)
-    env$im = avg[8] / (env$N + env$M)
-    env$Ha = avg[9] / (env$N + env$M)
-    env$Him = avg[10] / (env$N + env$M)
-    env$Hi = avg[11] / (env$N + env$M)
-    env$Hb = avg[12] / (env$N + env$M)
-    env$Hd = avg[13] / (env$N + env$M)
-    env$type = avg[14] / (env$N + env$M)
-    env$mutden = avg[15] / (env$N + env$M)
+    env$c = avg[1] / (env$N + env$M + env$P)
+    env$d = avg[2] / (env$N + env$M + env$P)
+    env$i = avg[3] / (env$N + env$M + env$P)
+    env$a = avg[4] / (env$N + env$M + env$P)
+    env$k = avg[5] / (env$N + env$M + env$P)
+    env$E = avg[6] / (env$N + env$M + env$P)
+    env$Nmax = avg[7] / (env$N + env$M + env$P)
+    env$im = avg[8] / (env$N + env$M + env$P)
+    env$Ha = avg[9] / (env$N + env$M + env$P)
+    env$Him = avg[10] / (env$N + env$M + env$P)
+    env$Hi = avg[11] / (env$N + env$M + env$P)
+    env$Hb = avg[12] / (env$N + env$M + env$P)
+    env$Hd = avg[13] / (env$N + env$M + env$P)
+    env$type = avg[14] / (env$N + env$M + env$P)
+    env$mutden = avg[15] / (env$N + env$M + env$P)
   } else {
     env$M = 0
     env$N = 0
+    env$P = 0
     env$c = 0
     env$d = 0
     env$i = 0
@@ -1283,17 +1288,21 @@ sum_mutation <- function(clone1) {
 }
 
 # To calculate N and M numbers - normal and metastasis cells
-sum_N_M <- function(env, clones) {
+sum_N_P_M <- function(env, clones) {
   if (length(clones) > 0) {
-    avg = apply(matrix(unlist(lapply(clones, number_N_M)),ncol=length(clones)),1,sum)  #  /length(clones)
-    env$N = avg[1]
-    env$M = avg[2]
-    return(env$N + env$M)
+    avg = apply(matrix(unlist(lapply(clones, number_N_P_M)),ncol=length(clones)),1,sum)  #  /length(clones)
+    env$N = avg[ 1 ]
+    env$P = avg[ 2 ]
+    env$M = avg[ 3 ]
+    return(env$N + env$P + env$M)
   }
 }
 
-number_N_M <- function(clone1) {
-  return( c(clone1$N_cells * ifelse(clone1$invasion,0,1),   clone1$N_cells * ifelse(clone1$invasion,1,0) ))
+number_N_P_M <- function(clone1) {
+  indicator = c(  ifelse(clone1$invasion,0,1) * ifelse(clone1$primary,0,1),
+                  ifelse(clone1$invasion,0,1) * ifelse(clone1$primary,1,0),
+                  ifelse(clone1$invasion,1,0) )
+  return( clone1$N_cells * indicator )
 }
 
 
@@ -1450,6 +1459,7 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
     }
     
     onco_update( onco1, gm )
+    if ( sum( clone1$gene ) > 0 ) clone1$primary = TRUE
 
 }
 
@@ -1464,22 +1474,24 @@ init_pnt_clones   <- function( clones, onco_clones ) {
         genes  =  onco1$name[ clone1$gene == 1 ]
         gm  =  modify_gene_map( clone1 , onco1 )
         
-        if ( length( genes ) == 0 ) return( stop('Length of mutated genes should be non-zero ') )
-        
-        for( gene in genes ){
-            
-            pm  =   get_point_mutation_for_gene( onco1, gm_1_2 = gm, gene )   #  get_point_mutation( onco1, gm )
-            prntl = unlist( pm[[1]] )
-            # gene  = unlist( pm[[2]] )
-            pos   = unlist( pm[[3]] )
-            Chr   = unlist( pm[[4]] )
-            pnt0 = generate_pnt( prntl, gene, pos, onco1, Chr, mutation = TRUE )
-            
-            ### Add pnt mutation ID to a clone:
-            if ( (clone1$PointMut_ID == 0)[1] ) {
-              id   =  pnt_clones[[ length(pnt_clones) ]]$PointMut_ID
-            } else  id   =  c( clone1$PointMut_ID, pnt_clones[[ length(pnt_clones) ]]$PointMut_ID )
-            clone1$PointMut_ID  =  id
+        if ( length( genes ) == 0 ) { 
+            print('The clone of the normal cells is in simulation')  # stop('Length of mutated genes should be non-zero ') )
+        } else {
+          for( gene in genes ){
+              
+              pm  =   get_point_mutation_for_gene( onco1, gm_1_2 = gm, gene )   #  get_point_mutation( onco1, gm )
+              prntl = unlist( pm[[1]] )
+              # gene  = unlist( pm[[2]] )
+              pos   = unlist( pm[[3]] )
+              Chr   = unlist( pm[[4]] )
+              pnt0 = generate_pnt( prntl, gene, pos, onco1, Chr, mutation = TRUE )
+              
+              ### Add pnt mutation ID to a clone:
+              if ( (clone1$PointMut_ID == 0)[1] ) {
+                id   =  pnt_clones[[ length(pnt_clones) ]]$PointMut_ID
+              } else  id   =  c( clone1$PointMut_ID, pnt_clones[[ length(pnt_clones) ]]$PointMut_ID )
+              clone1$PointMut_ID  =  id
+          }
         }
     }
     
@@ -1562,7 +1574,8 @@ clone_copy <- function(clone1) {
                         gene=clone1$gene, pasgene=clone1$pasgene, 
                         PointMut_ID = clone1$PointMut_ID, CNA_ID = clone1$CNA_ID,
                         # posdriver=clone1$posdriver, pospasngr=clone1$pospasngr, 
-                        invasion=clone1$invasion, s=clone1$s, birthday=env$T)) #, 
+                        invasion=clone1$invasion, primary=clone1$primary, 
+                        s=clone1$s, birthday=env$T)) #, 
                         # len = clone1$len ))
 }
 
@@ -1620,7 +1633,7 @@ write_geneout <- function(outfile, hall, Compaction_factor, CF) {
 
 write_header <- function(outfile, env, onco) {
     header <- c('Time', 'N_cells', 'AvgOrIndx', 'ID', 'ParentID', 'Birth_time', 'c', 'd', 'i', 'im', 'a',
-                'k', 'E', 'N', 'Nmax', 'M', 'Ha', 'Him', 'Hi', 'Hd', 'Hb', 'type', 'mut_den',
+                'k', 'E', 'N_normal', 'Nmax', 'N_primary', 'N_metastatic', 'Ha', 'Him', 'Hi', 'Hd', 'Hb', 'type', 'mut_den',
                 # paste("PosDriver:", onco$name, sep=""), paste("PosPasngr:", onco$name, sep="") )      #   , 'Clone number', 'Passengers Clone number', 'Mix Clone number')
                 'driver_genes', 'passenger_genes', 
                 'PointMut_ID', 'CNA_ID' , 'onco_ID', 
@@ -1629,20 +1642,28 @@ write_header <- function(outfile, env, onco) {
     write(header, outfile, append=FALSE, ncolumn=length(header), sep="\t")
 }
 
+### The function to get type of the clone: normal, primary or metastatic
+get_type  <-  function( clone1 ){
+    if ( clone1$invasion ) return( 'metastatic' )
+    if ( !clone1$primary ) return( 'normal' )
+    return( 'primary' )
+}
+
 write_cloneout <- function( outfile, env, clones, isFirst, onco_clones ) {
     data <- c(env$T, '-', 'avg', '-', '-', '-', env$c, env$d, env$i, env$im, env$a, env$k, env$E, env$N,
-              env$Nmax, env$M, env$Ha, env$Him, env$Hi, env$Hd, env$Hb, env$type, env$mutden,
+              env$Nmax, env$P, env$M, env$Ha, env$Him, env$Hi, env$Hd, env$Hb, '-', env$mutden,
               rep('-',17) )
     
     write(data, outfile, append=TRUE, ncolumn=length(data), sep="\t")
        
     if (length(clones) > 0 & isFirst) {
         for (i in 1:length(clones)) {
-            clone1 = clones[[i]]
-            onco1  = onco_clones[[i]]
+            clone1  =  clones[[i]]
+            onco1   =  onco_clones[[i]]
+            type    =  get_type( clone1 = clone1 )
             data <- c(env$T, clone1$N_cells, i, clone1$id, clone1$parent, clone1$birthday, clone1$c, clone1$d, 
-                      clone1$i, clone1$im, clone1$a, clone1$k, clone1$E, env$N, clone1$Nmax, env$M,
-                      clone1$Ha, clone1$Him, clone1$Hi, clone1$Hd, clone1$Hb, ifelse(clone1$invasion,1,0), 
+                      clone1$i, clone1$im, clone1$a, clone1$k, clone1$E, env$N, clone1$Nmax, env$P, env$M,
+                      clone1$Ha, clone1$Him, clone1$Hi, clone1$Hd, clone1$Hb, type,  # ifelse(clone1$invasion,1,0), 
                       clone1$mutden, 
                       paste(clone1$gene, collapse =  ' '), paste(clone1$pasgene, collapse =  ' '),
                       paste(clone1$PointMut_ID, collapse = ', '), paste(clone1$CNA_ID, collapse = ', '), 
@@ -1751,6 +1772,7 @@ init_clones <- function(clonefile, clone1) {
         #                               clones[[i]]$posdriver)
         clones[[i]]$calcMutden()
         clones[[i]]$calcApoptosis()
+        if ( sum( clones[[ i ]]$gene ) > 0 ) clones[[ i ]]$primary = TRUE 
     }
     env$last_id = n
     return(as.list(clones))
@@ -1777,7 +1799,7 @@ calc_binom <- function(tr,n,p){
     } else {
         m <- n * p
         s <- sqrt(  n*p* (1-p)  )
-        ou <- rnorm(tr,mean = m, sd = s)
+        ou <- rnorm( tr, mean = m, sd = s )
     }
     
     return(  round( ou )  )
@@ -1820,7 +1842,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     write_weights("Output/Weights.txt", hall)                 # write the weights of genes for hallmarks 
     write_header( cloneoutfile, env, onco )                   # 
     
-    cells_number <- sum_N_M(env, clones)                 # to calculate cells numbers - N,M 
+    cells_number <- sum_N_P_M(env, clones)                 # to calculate cells numbers - N,M 
     init_pnt_clones( clones, onco_clones )              # initialization of pnt_clones for point mutations
     
     lapply(clones,update_Hallmarks)                     # to calculate the Hallmarks and probabilities for initial cells
@@ -1875,7 +1897,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
         clones = c(clones[survived_clones],clones_new)
         onco_clones = c(onco_clones[survived_clones],onco_clones_new)
         
-        cells_number <- sum_N_M(env, clones)                 # to calculate cells numbers - N,M for next step
+        cells_number <- sum_N_P_M(env, clones)                 # to calculate cells numbers - N,M for next step
         lapply(clones,update_Hallmarks) 
         hall$updateEnviron(env, clones)                      # to average probabilities and hallmarks
         

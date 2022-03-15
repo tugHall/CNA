@@ -23,5 +23,5 @@ censore_t	50
 d0	0.5
 Compaction_factor	TRUE
 model_name	proportional_metastatic
-time_stop	60
+time_stop	10
 n_repeat	1
