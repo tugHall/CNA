@@ -599,16 +599,16 @@ hallmark <- setRefClass(
           clone1$d = clone1$Hd + d0     # d0 is defined in parameters 
           if ( clone1$d > 1 ) { clone1$d = 1 }
           if ( !clone1$invasion ) {
-              clone1$d = clone1$d - clone1$E * env$N
+              clone1$d = clone1$d - clone1$E * env$P
               if ( clone1$d < 0 ) { clone1$d = 0 }
           }
 
-                # Invasion metastasis
-                if ( !clone1$invasion ) {
-                  clone1$im = clone1$Him 
-            } else {
-              clone1$im = 1
-            }
+          # Invasion metastasis
+          if ( !clone1$invasion ) {
+                clone1$im = clone1$Him 
+          } else {
+                clone1$im = 1
+          }
           },
         # Change the environment variables
         updateEnviron = function(env, clones) {
@@ -1915,4 +1915,6 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     
     return( list( clones , onco_clones ) )
 }
+
+
 
