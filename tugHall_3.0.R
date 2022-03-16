@@ -74,3 +74,12 @@
     VAF  =  get_rho_VAF( vf = vf, rho = c( 0.1, 0.2, 0.5, 0.7, 0.9, 1 ) , file_name = './Output/VAF.txt' )
     
     
+
+# Plot data ---------------------------------------------------------------
+
+    
+    get_order_of_genes_dysfunction()
+    
+    source( './Code/my_plots.R' )
+    plot_average_simulation_data() 
+    
