@@ -70,11 +70,11 @@ plot_average_simulation_data  <-  function(){
         safe_pdf = TRUE
     } else safe_pdf = FALSE
     
-    g_range_y  =  range( 0, data_avg$N + 1 , data_avg$M + 1 )
-    g_range_x  =  range( min( data_avg$Time ), max( data_avg$Time ) )
+    g_range_y  =  range( 0, data_avg$N_normal + 1 , data_avg$N_primary + 1, data_avg$N_metastatic + 1 )
+    g_range_x  =  range( min( data_avg$Time ), max( data_avg$Time, round( time_max/10 +0.5 ) * 10  ) )
     plot_2D_lines( x = data_avg$Time, data_avg, 
-                   nl = c('N', 'M'), xr = g_range_x, yr = g_range_y,
-                   legend_names = c('Primary tumor', 'Metastatic'),
+                   nl = c('N_normal', 'N_primary', 'N_metastatic'), xr = g_range_x, yr = g_range_y,
+                   legend_names = c('Normal', 'Primary tumor', 'Metastatic'),
                    names = c( 'Time step', 'Number of cells' ) ,
                    safe_pdf  =  safe_pdf, 
                    filename = paste0( flnm, '_NM.pdf' )  )
@@ -91,7 +91,7 @@ plot_average_simulation_data  <-  function(){
     rl =  readline(prompt="This is a plot for average probabilities - Press Enter  ")
     
     
-    g_range_y  =  range( 0, max( data_avg[c('Ha', 'Hd', 'Hi', 'Him', 'Hb')] ) )
+    g_range_y  =  range( 0, max( data_avg[c('Ha', 'Hd', 'Hi', 'Him', 'Hb')] ) + 0.04 )
     plot_2D_lines( x = data_avg$Time, data_avg, 
                    nl = c('Ha', 'Hd', 'Hi', 'Him', 'Hb'), xr = g_range_x, yr = g_range_y,
                    legend_names = '',
@@ -173,10 +173,12 @@ get_order_of_genes_dysfunction  <-  function(){
     
     write.table( genes_dysfunction, file = './Output/order_genes_dysfunction.txt', 
                sep = '\t', row.names = FALSE, col.names = TRUE, append = FALSE )
-    cat('Order of genes dysfunction saved to the file in Output directory')
+    cat('Order of genes dysfunction saved to the file order_genes_dysfunction.txt in Output directory \n')
     
     return( genes_dysfunction )
 }
+
+
 
 get_VAF  <-  function(){
     
@@ -186,7 +188,7 @@ get_VAF  <-  function(){
     ids  =  str_split( data_last$PointMut_ID, pattern = ',' )
     ids =  sapply( X = 1:nrow( data_last), FUN = function(x) as.numeric( ids[[ x ]] ) )
     
-    nqu  =  unique( unlist( ids ) )
+    nqu  =  sort( unique( unlist( ids ) ) )
     if ( nqu[1] == 0 ) nqu = nqu[ -1 ]
     
     # start VAF 
@@ -199,14 +201,14 @@ get_VAF  <-  function(){
         
         VAF_1  =  pnt_mut[ which( pnt_mut$PointMut_ID == nqu[ j ] ) , ]
         
-        ### number of cells N - primary cells, M - metastasis cells
-        if ( any( data_last[ which( wc ), 'type' ] == 0 ) ){
-            VAF_1$N  =  sum( as.numeric( data_last[ which( wc & data_last$type ==  0 ),  'N_cells'  ] ) )
-        } else VAF_1$N  =  0
+        ### number of cells P - primary cells, M - metastasis cells
+        if ( any( data_last[ which( wc ), 'type' ] == 'primary' ) ){
+            VAF_1$N_primary  =  sum( as.numeric( data_last[ which( wc & data_last$type ==  'primary' ),  'N_cells'  ] ) )
+        } else VAF_1$N_primary  =  0
         
-        if ( any( data_last[ which( wc), 'type' ] == 1 ) ){
-            VAF_1$M  =  sum( as.numeric( data_last[ which( wc & data_last$type ==  1 ),  'N_cells'  ] ) )
-        } else VAF_1$M  =  0
+        if ( any( data_last[ which( wc), 'type' ] == 'metastatic' ) ){
+            VAF_1$N_metastatic =  sum( as.numeric( data_last[ which( wc & data_last$type ==  'metastatic' ),  'N_cells'  ] ) )
+        } else VAF_1$N_metastatic =  0
         
         # add copy number of original allele A:
         VAF_A  =  pnt_mut_A[ which( pnt_mut_A$PointMut_ID == nqu[ j ] ) , ]
@@ -216,13 +218,13 @@ get_VAF  <-  function(){
         VAF  =  rbind( VAF, VAF_1)
     }
     
-    if ( any( data_last[ , 'type' ] == 0 ) ) {
-        VAF$N_total = sum( as.numeric( data_last[ which( data_last$type == 0 ), 'N_cells' ] ) )  
-    } else  VAF$N_total  =  0 
+    if ( any( data_last[ , 'type' ] == 'primary' ) ) {
+        VAF$N_primary_total = sum( as.numeric( data_last[ which( data_last$type == 'primary' ), 'N_cells' ] ) )  
+    } else  VAF$N_primary_total  =  0 
     
-    if ( any( data_last[ , 'type' ] == 1 ) ) {
-        VAF$M_total = sum( as.numeric( data_last[ which( data_last$type == 1 ), 'N_cells' ] ) )  
-    } else  VAF$M_total  =  0
+    if ( any( data_last[ , 'type' ] == 'metastatic' ) ) {
+        VAF$N_metastatic_total = sum( as.numeric( data_last[ which( data_last$type == 'metastatic' ), 'N_cells' ] ) )  
+    } else  VAF$N_metastatic_total  =  0
     
     ### Save VAF to the file:
     write.table( VAF,file = "Output/VAF_data.txt", append = FALSE, row.names = FALSE, sep="\t" )
@@ -241,19 +243,19 @@ get_rho_VAF  <-  function( vf = NULL, rho = c( 0.5, 1 ) , file_name = './Output/
     nq_i  =  unique( vf$Ref_pos )
     if ( length(nq_i) < 1 ) return( NULL )
     
-    N_total  =  vf$N_total[1]
-    M_total  =  vf$M_total[1]
+    N_primary_total  =  vf$N_primary_total[1]
+    N_metastatic_total  =  vf$N_metastatic_total[1]
     
     VAF  =  NULL 
     for( k in 1:length( rho ) ){
         for( i in nq_i ){
             w  =  which( vf$Ref_pos == i )
                                         # for primary tumor cells 
-            numinator_N    =  sum( vf[ w , 'N'] * vf[ w, 'Copy_number'] ) / N_total
-            denumerator_N  =  sum( vf[ w , 'N'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_total
+            numinator_N    =  sum( vf[ w , 'N_primary'] * vf[ w, 'Copy_number'] ) / N_primary_total
+            denumerator_N  =  sum( vf[ w , 'N_primary'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_primary_total
                                         # for metastatic cells 
-            numinator_M    =  sum( vf[ w , 'M'] * vf[ w, 'Copy_number'] ) / M_total
-            denumerator_M  =  sum( vf[ w , 'M'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / M_total
+            numinator_M    =  sum( vf[ w , 'N_metastatic'] * vf[ w, 'Copy_number'] ) / N_metastatic_total
+            denumerator_M  =  sum( vf[ w , 'N_metastatic'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_metastatic_total
             VAF_N_rho  =  numinator_N / ( 2*( 1 - rho[ k ] ) + denumerator_N )
             VAF_M_rho  =  numinator_M / ( 2*( 1 - rho[ k ] ) + denumerator_M )
                                         # save to data.frame:
