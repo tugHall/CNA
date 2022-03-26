@@ -10,30 +10,6 @@
     source(file = "Code/tugHall_3.0_functions.R")
     source(file = "Code/read_maps.R")
 
-### MAKE INPUT CLONES ----------------------------------------------------
-
-    # if you have a new format of gene file, please, use change of columns function like: 
-    # genefile <- changeCol(genefile)
-    
-    ### Making of the input file for initial clones
-    
-    if (FALSE){
-        
-        
-        x <- 1
-        #xz <- data.frame(V1=x,V2=as.character("PIK3CA,APC,KRAS,TP53"), V3=rep.int(1000,length(x)))   # the id of clone, the genes, the number of cells in the clone
-        xz <- data.frame(V1=x,V2=as.character(""), V3=rep.int(10^3,length(x)))   # the id of clone, the genes, the number of cells in the clone
-        #xz[1,2] <- "PIK3CA"
-        xz[2,] <- c(2,"APC",10^3)
-        #xz[3,2] <- "KRAS"
-        #xz[4,2] <- "TP53"
-        xz$V2 <- as.character(xz$V2)
-        
-        write.table(xz,file = clonefile, col.names = FALSE,sep = "\t",row.names = FALSE)
-    }
-
-
-
 ### SIMULATION -----------------------------------------------------------
 ### Simulation of the cancer cell/clone evolution:
   
