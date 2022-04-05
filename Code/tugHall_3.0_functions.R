@@ -2,26 +2,27 @@
 ### Define the FOLDERS and files' names ---------------------------------------------------
 ## Create folders:  /Input, /Output and /Figures 
 define_files_names  <-  function(){    
-  mainDir <- getwd()
-  subDir <- "Output"
-  if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
+  mainDir    <-  getwd()
+  subDir     <-  "Output"
+  if (! file.exists( subDir ) ){  dir.create( file.path( mainDir, subDir ) ) }
   
   subDir <- "Input"
-  if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
+  if (! file.exists( subDir ) ){  dir.create( file.path( mainDir, subDir ) ) }
   
   subDir <- "Figures"
-  if (! file.exists(subDir)){  dir.create(file.path(mainDir, subDir)) }
+  if (! file.exists( subDir ) ){  dir.create( file.path( mainDir, subDir ) ) }
   
   
   ### Files to output and input data
-  genefile <<- 'Input/gene_hallmarks.txt'    # gene file 
-  clonefile <<- 'Input/cloneinit.txt'     # initial Cells 
+  genefile       <<-   'Input/gene_hallmarks.txt'    # gene file 
+  clonefile      <<-   'Input/cloneinit.txt'     # initial Cells 
   
   ### Output files
-  geneoutfile <<- 'Output/geneout.txt'  # Gene Out file with Hallmarks 
-  cloneoutfile <<- 'Output/cloneout.txt'  # output information of simulation
-  logoutfile <<-  'Output/log.txt'      # log file to save the input information of simulation - "log.txt"
+  geneoutfile    <<-   'Output/geneout.txt'  # Gene Out file with Hallmarks 
+  cloneoutfile   <<-   'Output/cloneout.txt'  # output information of simulation
+  logoutfile     <<-   'Output/log.txt'      # log file to save the input information of simulation - "log.txt"
   ### Output/Weights.txt               # file with gene weights for hallmarks
+  file_monitor   <<-   './Sim_monitoring.txt'
 }    
 ### Define the gene map - chromosomal locations --------------------------
 
@@ -48,7 +49,7 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
                                  uo_dup  = 0.8, us_dup  = 0.5, uo_del  = 0, us_del  = 0.8,
                                  CF  =  TRUE,  model  =  'proportional_metastatic', time_stop = 120, 
                                  read_fl = FALSE, file_name ='./Input/parameters.txt', 
-                                 n_repeat = 1000 ){  
+                                 n_repeat = 1000, monitor  =  TRUE ){  
     if ( read_fl ){
         data_log  =  read.table( file = file_name, sep = '\t', stringsAsFactors = FALSE )
         names( data_log )  =  c( 'var', 'value' )
@@ -84,7 +85,7 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         us_dup  <<- as.numeric( data_log[ which( data_log$var == 'us_dup' ), 2 ] )   # Gene malfunction probability by CNA duplication for suppressor
         uo_del  <<- as.numeric( data_log[ which( data_log$var == 'uo_del' ), 2 ] )   # Gene malfunction probability by CNA deletion    for oncogene
         us_del  <<- as.numeric( data_log[ which( data_log$var == 'us_del' ), 2 ] ) # Gene malfunction probability by CNA deletion    for suppressor
-        
+        monitor <<- as.logical( data_log[ which( data_log$var == 'monitor' ), 2 ] )
     } else {
         
         # Model definition:
@@ -113,6 +114,7 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         us_dup  <<- us_dup   # Gene malfunction probability by CNA duplication for suppressor
         uo_del  <<- uo_del   # Gene malfunction probability by CNA deletion    for oncogene
         us_del  <<- us_del # Gene malfunction probability by CNA deletion    for suppressor
+        monitor <<- monitor  # The indicator to make monitor file during a simulation or do not make
     }
 }    
 
@@ -151,7 +153,8 @@ print_parameters  <-  function(){
         'Compaction factor for angiogenesis hallmark CF$Hb = ', CF$Hb, ' \n', 
         'Compaction factor for growth/antigrowth hallmark CF$Hd = ', CF$Hd, ' \n', 
         'Compaction factor for immortalization hallmark CF$Hi = ', CF$Hi, ' \n', 
-        'Compaction factor for invasion/metastasis hallmark CF$Him = ', CF$Him 
+        'Compaction factor for invasion/metastasis hallmark CF$Him = ', CF$Him, 
+        '\n Monitoring: \n indicator monitor  =  ', monitor
     )
     
     cat( paste0( msg, collapse = ' ' ) )
@@ -1673,6 +1676,33 @@ write_cloneout <- function( outfile, env, clones, isFirst, onco_clones ) {
     }
 }
 
+# The function to write a simulation monitoring data into the file_monitor
+write_monitor  <- function( outfile = file_monitor, start = FALSE , env, clones ){
+    
+    if ( start ) {
+        header <- c('Time', 'N_clones', 'N_normal', 'N_primary', 'N_metastatic', 
+                    'N_point_mutations', 'N_duplications',   'N_deletions' )
+        write( header, outfile, append = FALSE, ncolumn = length( header ), sep="\t" )
+    } else {
+        if ( length( clones )  >  0 ) {
+                
+            point_mut_list  =  sort( unique( as.numeric( unlist( sapply( X = 1:length( clones ), FUN = function( x ) clones[[ x ]]$PointMut_ID ) ) ) ) )
+            if ( point_mut_list[ 1 ] == 0 ) l_pm  =  length( point_mut_list ) - 1 else l_pm  =  length( point_mut_list )
+            cna_list  =  sort( unique( as.numeric( unlist( sapply( X = 1:length( clones ), FUN = function( x ) clones[[ x ]]$CNA_ID ) ) ) ) )
+            if ( cna_list[ 1 ] == 0 ) cna_list  =  cna_list[ -1 ]
+            dupdel  =  unlist( sapply( X = cna_list, FUN = function( x ) cna_clones[[ x ]]$dupOrdel ) )
+            l_dup   =  length( which( dupdel  ==  'dup' ) )
+            l_del   =  length( which( dupdel  ==  'del' ) )
+            data <- c( env$T, length( clones ), env$N, env$P, env$M, l_pm, l_dup, l_del )
+            
+            write(data, outfile, append=TRUE, ncolumn=length(data), sep="\t")
+      }
+        
+        
+    }
+    
+}
+
 write_weights <- function(outfile, hall) {
     #data <- c("Hallmarks", "Designation", onco$name)
     data <- data.frame( "Gene" = onco$name)   
@@ -1841,7 +1871,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     write_geneout(geneoutfile, hall, Compaction_factor, CF)                  # write the geneout.txt file with initial hallmarks 
     write_weights("Output/Weights.txt", hall)                 # write the weights of genes for hallmarks 
     write_header( cloneoutfile, env, onco )                   # 
-    
+    if ( monitor ) write_monitor( start = TRUE )
     cells_number <- sum_N_P_M(env, clones)                 # to calculate cells numbers - N,M 
     init_pnt_clones( clones, onco_clones )              # initialization of pnt_clones for point mutations
     
@@ -1905,7 +1935,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
         
         write_cloneout( cloneoutfile, env, clones, isFirst, onco_clones )
         #print(c(env$T,env$N,env$M,env$last_id, length(clones), "N_clones_new = ", N_clones_new))
-        
+        if ( monitor ) write_monitor( start = FALSE, env = env, clones = clones )
         time_current  =  Sys.time()
 
     }

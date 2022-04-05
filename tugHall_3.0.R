@@ -32,12 +32,12 @@
     }
     
     
-    clones      <- smlt[[1]]
-    onco_clones <- smlt[[2]] 
+    clones        <-  smlt[[ 1 ]]
+    onco_clones   <-  smlt[[ 2 ]] 
     
     write_pnt_clones( pnt_clones, file = 'Output/point_mutations.txt' )
     write_pnt_clones( cna_clones, file = 'Output/CNA_mutations.txt' )
-    # rm(list = ls())
+    # rm( list = ls() )
 
 
 # Get VAF data  -----------------------------------------------------------
