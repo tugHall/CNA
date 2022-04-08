@@ -179,7 +179,7 @@ define_compaction_factor  <-  function( cf = data.frame( Ha = 1, Hb = 1, Hd = 1,
 
 #### The code:
 
-#### I)  Define CLONE'S CLASSES ----------------------------------------------------------
+###   I)  Define CLONE'S CLASSES ----------------------------------------------------------
 
 
 # Clone class
@@ -630,7 +630,7 @@ update_Hallmarks <- function(clone1) {
 }
 
 
-#### II) CNA and Point Mutations: CLASSES -------------------------------------------------
+###  II) CNA and Point Mutations: CLASSES -------------------------------------------------
 
 # Class and functions related to point mutations of genes of interest
 Point_Mutations <- setRefClass(
@@ -1233,7 +1233,7 @@ get_cds_rna  <-  function( gm ){
 
 }
 
-### IV)  MODEL: Functions --------------------------------------------------------
+###  IV)  MODEL: Functions --------------------------------------------------------
 
 
 # aggregate
@@ -1635,13 +1635,15 @@ write_geneout <- function(outfile, hall, Compaction_factor, CF) {
 }
 
 write_header <- function(outfile, env, onco) {
-    header <- c('Time', 'N_cells', 'AvgOrIndx', 'ID', 'ParentID', 'Birth_time', 'c', 'd', 'i', 'im', 'a',
+    header <- c('Time', 'AvgOrIndx', 'ID', 'N_cells', 'ParentID', 'Birth_time', 'c', 'd', 'i', 'im', 'a',
                 'k', 'E', 'N_normal', 'Nmax', 'N_primary', 'N_metastatic', 'Ha', 'Him', 'Hi', 'Hd', 'Hb', 'type', 'mut_den',
                 # paste("PosDriver:", onco$name, sep=""), paste("PosPasngr:", onco$name, sep="") )      #   , 'Clone number', 'Passengers Clone number', 'Mix Clone number')
                 'driver_genes', 'passenger_genes', 
-                'PointMut_ID', 'CNA_ID' , 'onco_ID', 
-                paste('CDS_', onco$name, sep=''), paste('Len_', onco$name, sep=''), 
-                'p0', 'prob_point_mut', 'prob_del', 'prob_dup' )
+                'PointMut_ID', 'CNA_ID' , 
+                paste('Chr1_CDS_', onco$name, sep=''), paste('Chr1_Len_', onco$name, sep=''), 
+                'Chr1_p0', 'Chr1_prob_point_mut', 'Chr1_prob_del', 'Chr1_prob_dup' ,
+                paste('Chr2_CDS_', onco$name, sep=''), paste('Chr2_Len_', onco$name, sep=''), 
+                'Chr2_p0', 'Chr2_prob_point_mut', 'Chr2_prob_del', 'Chr2_prob_dup' )
     write(header, outfile, append=FALSE, ncolumn=length(header), sep="\t")
 }
 
@@ -1653,9 +1655,10 @@ get_type  <-  function( clone1 ){
 }
 
 write_cloneout <- function( outfile, env, clones, isFirst, onco_clones ) {
-    data <- c(env$T, '-', 'avg', '-', '-', '-', env$c, env$d, env$i, env$im, env$a, env$k, env$E, env$N,
-              env$Nmax, env$P, env$M, env$Ha, env$Him, env$Hi, env$Hd, env$Hb, '-', env$mutden,
-              rep('-',17) )
+    data  =  c(env$T, 'avg', '-',  '-', '-', '-', env$c, env$d, env$i, env$im, env$a, env$k, env$E, env$N,
+               env$Nmax, env$P, env$M, env$Ha, env$Him, env$Hi, env$Hd, env$Hb, '-', env$mutden,
+               rep('-', 12 + 4*length( onco$name ) )      # rep('-',17) 
+               )
     
     write(data, outfile, append=TRUE, ncolumn=length(data), sep="\t")
        
@@ -1664,13 +1667,15 @@ write_cloneout <- function( outfile, env, clones, isFirst, onco_clones ) {
             clone1  =  clones[[i]]
             onco1   =  onco_clones[[i]]
             type    =  get_type( clone1 = clone1 )
-            data <- c(env$T, clone1$N_cells, i, clone1$id, clone1$parent, clone1$birthday, clone1$c, clone1$d, 
-                      clone1$i, clone1$im, clone1$a, clone1$k, clone1$E, env$N, clone1$Nmax, env$P, env$M,
-                      clone1$Ha, clone1$Him, clone1$Hi, clone1$Hd, clone1$Hb, type,  # ifelse(clone1$invasion,1,0), 
-                      clone1$mutden, 
-                      paste(clone1$gene, collapse =  ' '), paste(clone1$pasgene, collapse =  ' '),
-                      paste(clone1$PointMut_ID, collapse = ', '), paste(clone1$CNA_ID, collapse = ', '), 
-                      onco1$id, onco1$cds_1, onco1$rna_1, onco1$p0_1, onco1$prob_1 )     #  clone1$posdriver, clone1$pospasngr)           #   , vc, pasvc, mixvc)
+            data    =  c(env$T, i, clone1$id, clone1$N_cells, clone1$parent, clone1$birthday, clone1$c, clone1$d, 
+                        clone1$i, clone1$im, clone1$a, clone1$k, clone1$E, env$N, clone1$Nmax, env$P, env$M,
+                        clone1$Ha, clone1$Him, clone1$Hi, clone1$Hd, clone1$Hb, type,  # ifelse(clone1$invasion,1,0), 
+                        clone1$mutden, 
+                        paste(clone1$gene, collapse =  ' '), paste(clone1$pasgene, collapse =  ' '),
+                        paste(clone1$PointMut_ID, collapse = ', '), paste(clone1$CNA_ID, collapse = ', '), 
+                      # onco1$id, 
+                        onco1$cds_1, onco1$rna_1, onco1$p0_1, onco1$prob_1,
+                        onco1$cds_2, onco1$rna_2, onco1$p0_2, onco1$prob_2      )                       
             write(data, outfile, append=TRUE, ncolumn=length(data), sep="\t")
         }
     }
@@ -1835,7 +1840,7 @@ calc_binom <- function(tr,n,p){
     return(  round( ou )  )
 }
 
-### V)   MODEL: main function 'model' --------------------------------------------
+###   V)   MODEL: main function 'model' --------------------------------------------
 
 model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, 
                   E0, F0, m0, uo, us, s0, k0, censore_n, censore_t, d0) {
