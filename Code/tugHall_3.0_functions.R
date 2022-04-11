@@ -156,10 +156,23 @@ print_parameters  <-  function(){
         'Compaction factor for growth/antigrowth hallmark CF$Hd = ', CF$Hd, ' \n', 
         'Compaction factor for immortalization hallmark CF$Hi = ', CF$Hi, ' \n', 
         'Compaction factor for invasion/metastasis hallmark CF$Him = ', CF$Him, 
-        '\n Monitoring: \n indicator monitor  =  ', monitor
+        '\n Monitoring: \n indicator monitor  =  ', monitor, '\n \n '
     )
     
     cat( paste0( msg, collapse = ' ' ) )
+    
+    if ( model_name  ==  'simplified' ) {
+        msg  =  c(
+                'The model is simplified that means next: \n ',
+                '    1) all the hallmarks are defined but do not affect \n ',
+                '       excepting hallmark of growth/antigrowth Hd \n',
+                '    2) apoptosis trial is deleted \n',
+                '    3) all the cells are metastatic \n',
+                '    4) Hayflic limitation is deleted \n',
+                '    5) Only exponential growth is simulated'
+                  )
+        message( paste0( msg, collapse = ' ' ) )
+    }
 }
 
 define_compaction_factor  <-  function( cf = data.frame( Ha = 1, Hb = 1, Hd = 1,
