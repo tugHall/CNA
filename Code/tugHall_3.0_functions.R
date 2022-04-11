@@ -47,7 +47,9 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
                                  censore_t = 50, m_dup  = 1E-8, m_del  = 1E-8,
                                  lambda_dup  = 5000, lambda_del  = 7000, 
                                  uo_dup  = 0.8, us_dup  = 0.5, uo_del  = 0, us_del  = 0.8,
-                                 CF  =  TRUE,  model  =  'proportional_metastatic', time_stop = 120, 
+                                 CF  =  TRUE,  
+                                 model  =  c( 'proportional_metastatic', 'threshold_metastatic', 'simplified' )[ 1 ], 
+                                 time_stop = 120, 
                                  read_fl = FALSE, file_name ='./Input/parameters.txt', 
                                  n_repeat = 1000, monitor  =  TRUE ){  
     if ( read_fl ){
@@ -1240,21 +1242,22 @@ get_cds_rna  <-  function( gm ){
 sum_cell <- function(env, clones) {
   if (length(clones) > 0) {
     avg = apply(matrix(unlist(lapply(clones, sum_mutation)),ncol=length(clones)),1,sum)  #  /length(clones)
-    env$c = avg[1] / (env$N + env$M + env$P)
-    env$d = avg[2] / (env$N + env$M + env$P)
-    env$i = avg[3] / (env$N + env$M + env$P)
-    env$a = avg[4] / (env$N + env$M + env$P)
-    env$k = avg[5] / (env$N + env$M + env$P)
-    env$E = avg[6] / (env$N + env$M + env$P)
-    env$Nmax = avg[7] / (env$N + env$M + env$P)
-    env$im = avg[8] / (env$N + env$M + env$P)
-    env$Ha = avg[9] / (env$N + env$M + env$P)
-    env$Him = avg[10] / (env$N + env$M + env$P)
-    env$Hi = avg[11] / (env$N + env$M + env$P)
-    env$Hb = avg[12] / (env$N + env$M + env$P)
-    env$Hd = avg[13] / (env$N + env$M + env$P)
-    env$type = avg[14] / (env$N + env$M + env$P)
-    env$mutden = avg[15] / (env$N + env$M + env$P)
+    sNMP  =  env$N + env$M + env$P
+    env$c = avg[1] / sNMP
+    env$d = avg[2] / sNMP
+    env$i = avg[3] / sNMP
+    env$a = avg[4] / sNMP
+    env$k = avg[5] / sNMP
+    env$E = avg[6] / sNMP
+    env$Nmax = avg[7] / sNMP
+    env$im = avg[8] / sNMP
+    env$Ha = avg[9] / sNMP
+    env$Him = avg[10] / sNMP
+    env$Hi = avg[11] / sNMP
+    env$Hb = avg[12] / sNMP
+    env$Hd = avg[13] / sNMP
+    env$type = avg[14] / sNMP
+    env$mutden = avg[15] / sNMP
   } else {
     env$M = 0
     env$N = 0
@@ -1309,9 +1312,9 @@ number_N_P_M <- function(clone1) {
 }
 
 
-# trial function
+# trial functions for complex and simplified cases:
 # The result is a number of new cells, if N_New < 0 it means that the number is decreased.
-trial <- function( clone1, onco1 ) { 
+trial_complex <- function( clone1, onco1 ) { 
     
     # trial for Environmental death of cell 
     N_die  =  calc_binom( 1, clone1$N_cells, clone1$k )   # The number of cells to die due to the Environmental death of cells in clone
@@ -1343,6 +1346,55 @@ trial <- function( clone1, onco1 ) {
     
     # Divide trial
     N_new = calc_binom( 1, N_new, clone1$d )   # The ! FINAL ! number of cells to split, this number is the output value of function "trial"
+    
+    if ( clone1$N_cells > 0 ) clone1$c = clone1$c + N_new / clone1$N_cells  # How to calculate the counter of division ? - As an average value of the counters for all cells !  
+    
+    clone1$N_cells = clone1$N_cells + N_new       # The number of cells are increased due to the splitting 
+    
+    N_new_clones = 0             # The number of new clones arising from clone1
+    
+    # p = clone1$m * sum(onco$cds) 
+    # if (p < 1) N_new_clones = calc_binom(1, 2 * N_new, p ) else N_new_clones = 2 * N_new
+    
+    N_new_clones = calc_binom( 1, 2 * N_new, 1 - (onco1$p0_1 + onco1$p0_2 ) / 2  )   # 1 and 2 chr
+    
+    clone1$N_cells = ifelse( ( clone1$N_cells - N_new_clones ) > 0, ( clone1$N_cells - N_new_clones ) , 0 )
+    
+    return( N_new_clones )
+}
+
+trial_simple <- function( clone1, onco1 ) { 
+    
+    # trial for Environmental death of cell 
+    N_die  =  calc_binom( 1, clone1$N_cells, clone1$k )   # The number of cells to die due to the Environmental death of cells in clone
+    
+    # DELETED: # Apoptosis trial
+    # DELETED: N_die  =  N_die + calc_binom( 1, clone1$N_cells, clone1$a ) 
+    
+    # DELETED: # invasion / metastasis trial 
+    # if (clone1$im > 0) {
+    #     if (!clone1$invasion) {
+    #         N_die  =  N_die + calc_binom( 1, clone1$N_cells, ( 1 - clone1$im ) )
+    #         if ( model_name == 'proportional_metastatic') {
+    #             clone1$invasion = ifelse( clone1$im > 0, TRUE, FALSE )  # condition here is related to the model
+    #         } else {
+    #             clone1$invasion = ifelse( clone1$im == 1, TRUE, FALSE )  
+    #         }
+    #     }
+    # }
+    
+    # The new number of cells in the clone: 
+    clone1$N_cells = ifelse( (clone1$N_cells - N_die) > 0, (clone1$N_cells - N_die) , 0)
+    
+    # N_new = clone1$N_cells   # the initial number to split / before trial / - all cells "want" to split
+    
+    # DELETED: # Fragmentation restriction trial
+    # if (clone1$c > 50) {
+    #     N_new = calc_binom(1, N_new, (1 - clone1$i))
+    # }
+    
+    # Divide trial
+    N_new = calc_binom( 1, clone1$N_cells, clone1$d )   # The ! FINAL ! number of cells to split, this number is the output value of function "trial"
     
     if ( clone1$N_cells > 0 ) clone1$c = clone1$c + N_new / clone1$N_cells  # How to calculate the counter of division ? - As an average value of the counters for all cells !  
     
@@ -1883,6 +1935,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     lapply(clones,update_Hallmarks)                     # to calculate the Hallmarks and probabilities for initial cells
     hall$updateEnviron(env, clones)                     # make averaging for cells 
     isFirst = TRUE
+    if ( model_name == 'simplified' ) lapply( clones, FUN = function( clone1 ) clone1$invasion = TRUE )
     write_cloneout( cloneoutfile, env, clones, isFirst, onco_clones )     #  write initial clones
 
     print( paste0("The probability of an absence of the mutations is p0 = ", as.character(onco$p0_1) )) 

@@ -20,6 +20,13 @@
     define_compaction_factor( read_fl = TRUE , file_name = './Input/CF.txt' )
     print_parameters()
     
+    # Define trial() function: trial_complex or trial_simple
+    if ( model_name != 'simplified' ){
+        trial  =  trial_complex
+    } else {
+        trial  =  trial_simple
+    }
+    
     n_c  =  0 
     repeat{
         
