@@ -5,9 +5,7 @@ tugHall version 3.0
 
 **tugHall** _(**tu**mor **g**ene-**Hall**mark)_ is a cancer-cell evolution model simulator, wherein gene mutations are linked to the hallmarks of cancer, 
 which influence tumor cell behaviors. 
-=======
-**tugHall** _(**tu**mor **g**ene-**Hall**mark)_ is a cancer-cell evolution model simulator, wherein gene mutations are linked to the hallmarks of cancer,
-which influence tumor cell behaviors.
+
 
 
 This is an _**R**_-based script to simulate the cancer cell evolution in the framework of the model proposed by _**Prof. Mamoru Kato**_,
@@ -49,11 +47,6 @@ Changes in comparison with tugHall v.2.1
 This version can calculate the copy number alterations (CNA) caused by deletions and duplications in comparison with version 2.1. 
 CNAs may malfunction genes and change variant allel frequences if the point mutations are located on CNAs.
 
-Changes in comparison with tugHall v.2.1
----
-
-This version can calculate the copy number alterations (CNA) caused by deletions and duplications in comparison with version 2.1.
-CNAs may malfunction genes and change variant allel frequences if the point mutations are located on CNAs.
 
 Content of package
 ---
