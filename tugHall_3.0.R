@@ -54,15 +54,22 @@
     ### Also VAF data in the file 'Output/VAF_data.txt'
     vf = get_VAF()
     
-    VAF  =  get_rho_VAF( vf = vf, rho = c( 0.1, 0.2, 0.5, 0.7, 0.9, 1 ) , file_name = './Output/VAF.txt' )
+    VAF  =  get_rho_VAF( vf = vf, rho = c( 0.0, 0.1, 0.2, 0.5, 0.7, 0.9 ) , file_name = './Output/VAF.txt' )
     
     
 
 # Plot data ---------------------------------------------------------------
 
-    
-    get_order_of_genes_dysfunction()
-    
     source( './Code/my_plots.R' )
+    
+    rdr_dysf  =  get_order_of_genes_dysfunction()
+    
+    plot_order_dysfunction( rdr_dysf , pos = c(29,450), logscale = 'y', cex = 0.5 )
+    
+    
+
     plot_average_simulation_data() 
+    
+    
+    
     

@@ -57,7 +57,8 @@ plot_2D_lines   <-  function( x, DF, nl = 1:2, names = c( 'X', 'Y' ),
                               legend_names = '',
                                col = basic_cls, cex = 1.2, lwd = 2.0, 
                               lt = c(1:6), xr = c(-10,10), yr = c(-10,10), 
-                        safe_pdf = FALSE, filename = './plot.pdf' ){
+                        safe_pdf = FALSE, filename = './plot.pdf', 
+                        type = 'l' , logscale = '' ){
     rp = 1 
     if ( safe_pdf )    {
         pdf( filename, width = 8, height = 8 )
@@ -67,9 +68,10 @@ plot_2D_lines   <-  function( x, DF, nl = 1:2, names = c( 'X', 'Y' ),
         par( mgp = c(2.2, 0.5, 0), font.axis = 2, font.lab = 2 )
         ### Plot the first line:
         y = DF[, nl[1] ]
-        plot( x, y, type = 'l', xlab = names[1], xlim = xr, ylim = yr,
+        plot( x, y, xlab = names[1], xlim = xr, ylim = yr,
               ylab = names[2], axes = FALSE, cex.lab = 1.5, col = col[1],
-              lwd = lwd, lty = lt[1] )
+              lwd = lwd, lty = lt[1],
+              type = type, log = logscale )
         
         axis( 1, font = 2, tck = 0.03, cex.axis = 1.4 )
         axis( 2, font = 2, tck = 0.03, cex.axis = 1.4)    
@@ -93,6 +95,25 @@ plot_2D_lines   <-  function( x, DF, nl = 1:2, names = c( 'X', 'Y' ),
 }
 
 
+plot_order_dysfunction  <-  function( rdr_dysf , pos = c(0,100), 
+                                      logscale = 'y', cex = 1 ){
+    tbl_rdr_dysf  =  aggregate( N_cells ~ order, data = rdr_dysf, FUN = sum )
+    tbl_rdr_dysf  =  tbl_rdr_dysf[ order( tbl_rdr_dysf$N_cells, decreasing = T ), ]
+    
+    if ( logscale == '' ) cfcnt = 1.05 else cfcnt = 10.5
+    
+    plot_2D_lines( x = 1:nrow(tbl_rdr_dysf), DF = tbl_rdr_dysf, nl = 2 ,
+                   names = c( 'Index', 'Number of cells' ),
+                   yr = c(1, max( tbl_rdr_dysf$N_cells ) * cfcnt ),
+                   xr = c(0.1, nrow( tbl_rdr_dysf )+2 ), 
+                   type = 's', logscale = logscale ) 
+    txt = NULL
+    for( i in 1:nrow( tbl_rdr_dysf) ) {
+        txt  = paste( txt, paste( i, tbl_rdr_dysf$order[ i ] ) , '\n', collapse = '   ') 
+    }
+    text( x = pos[1], y = pos[2], 
+          labels = txt , pos = 4, cex = cex )
+}
 
 # Make a large number of colors
 gen_colors  <-  function(nm = 12){

@@ -188,8 +188,8 @@ get_VAF  <-  function(){
     ids  =  str_split( data_last$PointMut_ID, pattern = ',' )
     ids =  sapply( X = 1:nrow( data_last), FUN = function(x) as.numeric( ids[[ x ]] ) )
     
-    nqu  =  sort( unique( unlist( ids ) ) )
-    if ( nqu[1] == 0 ) nqu = nqu[ -1 ]
+    nqu  =  sort( unique( unlist( ids ) ) )  # unique IDs of point mutations
+    if ( nqu[1] == 0 ) nqu = nqu[ -1 ]       # exclude intact normal cells
     
     # start VAF 
     VAF  =  NULL
@@ -197,16 +197,22 @@ get_VAF  <-  function(){
     if ( length( nqu ) == 0 ) return( NULL )
     
     for( j in 1:length( nqu ) ){
+        # wc - which clones have an ID of point mutation
         wc  =  sapply( X = 1:length( ids ), FUN = function( x ) is.element( nqu[j] , ids[[ x ]] ) )
         
         VAF_1  =  pnt_mut[ which( pnt_mut$PointMut_ID == nqu[ j ] ) , ]
         
-        ### number of cells P - primary cells, M - metastasis cells
+        ### number of cells: speckled normal cells,
+        ###     primary tumor cells and metastatic cells:
+        if ( any( data_last[ which( wc ), 'type' ] == 'normal' ) ){
+          VAF_1$N_speckled_normal =  sum( as.numeric( data_last[ which( wc & data_last$type ==  'normal' ),  'N_cells'  ] ) )
+        } else VAF_1$N_speckled_normal =  0
+        
         if ( any( data_last[ which( wc ), 'type' ] == 'primary' ) ){
             VAF_1$N_primary  =  sum( as.numeric( data_last[ which( wc & data_last$type ==  'primary' ),  'N_cells'  ] ) )
         } else VAF_1$N_primary  =  0
         
-        if ( any( data_last[ which( wc), 'type' ] == 'metastatic' ) ){
+        if ( any( data_last[ which( wc ), 'type' ] == 'metastatic' ) ){
             VAF_1$N_metastatic =  sum( as.numeric( data_last[ which( wc & data_last$type ==  'metastatic' ),  'N_cells'  ] ) )
         } else VAF_1$N_metastatic =  0
         
@@ -218,10 +224,18 @@ get_VAF  <-  function(){
         VAF  =  rbind( VAF, VAF_1)
     }
     
+    # Total number of speckled normal cells (no driver mutations but at least one passenger )
+    if ( any( data_last[ , 'type' ] == 'normal' & ( data_last[ , 'CNA_ID'] != '0' | data_last[ , 'PointMut_ID'] != '0' ) ) ) {
+      w = which( data_last$type == 'normal' & ( data_last[ , 'CNA_ID'] != '0' | data_last[ , 'PointMut_ID'] != '0' ) )  
+      VAF$N_speckled_normal_total = sum( as.numeric( data_last[ w, 'N_cells' ] ) )  
+    } else  VAF$N_speckled_normal_total  =  0 
+    
+    # Total number of primary tumor cells (at least one driver)
     if ( any( data_last[ , 'type' ] == 'primary' ) ) {
         VAF$N_primary_total = sum( as.numeric( data_last[ which( data_last$type == 'primary' ), 'N_cells' ] ) )  
     } else  VAF$N_primary_total  =  0 
     
+    # Total number of metastatic cells
     if ( any( data_last[ , 'type' ] == 'metastatic' ) ) {
         VAF$N_metastatic_total = sum( as.numeric( data_last[ which( data_last$type == 'metastatic' ), 'N_cells' ] ) )  
     } else  VAF$N_metastatic_total  =  0
@@ -233,42 +247,46 @@ get_VAF  <-  function(){
 }
 
 
-get_rho_VAF  <-  function( vf = NULL, rho = c( 0.5, 1 ) , file_name = './Output/VAF.txt' ){
-    # rho is a tumor purity, it can be vector of numbers
+get_rho_VAF  <-  function( vf = NULL, rho = c( 0.0, 0.1, 0.5 ) , file_name = './Output/VAF.txt' ){
+    # rho is an admixture rate of intact normal cells, it can be vector of numbers
     # vf is a VAF data getting from get_VAF function
-    # hist_VAF is logical indicator to plot histogram of VAF
-    # file_name is a initial part of file names for histogram and row data of VAF
+    # file_name is  file name for VAF file
     
     if ( min(rho) < 0 | max(rho) >1 ) return( NULL )
     nq_i  =  unique( vf$Ref_pos )
     if ( length(nq_i) < 1 ) return( NULL )
     
-    N_primary_total  =  vf$N_primary_total[1]
-    N_metastatic_total  =  vf$N_metastatic_total[1]
+    N_speckled_normal_total  =  vf$N_speckled_normal_total[1]
+    N_primary_total          =  vf$N_primary_total[1]
+    N_metastatic_total       =  vf$N_metastatic_total[1]
     
     VAF  =  NULL 
     for( k in 1:length( rho ) ){
+        # Scale for admixture rate of intact normal cells rho[ k ]:
+        k_scale  =  ( 1 - rho[ k ] )   # rho[ k ] * ( N_primary_total + N_speckled_normal_total ) / N_primary_total 
+        
         for( i in nq_i ){
             w  =  which( vf$Ref_pos == i )
-                                        # for primary tumor cells 
-            numinator_N    =  sum( vf[ w , 'N_primary'] * vf[ w, 'Copy_number'] ) / N_primary_total
-            denumerator_N  =  sum( vf[ w , 'N_primary'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_primary_total
+                                        # for primary tumor and speckled normal cells 
+            numenator_N    =  sum( vf[ w , c( 'N_speckled_normal', 'N_primary' ) ] * vf[ w, 'Copy_number'] ) / ( N_primary_total + N_speckled_normal_total )
+            denominator_N  =  sum( vf[ w , c( 'N_speckled_normal', 'N_primary' ) ] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / ( N_primary_total + N_speckled_normal_total )
                                         # for metastatic cells 
-            numinator_M    =  sum( vf[ w , 'N_metastatic'] * vf[ w, 'Copy_number'] ) / N_metastatic_total
-            denumerator_M  =  sum( vf[ w , 'N_metastatic'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_metastatic_total
-            VAF_N_rho  =  numinator_N / ( 2*( 1 - rho[ k ] ) + denumerator_N )
-            VAF_M_rho  =  numinator_M / ( 2*( 1 - rho[ k ] ) + denumerator_M )
+            numenator_M    =  sum( vf[ w , 'N_metastatic'] * vf[ w, 'Copy_number'] ) / N_metastatic_total
+            denominator_M  =  sum( vf[ w , 'N_metastatic'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_metastatic_total
+                                        # VAF calculations:
+            VAF_N_rho  =  k_scale * numenator_N / ( 2*( 1 - k_scale ) + k_scale * denominator_N )
+            VAF_M_rho  =  numenator_M / denominator_M 
                                         # save to data.frame:
             VAF_1 = data.frame(site = i,
                                Chr = vf[ w[1], 'Chr' ] ,
                                gene = vf[ w[1], 'Gene_name' ] ,
                                rho = rho[ k ],
                                VAF_primary = VAF_N_rho,
-                               VAF_primary_numerator = numinator_N,
-                               VAF_primary_denominator = ( 2*( 1 - rho[ k ] ) + denumerator_N ),
+                               VAF_primary_numerator = k_scale * numenator_N,
+                               VAF_primary_denominator = ( 2*( 1 - k_scale ) + k_scale * denominator_N ),
                                VAF_metastatic = VAF_M_rho,
-                               VAF_metastatic_numerator = numinator_M,
-                               VAF_metastatic_denominator = ( 2*( 1 - rho[ k ] ) + denumerator_M ))
+                               VAF_metastatic_numerator = numenator_M,
+                               VAF_metastatic_denominator =  denominator_M   )
             VAF_1[ is.na.data.frame( VAF_1 ) ]  =  0  #  division by 0 if rho = 1 
             VAF  =  rbind( VAF, VAF_1 )
         }
