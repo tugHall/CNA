@@ -70,6 +70,7 @@
 
     plot_average_simulation_data() 
     
+    plot_clone_evolution( threshold = 0.04, lwd = 2.0 )
     
     
     
