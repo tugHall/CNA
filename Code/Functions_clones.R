@@ -108,7 +108,8 @@ plot_average_simulation_data  <-  function(){
                    legend_names = '',
                    names = c( 'Time step', 'Mutation rate' ) ,
                    safe_pdf  =  safe_pdf, 
-                   filename = paste0( flnm, '_mutation_rate.pdf' )  )
+                   filename = paste0( flnm, '_mutation_rate.pdf') ,
+                   draw_key = FALSE )
     
     rl =  readline(prompt="This is a plot for average value of mutation rate - Press Enter")
     
