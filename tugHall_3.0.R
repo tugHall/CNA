@@ -70,7 +70,11 @@
 
     plot_average_simulation_data() 
     
-    plot_clone_evolution( threshold = 0.04, lwd = 2.0 )
+    plot_clone_evolution( threshold = c(0.02, 0.3), lwd = 2.0,
+                          hue = c(" ", "random", "red", "orange", "yellow", 
+                                  "green", "blue", "purple", "pink", "monochrome")[1], 
+                          luminosity = c(" ", "random", "light", "bright", "dark")[4],
+                          yr = NA , add_initial = FALSE )
     
     
     

@@ -158,38 +158,48 @@ gen_colors  <-  function(nm = 12){
     
 }
 
-plot_clone_evolution  <-  function( threshold = 0.05, lwd = 2.0 ){
 
+
+plot_clone_evolution  <-  function( threshold = c(0.05,1.0), lwd = 2.0,
+                                    hue = c(" ", "random", "red", "orange", "yellow", 
+                                            "green", "blue", "purple", "pink", "monochrome")[1], 
+                                    luminosity = c(" ", "random", "light", "bright", "dark")[5] ,
+                                    yr = NA , add_initial = TRUE ){
+    
     clones_flow  =  data_flow[ ,c('Time', 'ID', 'ParentID', 'Birth_time', 'N_cells' ) ]
     Nmax  =  max( clones_flow$N_cells )
     time_max  =  max( clones_flow$Time )
-    Nthreshold  =  round( Nmax * threshold )
+    Nthreshold  =  round( Nmax * threshold[1] )
+    N_max  =  round( Nmax * threshold[2] )
     
     # delete clones with number of cells less than Nthreshold 
     w = sapply( X = ( max(clones_flow$ID[ which( clones_flow$Time == 0 ) ]) + 1 ):( max(clones_flow$ID ) ), 
                 FUN = function( x ) { 
-                    if ( max( clones_flow$N_cells[ which( clones_flow$ID == x ) ] ) > Nthreshold  ) 
+                    if ( max( clones_flow$N_cells[ which( clones_flow$ID == x ) ] ) > Nthreshold &
+                         max( clones_flow$N_cells[ which( clones_flow$ID == x ) ] ) < N_max ) 
                         return( x ) 
                     else 
                         return(NULL) 
                     }
                 )
     w  =  unlist( w )
-    w  =  c( clones_flow$ID[ which( clones_flow$Time == 0 ) ], w )
+    if ( add_initial )  w  =  c( clones_flow$ID[ which( clones_flow$Time == 0 ) ], w )
+    
+    # clrs  =  gen_colors( nm = length( w ) )
+    clrs  =  randomColor(count = length( w ), 
+                         hue = hue, 
+                         luminosity = luminosity )
+    
     
     DF  =  list( )
     for ( i in 1:length( w ) ){
         ss  =  which( clones_flow$ID == w[ i ] ) 
         DF[[ i ]]  =  data.frame( x = clones_flow$Time[ ss ], y = clones_flow$N_cells[ ss ] )
     }
-    
+    if ( is.na(yr) ) yr = c( 0, N_max ) 
     plot_2D_lines( x = DF[[ 1 ]]$x, DF = DF[[ 1 ]], nl = 2, names = c( 'Time step', 'Number of cells'),
-                    xr = c( 1, time_max+7 ), yr = c( 1, Nmax ), draw_key = FALSE )
-    # clrs  =  gen_colors( nm = length( w ) )
-    clrs  =  randomColor(count = length( w ), 
-                     hue = c(" ", "random", "red", "orange", "yellow", 
-                             "green", "blue", "purple", "pink", "monochrome")[1], 
-                     luminosity = c(" ", "random", "light", "bright", "dark")[5] )
+                    xr = c( 1, time_max+5 ), yr = yr, draw_key = FALSE )
+
     if ( length( w ) > 1 ){
         for( i in 2:length( w ) ){
                     lines( x = DF[[ i ]]$x, y = DF[[ i ]]$y, lwd = lwd, col = clrs[ i ] ) # clrs[ i, 'color']  )
