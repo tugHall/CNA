@@ -72,6 +72,8 @@ The simplest way to run tugHall:
 
 The code has its initial input parameters and input files in the **/Input/** folder. After the simulation the user can see results of the simulation (please, see **User-Guide-Analysis_3** for details), which will save to the **/Output/** and **/Figures/** folders. Note that the analysis procedure requires additional libraries and a higher version of R - 3.6.0.
 
+To test code, please, be kind to run tests in the **/Tests/** folder, for details see **/Tests/README.md** file.
+
 <a name="directories"></a>
 
 # 2. Structure of directories {#directories}
@@ -721,7 +723,10 @@ The calculation of probabilities and hallmarks variables is not changed.
 
 At the end of a simulation the VAF frequencies are calculated in accordance with formulation:
 
-$\LARGE VAF^i = \frac{(1-\rho)n^i_{B,N}+ \sum_{s=1}^{\#sp} \tau_s n^i_{B,S}}{(1-\rho)(n^i_{A,N} + n^i_{B,N}) + \sum_{s=1}^{\#sp} \tau_s (n^i_{A,S} + n^i_{B,S}) }$,
+$$
+\LARGE VAF^i = 
+\frac{(1-\rho)n^i_{B,N}+ \sum_{s=1}^{\#sp} \tau_s n^i_{B,S}}{(1-\rho)(n^i_{A,N} + n^i_{B,N}) + \sum_{s=1}^{\#sp} \tau_s (n^i_{A,S} + n^i_{B,S}) },
+$$
 
 where:
 
@@ -737,8 +742,24 @@ $n$ is copy number,
 
 A denotes an original allele A, B - variant B, N - normal, S - tumor.
 
-In usual application and in program we used for normal cells $n^i_{A,N} = 2$ and $n^i_{B,N} = 0$, so VAF is calculated as follow:
+In usual application we used for normal cells $n^i_{A,N} = 2$ and $n^i_{B,N} = 0$, so VAF can be calculated as follow:
 
-$\LARGE VAF^i = \frac{\sum_{s=1}^{\#sp} \tau_s n^i_{B,S}}{2(1-\rho) + \sum_{s=1}^{\#sp} \tau_s (n^i_{A,S} + n^i_{B,S}) }$
+$$
+\LARGE VAF^i = 
+\frac{\sum_{s=1}^{\#sp} \tau_s n^i_{B,S}}{2(1-\rho) + \sum_{s=1}^{\#sp} \tau_s (n^i_{A,S} + n^i_{B,S}) }
+$$
+
+
+
+In tugHall, under the given admixture rate of intact normal cells $\rho_N$, values of VAF are calculated using next formulation:
+
+$$
+\LARGE VAF^i = 
+\frac{(1-\rho_N) \sum_{s=1}^{\#sp} \lambda_s n^i_{B,S}}{2\rho_N + (1-\rho_N) \sum_{s=1}^{\#sp} \lambda_s (n^i_{A,S} + n^i_{B,S}) },
+$$
+
+where $\lambda_s = (N^s_T+N^s_{SN})/(N_T+N_{SN})$, ${N_T}$ and $N_{SN}$ are total number of primary tumor and speckled normal cells respectively at the last time step of a simulation, index $s$ related to cells with mutated site $s$. Observation subpopulation (clone's) fraction $\tau_s$ and simulation one $\lambda_s$ are proportional with $\tau_s = (1-\rho_N) \lambda_s$. Please, pay attention that for metastatic cells, we put $\rho_N = 0$.
+
+
 
 
