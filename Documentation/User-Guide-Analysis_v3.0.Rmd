@@ -1,0 +1,313 @@
+---
+title: "tugHall v 3.0: USER-GUIDE-Analysis"
+#authors: "Iurii Nagornov, Nishino Jo and Mamoru Kato"
+## date: "`r Sys.Date()`"
+output: 
+    rmarkdown::pdf_document:
+classoption: landscape
+linkcolor: Mahogany
+urlcolor: blue
+---
+
+
+<!-- 
+
+rmarkdown::pdf_document: 
+
+OR  
+
+rmarkdown::html_vignette:
+  vignette: >
+    %\VignetteIndexEntry{Vignette Title}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+-->
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  fig.path='./Documentation/Example/Figures/',
+  echo=FALSE, 
+  warning=FALSE, 
+  message=FALSE,
+  collapse = TRUE,
+  comment = "#>"
+)
+
+Sys.setenv("TimeZone" = "Japan")
+```
+
+
+## Requirements
+
+R version **3.6**
+
+Libraries: **stringr, ape, ggplot2** 
+
+Operation systems: Window, Mac. The code for analysis is not tested under Linux based systems.
+
+Note that the program comprises two different procedures in general: the first is simulation and the second is the analysis of the simulation results. 
+This User-Guide pertains to the **analysis** alone.
+The programs for the analysis can be run only after the simulation is completed, and the **cloneout.txt** file exists in the **CNA/Output/** folder. 
+
+# Table of Contents
+1. [Quick start guide](#quick)
+2. [Inputs](#inputs)
+3. [Outputs](#outputs)
+4. [Figures](#figures)
+5. [Relation to experimental measurements](#relation)
+
+
+<a name="quick"></a>
+
+# 1. Quick start guide 
+
+To perform the simulation, kindly see the **User-Guide-tugHall_v_3.0** file. After the simulation the file **CNA/Output/cloneout.txt** is generated, which is used to analyze the evolution of cells. Also, since the functions and objects are used after the simulation, the **.RData** file saved after the simulation must be loaded, if required. 
+
+The simplest way to analyze the results after simulation:
+
+- open R;
+- set **CNA/** as the working directory;
+- load **.RData**;
+- run script after a simulation in **tugHall_3.0.R** file like:
+
+```
+
+        source("Code/Functions_clones.R")
+        get_flow_data(cloneoutfile, genefile )
+        
+        vf = get_VAF()
+        VAF  =  get_rho_VAF( vf = vf, rho = c( 0.0, 0.1, 0.2, 0.5, 0.7, 0.9 ) , file_name = './Output/VAF.txt' )
+
+        source( './Code/my_plots.R' )
+        rdr_dysf  =  get_order_of_genes_dysfunction()
+        plot_order_dysfunction( rdr_dysf , pos = c(28.5,200), logscale = 'y', cex = 0.7 )
+        
+        plot_average_simulation_data() 
+    
+        plot_clone_evolution( threshold = c(0.01, 1 ), lwd = 2.0,
+                              hue = c(" ", "random", "red", "orange", "yellow", 
+                                      "green", "blue", "purple", "pink", "monochrome")[1], 
+                              luminosity = c(" ", "random", "light", "bright", "dark")[4],
+                              yr = NA , add_initial = TRUE, log_scale = FALSE )
+        
+        plot_clone_evolution( threshold = c(0.0, 0.01), lwd = 2.0,
+                              hue = c(" ", "random", "red", "orange", "yellow", 
+                                      "green", "blue", "purple", "pink", "monochrome")[1], 
+                              luminosity = c(" ", "random", "light", "bright", "dark")[4],
+                              yr = NA , add_initial = FALSE, log_scale = TRUE )
+
+```
+
+The code has initial input parameters and input files in the **/Input/** folder to define the names of the genes. 
+In the dialogue box, the user can see the results of the simulation, which will be saved to the **/Output/** and **/Figures/** folders (if file name is defined in functions). 
+
+
+<a name="inputs"></a>
+
+# 2. Inputs 
+
+To analyze the output data, the user has to obtain the results of the simulation in the **CNA/Output/cloneout.txt** file and the functions and objects of simulations should be present in the R environment. 
+That is why the **cloneout.txt** file is the input file for the analysis. 
+For detailed information, kindly see the "Outputs" section in **User-Guide-tugHall_v3.0**.
+
+
+\newpage 
+<a name="outputs"></a>
+
+# 3. Outputs 
+
+Output data contain several files and figures:
+
+- **order_genes_dysfunction.txt** has information about the order of gene dysfunction during evolution. 
+- **VAF.txt** and **VAF_data.txt** files have information about the variant allele frequencies (VAFs) for each gene and each site in the genes.
+- the folder **CNA/Figures/** has many plots (see [Figures](#figures)).
+
+### **order_genes_dysfunction.txt** file
+
+**CNA/Output/order_genes_dysfunction.txt** has information about the order of gene dysfunction during evolution in the next format (only first 10 lines are presented here):
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/order_genes_dysfunction.txt",header = TRUE, sep = "\t", nrows = 10)
+x[is.na(x)] = ""
+x = x[ , c(1:8)]
+# names( x )  = c( names( x )[1:( ncol( x ) - 1 ) ], '____order____') 
+knitr::kable(x, align = "c", caption = "**Order of gene dysfunction.**" )
+```
+
+```{r, echo=FALSE, results='asis'}
+x <- read.csv(file = "../Output/order_genes_dysfunction.txt",header = TRUE, sep = "\t", nrows = 10)
+x[is.na(x)] = ""
+x = x[ , c(1,2,9:ncol(x))]
+names( x )  = c( names( x )[1:( ncol( x ) - 1 ) ], '_______order_______') 
+knitr::kable(x, align = "c", caption = "**Order of gene dysfunction (continuous).**" )
+```
+
+1. **N\_cells** - the number of cells in this clone, e.g. 1000, 2.
+2. **ID** - the unique ID of clone, e.g., 1, 50.
+3. **Parent_ID** - the parent index,  e.g., 0, 45.
+4. **Birth_time** - the time step of the clone's birth,  e.g., 0, 5.
+5. **type** - the type of the cell: 'normal' or 'primary' or 'metastatic'.
+6. **mut_den** - the density of mutations for the cell, it equals to ratio a number of mutated driver genes to a number of all the genes, e.g., 0, 0.32.	
+7. **driver_genes** - the binary numbers indicate the driver mutation at the gene related to order of genes in onco as well as order of the next columns with genes' names, e.g., '1 0 0 0' means that the first gene has a driver mutation and other genes have no.
+8. **passenger_genes** - the binary numbers indicate the passenger mutation at the gene related to order of genes in onco as well as order of the next columns with genes' names, e.g., '0 0 1 0' means that the third gene has a passanger mutation and other genes have no.
+9. **PointMut_ID** - the index of data row for point mutation data frame saved at the end of simulation in the file **Point_mutations.txt**, e.g., 23, 32.
+10. **CNA_ID** - the index of data row for CNA data frame saved at the end of simulation in the file **CNA.txt**, e.g., 44, 21.
+11. **order** - Order of gene dysfunction from the first mutated gene to the last one, e.g., 'PIK3CA -> APC -> PIK3CA -> APC' related to driver mutations only.
+
+
+---
+
+\newpage 
+
+### **Variant allele frequencies information**
+
+**CNA/Output/VAF.txt** file has information about the VAFs for each gene and each site in the genes (first 10 lines):
+
+```{r, echo=FALSE, results='asis'}
+x <- read.table(file = "../Output/VAF.txt",header = TRUE, sep = "\t", nrows = 10)
+x[is.na(x)] <- ""
+x = x[ , c(1:7)]
+knitr::kable(x, align = "c", caption = "**Variant allele frequencies.**")
+```
+
+
+```{r, echo=FALSE, results='asis'}
+x <- read.table(file = "../Output/VAF.txt",header = TRUE, sep = "\t", nrows = 10)
+x[is.na(x)] <- ""
+x = x[ , c(1:4,8:ncol(x))]
+knitr::kable(x, align = "c", caption = "**Variant allele frequencies (continuous).**")
+```
+
+1. **site** - position at mutated site in the gene,  e.g., 123, 1028.
+
+2. **Chr** - chromosome where a gene is located, e.g., '12', '3'.
+
+3. **Gene** - name of gene, e.g. TP53, KRAS.
+
+4. **rho** - rho parameter in the formula of VAF calculation in the range [0,1], e.g., 0.0, 0.3.
+
+5. **VAF_Primary** - VAF for cells in the primary tumor = VAF_primary_numerator / VAF_primary_denominator, e.g. 0.2345.
+
+6. **VAF_primary_numerator** - numerator in the formula of VAF calculation for tumor primary cells and speckled normal cells, e.g., 0.9997295.
+
+7. **VAF_primary_denominator** - denominator in the formula of VAF calculation for tumor primary cells and speckled normal cells, e.g., 1.9994589.
+
+8. **VAF_Metastatic** VAF for metastatic cells = VAF_metastatic_numerator / VAF_metastatic_denominator, e.g. 0.35. 
+
+9. **VAF_metastatic_numerator** - numerator in the formula of VAF calculation for metastatic cells, e.g., 0.9997295.
+
+10. **VAF_metastatic_denominator** - denominator in the formula of VAF calculation for metastatic cells, e.g., 1.9994589.
+
+ 
+\newpage 
+
+**CNA/Output/VAF_data.txt** file has information about the point mutations and its locations at chromosome, gene etc. (first 10 lines):
+
+```{r, echo=FALSE, results='asis'}
+x <- read.table(file = "../Output/VAF_data.txt",header = TRUE, sep = "\t", nrows = 10)
+x[is.na(x)] <- ""
+x = x[ , c(1:8)]
+knitr::kable(x, align = "c", caption = "**Information on point mutations in the clones at final time step.**")
+```
+
+
+```{r, echo=FALSE, results='asis'}
+x <- read.table(file = "../Output/VAF_data.txt",header = TRUE, sep = "\t", nrows = 10)
+x[is.na(x)] <- ""
+x = x[ , c(1,9:14)]
+knitr::kable(x, align = "c", caption = "**Information on point mutations in the clones at final time step (continuous).**")
+```
+
+\newpage 
+
+```{r, echo=FALSE, results='asis'}
+x <- read.table(file = "../Output/VAF_data.txt",header = TRUE, sep = "\t", nrows = 10)
+x[is.na(x)] <- ""
+x = x[ , c(1,15:ncol(x))]
+knitr::kable(x, align = "c", caption = "**Information on point mutations in the clones at final time step (continuous).**")
+```
+
+1. **PointMut_ID** - ID of point mutation.
+2. **Parental_1or2** - indicates either of the two parental chromosomes. 
+3. **Chr** - name of a chromosome.
+4. **Ref_pos** - the reference position of an allele. The reference position is on the coordinate system of the human reference genome. 
+5. **Phys_pos** - the physical position of an allele. The physical length of a (parental) chromosome is extended or shrunk by CNA duplications or deletions, respectively. When a duplication happens, the reference position is divided into two or more physical positions, which are represented by multiple elements in a vector. When a deletion happens and the allele is lost, the lost is represented by “-” on the coordinate system of physical positions. 
+6. **Delta** - difference between the reference and physical positions.
+7. **Copy_number** - the copy number of an allele at the chromosome where mutation is happened (allele B). 
+8. **Gene_name** - the name of a gene.
+9. **MalfunctionedByPointMut** - logical indicator of whether or not the gene is malfunctioned by the point mutation. 
+10. **mut_order** - indicator of mutation order in the simulation, it's used to detect order of mutations in the clone at each chromosome.
+11. **N_speckled_normal** - number of speckled normal cells at final time step which have that PointMut_ID.
+12. **N_primary** - number of primary tumor cells at final time step which have that PointMut_ID.
+13. **N_metastatic** - number of metastatic cells at final time step which have that PointMut_ID.
+14. **Copy_number_A** - the copy number of an allele at the chromosome where mutation is NOT happened (allele A). 
+15. **N_speckled_normal_total** - the total amount of speckled normal cells in the pool of simulation at the last time step.
+16. **N_primary_total** - the total amount of primary tumor cells in the pool of simulation at the last time step.
+17. **N_metastatic_total** - the total amount of metastatic cells in the pool of simulation at the last time step.
+
+---
+
+\newpage
+
+<a name="figures"></a>
+
+# 4. Figures 
+
+The directory **Figures/** contains many output figures, generated during the analysis process of **cloneout.txt** file, including the evolution of the number of primary tumors and metastasis cells (Fig.1 left), hallmarks (Fig.1 right), and probabilities (Fig.2 left). 
+
+```{r fig.align = 'center', out.width='10in', fig.width=16, fig.height=9,  fig.cap = 'Results of the simulation: left - evolution of number of cells, right - evolution of hallmarks. Files are "Cells evolution.pdf" and "Hallmarks.pdf" ' }
+library(cowplot)
+library(ggplot2)
+p1 = ggdraw() + draw_image( './Example/Figures/Cells_evolution.pdf', scale = 1)
+p2 = ggdraw() + draw_image( './Example/Figures/Hallmarks.pdf', scale = 1)
+plot_grid(p1, p2, scale = 0.9  )
+```
+
+
+
+```{r  fig.align = 'center', out.width='10in', fig.width=16, fig.height=9, fig.cap = 'Results of the simulation: left - evolution of probabilities, right - evolution of average mutation rate. Files are "Probabilities.pdf" and "Mutation rate.pdf".'}
+p1 = ggdraw() + draw_image( './Example/Figures/Probabilities.pdf', scale = 1)
+p2 = ggdraw() + draw_image( './Example/Figures/Mutation_rate.pdf', scale = 1)
+plot_grid(p1, p2, scale = 0.9  )
+```
+
+
+The right side Fig.2 shows the evolution of mutation rate. 
+Fig.3 shows the evolution of clones with different separation of them: for 'large' and 'small' clones with large and small number of cells respectively.
+
+```{r  fig.align = 'center', out.width='10in', fig.width=16, fig.height=9, fig.cap = 'Results of the simulation: left - evolution of number of cells in clones for "large" clones, right - evolution of number of cells in clones for "small" clones (log scale). Files are "Large clones.pdf" and "Small clones.pdf".'}
+par(mfrow=c(1,2))
+p1 = ggdraw() + draw_image( './Example/Figures/Large_clones.pdf', scale = 1)
+p2 = ggdraw() + draw_image( './Example/Figures/Small_clones.pdf', scale = 1)
+plot_grid(p1, p2, scale = 0.9   )
+```
+
+
+Final figure shows the list of 'order of genes dysfunction' sorted with corresponding number of cells.
+
+```{r  fig.align = 'center', out.width='10in', fig.width=16, fig.height=9,  fig.cap = 'Results of the simulation: order of genes dysfunction as sorted histogram of number of cells for each unique value.'}
+p1 = ggdraw() + draw_image( './Example/Figures/Genes_order.pdf', scale = 1)
+p1
+```
+
+
+<a name="relation"></a>
+
+# 5. Relation to experimental measurements
+
+We here list variables processed from the tugHall outputs that are related to experimental measurements. 
+
+
+
+|  Variables processed from the simulator outputs  | Relation to experimental measurements  |
+|:---|:---|
+| Number of cells | Observed tumor size. $10^9$ cells correspond to the tumor tissue diameter of 1 cm. $10^{12}$ cells correspond to that of 10 cm. $10^{12}-10^{13}$ cells correspond to lethal burden. See Friberg and Mattson, Journal of Surgical Oncology, 1997. |
+| VAF | VAF calculated from sequence reads in the next-generation sequencer (NGS) under the assumption of 100% tumor purity. |
+| Mutation number per base-pairs | Tumor mutation burden calculated from NGS data. |
+| Number of clones | Number of clones estimated from NGS data by computational tools such as SciClone (Miller et al, PLOS Computational Biology, 2014) and SubClonalSelection (Williams et al, Nature Genetics, 2018). |
+| <img width=200/> | <img width=440/> |
+
+
+
+

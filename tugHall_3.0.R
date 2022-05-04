@@ -64,17 +64,25 @@
     
     rdr_dysf  =  get_order_of_genes_dysfunction()
     
-    plot_order_dysfunction( rdr_dysf , pos = c(29,450), logscale = 'y', cex = 0.5 )
+    plot_order_dysfunction( rdr_dysf , pos = c(28.5,200), logscale = 'y', cex = 0.7 )
     
     
 
     plot_average_simulation_data() 
     
-    plot_clone_evolution( threshold = c(0.02, 0.3), lwd = 2.0,
+    # Main clones
+    plot_clone_evolution( threshold = c(0.01, 1 ), lwd = 2.0,
                           hue = c(" ", "random", "red", "orange", "yellow", 
                                   "green", "blue", "purple", "pink", "monochrome")[1], 
                           luminosity = c(" ", "random", "light", "bright", "dark")[4],
-                          yr = NA , add_initial = FALSE )
+                          yr = NA , add_initial = TRUE, log_scale = FALSE )
+    
+    # Minor clones but large amount of them
+    plot_clone_evolution( threshold = c(0.0, 0.01), lwd = 2.0,
+                          hue = c(" ", "random", "red", "orange", "yellow", 
+                                  "green", "blue", "purple", "pink", "monochrome")[1], 
+                          luminosity = c(" ", "random", "light", "bright", "dark")[4],
+                          yr = NA , add_initial = FALSE, log_scale = TRUE )
     
     
     
