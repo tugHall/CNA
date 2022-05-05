@@ -1,0 +1,3 @@
+"PointMut_ID"	"Parental_1or2"	"Chr"	"Ref_pos"	"Phys_pos"	"Delta"	"Copy_number"	"Gene_name"	"MalfunctionedByPointMut"	"mut_order"	"N_speckled_normal"	"N_primary"	"N_metastatic"	"Copy_number_A"	"N_speckled_normal_total"	"N_primary_total"	"N_metastatic_total"
+1	1	12	25209835	"[25209835]"	"[0]"	1	"KRAS"	TRUE	1	0	3083	3	1	1	3083	17
+3	2	5	112837598	"[112837598]"	"[0]"	1	"APC"	FALSE	30	0	1	0	1	1	3083	17

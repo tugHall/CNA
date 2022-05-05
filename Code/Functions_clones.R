@@ -21,7 +21,7 @@ read_file  <-  function( file_name = '', stringsAsFactors = FALSE ){
 }
 
 ### The function to get data about last simulation
-get_flow_data <- function(cloneoutfile, genefile ) {
+get_flow_data <- function(cloneoutfile, genefile, mainDir = getwd(), sbdr_Output = '/Output' ) {
 
     # Get data about onco and hallmarks
     onco   <<- oncogene$new()        # make the vector onco about the hallmarks
@@ -53,10 +53,10 @@ get_flow_data <- function(cloneoutfile, genefile ) {
     time_max   <<-  max( data_flow$Time )
     data_last  <<-  data_flow[ which( data_flow$Time  ==  time_max ), ]
     rm( data_out )
-    
-    cna_mut  <<-  read_file( file_name = 'Output/CNA_mutations.txt' )
+    dr  =  file.path( mainDir, sbdr_Output )
+    cna_mut  <<-  read_file( file_name = paste0( dr, '/CNA_mutations.txt' ) )
       # read.table( file = 'Output/CNA_mutations.txt', sep = '\t', header = TRUE )
-    pnt_mut  <<-  read_file( file_name = 'Output/point_mutations.txt' )
+    pnt_mut  <<-  read_file( file_name = paste0( dr, '/point_mutations.txt' ) )
       #read.table( file = 'Output/point_mutations.txt', sep = '\t', header = TRUE )
     
 }  
@@ -122,7 +122,7 @@ plot_average_simulation_data  <-  function(){
 
 ### the function to get order of genes' dysfunction:
 
-get_order_of_genes_dysfunction  <-  function(){
+get_order_of_genes_dysfunction  <-  function( pnt_mut, file_name = './Output/order_genes_dysfunction.txt' ){
     
     # as.numeric( unlist( str_split( data_last[ , 'PointMut_ID' ], pattern = ',' ) ) )
     
@@ -172,19 +172,19 @@ get_order_of_genes_dysfunction  <-  function(){
         }
     } else { return( NULL ) }
     
-    write.table( genes_dysfunction, file = './Output/order_genes_dysfunction.txt', 
+    write.table( genes_dysfunction, file = file_name, 
                sep = '\t', row.names = FALSE, col.names = TRUE, append = FALSE )
-    cat('Order of genes dysfunction saved to the file order_genes_dysfunction.txt in Output directory \n')
+    cat( paste0('Order of genes dysfunction saved to the file ', file_name ,' \n') )
     
     return( genes_dysfunction )
 }
 
 
 
-get_VAF  <-  function(){
+get_VAF  <-  function( file_name = 'Output/VAF_data.txt'){
     
     pnt_mut_A  <<-  pnt_mut[ which(  is.na( pnt_mut$MalfunctionedByPointMut ) ) , ]
-    pnt_mut    <<-  pnt_mut[ which( !is.na( pnt_mut$MalfunctionedByPointMut ) ) , ]
+    pnt_mut_B  <<-  pnt_mut[ which( !is.na( pnt_mut$MalfunctionedByPointMut ) ) , ]
     
     ids  =  str_split( data_last$PointMut_ID, pattern = ',' )
     ids =  sapply( X = 1:nrow( data_last), FUN = function(x) as.numeric( ids[[ x ]] ) )
@@ -201,12 +201,14 @@ get_VAF  <-  function(){
         # wc - which clones have an ID of point mutation
         wc  =  sapply( X = 1:length( ids ), FUN = function( x ) is.element( nqu[j] , ids[[ x ]] ) )
         
-        VAF_1  =  pnt_mut[ which( pnt_mut$PointMut_ID == nqu[ j ] ) , ]
+        VAF_1  =  pnt_mut_B[ which( pnt_mut_B$PointMut_ID == nqu[ j ] ) , ]
         
         ### number of cells: speckled normal cells,
         ###     primary tumor cells and metastatic cells:
         if ( any( data_last[ which( wc ), 'type' ] == 'normal' ) ){
-          VAF_1$N_speckled_normal =  sum( as.numeric( data_last[ which( wc & data_last$type ==  'normal' ),  'N_cells'  ] ) )
+            sm  =  sum( as.numeric( data_last[ which( wc & data_last$type ==  'normal' ),  'N_cells'  ] ) )
+            if ( length( sm ) == 0 ) sm = 0 
+            VAF_1$N_speckled_normal =  sm
         } else VAF_1$N_speckled_normal =  0
         
         if ( any( data_last[ which( wc ), 'type' ] == 'primary' ) ){
@@ -242,8 +244,9 @@ get_VAF  <-  function(){
     } else  VAF$N_metastatic_total  =  0
     
     ### Save VAF to the file:
-    write.table( VAF,file = "Output/VAF_data.txt", append = FALSE, row.names = FALSE, sep="\t" )
-    print("VAF data for allele B and A is saved to the file `Output/VAF_data.txt` ")
+    write.table( VAF, file = file_name, append = FALSE, row.names = FALSE, sep="\t" )
+    print( paste0("VAF data for allele B and A is saved to the file ", file_name , ' \n ' ) )
+    
     return( VAF )
 }
 

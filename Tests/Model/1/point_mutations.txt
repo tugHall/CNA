@@ -1,1 +1,3 @@
-""
+"PointMut_ID"	"Parental_1or2"	"Chr"	"Ref_pos"	"Phys_pos"	"Delta"	"Copy_number"	"Gene_name"	"MalfunctionedByPointMut"	"mut_order"
+1	1	"12"	25209835	"[25209835]"	"[0]"	1	"KRAS"	TRUE	1
+1	2	"12"	25209835	"[NA]"	"[NA]"	1	"KRAS"	NA	1

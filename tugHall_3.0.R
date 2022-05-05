@@ -62,9 +62,9 @@
 
     source( './Code/my_plots.R' )
     
-    rdr_dysf  =  get_order_of_genes_dysfunction()
+    rdr_dysf  =  get_order_of_genes_dysfunction( pnt_mut = pnt_mut_B, file_name = './Output/order_genes_dysfunction.txt')
     
-    plot_order_dysfunction( rdr_dysf , pos = c(28.5,200), logscale = 'y', cex = 0.7 )
+    plot_order_dysfunction( rdr_dysf , pos = c(9,200), logscale = 'y', cex = 1. )
     
     
 

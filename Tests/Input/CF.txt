@@ -1,0 +1,7 @@
+apoptosis	0.9
+growth	0.85
+immortalization	0.79
+angiogenesis	0.82
+invasion	0.97
+
+

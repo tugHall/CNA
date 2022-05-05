@@ -1,28 +1,25 @@
 
 ### Define the FOLDERS and files' names ---------------------------------------------------
 ## Create folders:  /Input, /Output and /Figures 
-define_files_names  <-  function(){    
-  mainDir    <-  getwd()
-  subDir     <-  "Output"
-  if (! file.exists( subDir ) ){  dir.create( file.path( mainDir, subDir ) ) }
+define_files_names  <-  function( sbdr_Input = '/Input', sbdr_Output = '/Output' ){    
+    mainDir    =  getwd()
   
-  subDir <- "Input"
-  if (! file.exists( subDir ) ){  dir.create( file.path( mainDir, subDir ) ) }
-  
-  subDir <- "Figures"
-  if (! file.exists( subDir ) ){  dir.create( file.path( mainDir, subDir ) ) }
-  
-  
-  ### Files to output and input data
-  genefile       <<-   'Input/gene_hallmarks.txt'    # gene file 
-  clonefile      <<-   'Input/cloneinit.txt'     # initial Cells 
-  
-  ### Output files
-  geneoutfile    <<-   'Output/geneout.txt'  # Gene Out file with Hallmarks 
-  cloneoutfile   <<-   'Output/cloneout.txt'  # output information of simulation
-  logoutfile     <<-   'Output/log.txt'      # log file to save the input information of simulation - "log.txt"
-  ### Output/Weights.txt               # file with gene weights for hallmarks
-  file_monitor   <<-   './Sim_monitoring.txt'
+    if (! file.exists( paste0( mainDir, sbdr_Output ) ) ){  dir.create( file.path( mainDir, sbdr_Output ) ) }
+    
+    if (! file.exists( paste0( mainDir, sbdr_Input ) ) ){  dir.create( file.path( mainDir, sbdr_Input ) ) }
+    
+    if (! file.exists( paste0( mainDir, '/Figures' ) ) ){  dir.create( file.path( mainDir, 'Figures' ) ) }
+    
+    ### Files to output and input data
+    genefile       <<-   paste0( mainDir, sbdr_Input, '/gene_hallmarks.txt' )    # gene file 
+    clonefile      <<-   paste0( mainDir, sbdr_Input, '/cloneinit.txt'      )    # initial Cells 
+    
+    ### Output files
+    geneoutfile    <<-   paste0( mainDir, sbdr_Output, '/geneout.txt'       )    # Gene Out file with Hallmarks 
+    cloneoutfile   <<-   paste0( mainDir, sbdr_Output, '/cloneout.txt'      )    # output information of simulation
+    logoutfile     <<-   paste0( mainDir, sbdr_Output, '/log.txt'     )    # log file to save the input information of simulation - "log.txt"
+    ### Output/Weights.txt               # file with gene weights for hallmarks
+    file_monitor   <<-   './Sim_monitoring.txt'
 }    
 ### Define the gene map - chromosomal locations --------------------------
 
@@ -1892,7 +1889,7 @@ init_onco_clones <- function( onco1, clones ) {
     return( as.list( onco_clones ) )
 }
 
-### Function to calculate binominal distribution including BIG NUMBERS like 10^12 and more using approximation with normal distribution 
+### Function to calculate binomial distribution including BIG NUMBERS like 10^12 and more using approximation with normal distribution 
 calc_binom <- function(tr,n,p){
     if (n*p < 10^8){
         ou <- rbinom(tr,n,p) 

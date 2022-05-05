@@ -29,38 +29,23 @@ if ( !exists('Print_output_data') )  {
 # Generate objects of simulation ------------------------------------------
 
 ### Parameters
-if ( TRUE ){
-    # Probabilities of processes
-    
-    E0 <<-  1E-4       # parameter in the division probability  
-    F0 <<-  10         # parameter in the division probability  
-    m0 <<-  1E-6       # mutation probability  
-    uo <<-  0.5        # oncogene mutation probability  
-    us <<-  0.5        # suppressor mutation probability  
-    s0 <<-  10         # parameter in the sigmoid function  
-    k0 <<-  0.2        # Environmental death probability  
-    d0 <<-  0.35       # Initial probability to divide cells
-    ### Additional parameters of simulation
-    censore_n <<- 10^5       # Max cell number where the program forcibly stops
-    censore_t <<- 100         # Max time where the program forcibly stops
-    ### New parameters for CNA:
-    m_dup  <<- 8E-8 # mutation probability for duplication
-    m_del  <<- 1E-9 # mutation probability for deletion 
-    lambda_dup  <<- 5000  # CNA duplication average length (of the geometrical distribution for the length)
-    lambda_del  <<- 7000  # CNA deletion average length
-    uo_dup  <<- 0.8 # Gene malfunction probability by CNA duplication for oncogene
-    us_dup  <<- 0   # Gene malfunction probability by CNA duplication for suppressor
-    uo_del  <<- 0   # Gene malfunction probability by CNA deletion    for oncogene
-    us_del  <<- 0.8 # Gene malfunction probability by CNA deletion    for suppressor
-    
+define_files_names( sbdr_Input = '/Tests/Input', sbdr_Output = '/Tests/Output' )   
+define_gene_location()
+define_paramaters( read_fl = TRUE , file_name = './Tests/Input/parameters.txt' )
+define_compaction_factor( read_fl = TRUE , file_name = './Tests/Input/CF.txt' )
+print( 'Tested parameters are obtained from /Tests/Input/ folder.' )
+
+# Define trial() function: trial_complex or trial_simple
+if ( model_name != 'simplified' ){
+  trial  =  trial_complex
+} else {
+  trial  =  trial_simple
 }
 
-gene_map  =  make_map( f_out = './Tests/GENE_MAP/current_test_map.txt', 
-                       f_in = './Input/CCDS.current.txt')
+
+
 ### Objects
 if ( TRUE ){
-    genefile = 'Input/gene_hallmarks.txt'
-    clonefile = 'Input/cloneinit.txt' 
     onco = oncogene$new()        # make the vector onco about the hallmarks
     onco$read(genefile)          # read the input info to the onco from genefile - 'gene_cds2.txt'
     hall = hallmark$new()        # make a vector hall with hallmarks parameters
@@ -141,6 +126,8 @@ test_that("Check the calculation of probabilities based on lengths of genes and
           their CDS lengths. The function get_cds_rna( gm ): ", {
     list_prob_len  =  get_cds_rna( gm = gene_map ) 
     chk_data = readRDS( file = './Tests/CNA/prob_length.txt')
+    
+    # saveRDS( list_prob_len, file = './Tests/CNA/prob_length.txt')
     
     if ( Print_output_data ){
         print( 'Given probabilities for each site: ')
@@ -303,48 +290,4 @@ test_that( "Check the modification of chromosomal locations due to deletion afte
         }
         expect_identical( chk_data, lst_del_and_pnts )
 } )
-
-
-
-# Examples ----------------------------------------------------------------
-
-if (FALSE){
-    ### Vector
-    test_that("Distinct roots", {
-        
-        roots <- sqrt( c( 1, 7, 12) )
-        
-        expect_that( roots, is_a("numeric") )
-        expect_that( length(roots), equals(3) )
-        expect_that( roots[1] < roots[2], is_true() )
-    })
-    
-    ### Function
-    test_that("trigonometric functions match identities", {
-        expect_equal(sin(pi / 4), 1 / sqrt(2))
-        expect_equal(cos(pi / 4), 1 / sqrt(2))
-        expect_equal(tan(pi / 4), 1)
-    })
-    
-    ### function with Data.Frame as output
-    test_that("Data.Frame", {
-        # manually created data
-        dat <- iris[1:5, c("Species", "Sepal.Length")]
-        
-        # function
-        myfun <- function(row, col, data) {
-            data[row, col]
-        }
-        
-        # result of applying function
-        outdat <- myfun(1:5, c("Species", "Sepal.Length"), iris)
-        
-        # two versions of the same test
-        expect_true(identical(dat, outdat))
-        expect_identical(dat, outdat)
-        expect_true(identical(dat, outdat))
-    
-    })
-    
-}
 

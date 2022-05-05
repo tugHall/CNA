@@ -107,8 +107,8 @@ plot_order_dysfunction  <-  function( rdr_dysf , pos = c(0,100),
     plot_2D_lines( x = 1:nrow(tbl_rdr_dysf), DF = tbl_rdr_dysf, nl = 2 ,
                    names = c( 'Index', 'Number of cells' ),
                    yr = c(1, max( tbl_rdr_dysf$N_cells ) * cfcnt ),
-                   xr = c(0.1, nrow( tbl_rdr_dysf )+2 ), 
-                   type = 's', logscale = logscale ) 
+                   xr = c(0.1, round( nrow( tbl_rdr_dysf )+5, digits = -1) ), 
+                   type = 's', logscale = logscale,  draw_key  =  FALSE ) 
     txt = NULL
     for( i in 1:nrow( tbl_rdr_dysf) ) {
         txt  = paste( txt, paste( i, tbl_rdr_dysf$order[ i ] ) , '\n', collapse = '   ') 
@@ -164,7 +164,7 @@ plot_clone_evolution  <-  function( threshold = c(0.05,1.0), lwd = 2.0,
                                     hue = c(" ", "random", "red", "orange", "yellow", 
                                             "green", "blue", "purple", "pink", "monochrome")[1], 
                                     luminosity = c(" ", "random", "light", "bright", "dark")[5] ,
-                                    yr = NA , add_initial = TRUE ){
+                                    yr = NA , add_initial = TRUE, log_scale = FALSE ){
     
     clones_flow  =  data_flow[ ,c('Time', 'ID', 'ParentID', 'Birth_time', 'N_cells' ) ]
     Nmax  =  max( clones_flow$N_cells )
@@ -196,16 +196,17 @@ plot_clone_evolution  <-  function( threshold = c(0.05,1.0), lwd = 2.0,
         ss  =  which( clones_flow$ID == w[ i ] ) 
         DF[[ i ]]  =  data.frame( x = clones_flow$Time[ ss ], y = clones_flow$N_cells[ ss ] )
     }
-    if ( is.na(yr) ) yr = c( 0, N_max ) 
+    if ( is.na(yr) ) yr = c( 1, N_max ) 
     plot_2D_lines( x = DF[[ 1 ]]$x, DF = DF[[ 1 ]], nl = 2, names = c( 'Time step', 'Number of cells'),
-                    xr = c( 1, time_max+5 ), yr = yr, draw_key = FALSE )
+                    xr = c( 1, time_max+5 ), yr = yr, draw_key = FALSE, 
+                   logscale = ifelse( log_scale, 'y', '' ) ) 
 
     if ( length( w ) > 1 ){
         for( i in 2:length( w ) ){
                     lines( x = DF[[ i ]]$x, y = DF[[ i ]]$y, lwd = lwd, col = clrs[ i ] ) # clrs[ i, 'color']  )
         }
     }
-    
+    title( main = paste0('Number of shown clones is ', length( w ), ' from ',  max( clones_flow$ID ), ' clones' ) )
 }
 
 

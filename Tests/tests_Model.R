@@ -31,49 +31,34 @@ if ( !exists('Print_output_data') )  {
 
 
 # Test for model() --------------------------------------------------------
+define_files_names( sbdr_Input = '/Tests/Input', sbdr_Output = '/Tests/Output' )   
+define_gene_location()
+define_paramaters( read_fl = TRUE , file_name = './Tests/Input/parameters.txt' )
+define_compaction_factor( read_fl = TRUE , file_name = './Tests/Input/CF.txt' )
+print( 'Tested parameters are obtained from /Tests/Input/ folder.' )
+# print_parameters()
 
-### Parameters
-if ( TRUE ){
-    # Probabilities of processes
-    
-    E0 <<-  1E-4       # parameter in the division probability  
-    F0 <<-  10         # parameter in the division probability  
-    m0 <<-  1E-6       # mutation probability  
-    uo <<-  0.5        # oncogene mutation probability  
-    us <<-  0.5        # suppressor mutation probability  
-    s0 <<-  10         # parameter in the sigmoid function  
-    k0 <<-  0.2        # Environmental death probability  
-    d0 <<-  0.35       # Initial probability to divide cells
-    ### Additional parameters of simulation
-    censore_n <<- 10^5       # Max cell number where the program forcibly stops
-    censore_t <<- 10         # Max time where the program forcibly stops
-    ### New parameters for CNA:
-    m_dup  <<- 8E-8 # mutation probability for duplication
-    m_del  <<- 1E-9 # mutation probability for deletion 
-    lambda_dup  <<- 5000  # CNA duplication average length (of the geometrical distribution for the length)
-    lambda_del  <<- 7000  # CNA deletion average length
-    uo_dup  <<- 0.8 # Gene malfunction probability by CNA duplication for oncogene
-    us_dup  <<- 0   # Gene malfunction probability by CNA duplication for suppressor
-    uo_del  <<- 0   # Gene malfunction probability by CNA deletion    for oncogene
-    us_del  <<- 0.8 # Gene malfunction probability by CNA deletion    for suppressor
-    
-    genefile = 'Tests/Input/gene_hallmarks.txt'
-    clonefile = 'Tests/Input/cloneinit.txt' 
-    geneoutfile <- 'Output/geneout.txt'  # Gene Out file with Hallmarks 
-    logoutfile <-  'Output/log.txt' 
+# To accelerate the calculations:
+censore_t  <<- 10 
+
+# Define trial() function: trial_complex or trial_simple
+if ( model_name != 'simplified' ){
+    trial  =  trial_complex
+} else {
+    trial  =  trial_simple
 }
 
-gene_map  =  make_map( f_out = './Tests/GENE_MAP/current_test_map.txt', 
-                       f_in = './Tests/Input/CCDS.current.txt')
 
 msg  =  'Check the main function model() for different mutation rates with 10 time-steps for each simulation'
+cat( paste0(msg, '. \n') )
+msg  =  'as well as VAF calculations and order of genes dysfunctions for each simulation'
 cat( paste0(msg, '. \n') )
 
 rdr  =  -11:-5
 for( nos in  1:7 ){
     m0 = 10^rdr[nos]
     
-    subDir  =  paste0('./Tests/Model/', nos )
+    subDir  =  paste0('Tests/Model/', nos )
     if (! file.exists(subDir))  dir.create( subDir ) 
     
     # To fix a random choose:
@@ -83,11 +68,18 @@ for( nos in  1:7 ){
     ### Simulation of the cancer cell/clone evolution:
     smlt = model(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, censore_n, censore_t, d0)
     
-    # clones      =  smlt[[1]]
-    # onco_clones =  smlt[[2]] 
+    clones      =  smlt[[1]]
+    onco_clones =  smlt[[2]] 
     
     write_pnt_clones( pnt_clones, file_out  =  paste0( subDir, '/point_mutations.txt' )  )
     write_pnt_clones( cna_clones, file_out  =  paste0( subDir, '/CNA_mutations.txt' )  )
+    
+    source("Code/Functions_clones.R")
+    get_flow_data(cloneoutfile, genefile, sbdr_Output = subDir )
+    vf = get_VAF( file_name = paste0( subDir, '/VAF_data.txt' ) )
+    VAF  =  get_rho_VAF( vf = vf, rho = c( 0.0, 0.1, 0.2, 0.5, 0.7, 0.9 ) , file_name = paste0( subDir, '/VAF.txt' ) )
+    
+    rdr_dysf  =  get_order_of_genes_dysfunction( pnt_mut = pnt_mut_B, file_name = paste0( subDir, '/order_genes_dysfunction.txt' ) )
     
 }
 
@@ -97,7 +89,8 @@ test_that( paste0( msg, ': \n'), {
     for( nos in  1:7 ){
         subDir        =  paste0('./Tests/Model/', nos )
         subDir_check  =  paste0('./Tests/Model/Check/', nos )
-        for( nm in c( '/point_mutations.txt', '/CNA_mutations.txt', '/cloneout.txt' ) ){ 
+        for( nm in c( '/cloneout.txt', '/point_mutations.txt', '/CNA_mutations.txt',  
+                      '/VAF_data.txt', '/VAF.txt', '/order_genes_dysfunction.txt' ) ){ 
             file_check  =  paste0( subDir_check, nm )
             file_data   =  paste0( subDir,       nm )
             
