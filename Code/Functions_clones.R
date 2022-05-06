@@ -279,18 +279,19 @@ get_rho_VAF  <-  function( vf = NULL, rho = c( 0.0, 0.1, 0.5 ) , file_name = './
             denominator_M  =  sum( vf[ w , 'N_metastatic'] * ( vf[ w, 'Copy_number'] + vf[ w, 'Copy_number_A'] ) ) / N_metastatic_total
                                         # VAF calculations:
             VAF_N_rho  =  k_scale * numenator_N / ( 2*( 1 - k_scale ) + k_scale * denominator_N )
-            VAF_M_rho  =  numenator_M / denominator_M 
+            VAF_M_rho  =  k_scale * numenator_M / ( 2*( 1 - k_scale ) + k_scale * denominator_M )
                                         # save to data.frame:
             VAF_1 = data.frame(site = i,
                                Chr = vf[ w[1], 'Chr' ] ,
                                gene = vf[ w[1], 'Gene_name' ] ,
                                rho = rho[ k ],
                                VAF_primary = VAF_N_rho,
-                               VAF_primary_numerator = k_scale * numenator_N,
-                               VAF_primary_denominator = ( 2*( 1 - k_scale ) + k_scale * denominator_N ),
+                               VAF_primary_numerator   =  k_scale * numenator_N,
+                               VAF_primary_denominator    =  ( 2*( 1 - k_scale ) + k_scale * denominator_N ),
                                VAF_metastatic = VAF_M_rho,
-                               VAF_metastatic_numerator = numenator_M,
-                               VAF_metastatic_denominator =  denominator_M   )
+                               VAF_metastatic_numerator = k_scale * numenator_M,
+                               VAF_metastatic_denominator =  ( 2*( 1 - k_scale ) + k_scale * denominator_M )  
+                    )
             VAF_1[ is.na.data.frame( VAF_1 ) ]  =  0  #  division by 0 if rho = 1 
             VAF  =  rbind( VAF, VAF_1 )
         }

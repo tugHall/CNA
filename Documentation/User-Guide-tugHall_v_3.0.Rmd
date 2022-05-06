@@ -758,8 +758,7 @@ $$
 \frac{(1-\rho_N) \sum_{s=1}^{\#sp} \lambda_s n^i_{B,S}}{2\rho_N + (1-\rho_N) \sum_{s=1}^{\#sp} \lambda_s (n^i_{A,S} + n^i_{B,S}) },
 $$
 
-where $\lambda_s = (N^s_T+N^s_{SN})/(N_T+N_{SN})$, ${N_T}$ and $N_{SN}$ are total number of primary tumor and speckled normal cells respectively at the last time step of a simulation, index $s$ related to cells with mutated site $s$. Observation subpopulation (clone's) fraction $\tau_s$ and simulation one $\lambda_s$ are proportional with $\tau_s = (1-\rho_N) \lambda_s$. Please, pay attention that for metastatic cells, we put $\rho_N = 0$.
-
+where $\lambda_s = (N^s_T+N^s_{SN})/(N_T+N_{SN})$, ${N_T}$ and $N_{SN}$ are total number of primary tumor and speckled normal cells respectively at the last time step of a simulation, index $s$ related to cells with mutated site $s$. Observation subpopulation (clone's) fraction $\tau_s$ and simulation one $\lambda_s$ are proportional with $\tau_s = (1-\rho_N) \lambda_s$. VAF calculations are performed for metastatic cells separately from primary tumor and speckled normal cells.
 
 
 
