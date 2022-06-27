@@ -64,9 +64,11 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         uo <<-  as.numeric( data_log[ which( data_log$var == 'uo' ), 2 ] )        # oncogene mutation probability  
         us <<-  as.numeric( data_log[ which( data_log$var == 'us' ), 2 ] )        # suppressor mutation probability  
         s0 <<-  as.numeric( data_log[ which( data_log$var == 's' ), 2 ] )         # parameter in the sigmoid function  
-        d0 <<-  as.numeric( data_log[ which( data_log$var == 'd0' ), 2 ] )      # Initial probability to divide cells
-        k0 <- as.character( data_log[ which( data_log$var == 'k0' ), 2 ] )   # Environmental death probability  
+        d0 <-  as.numeric( data_log[ which( data_log$var == 'd0' ), 2 ] )      # Initial probability to divide cells
+        d0 <<- d0
+        k0 <-  as.character( data_log[ which( data_log$var == 'k0' ), 2 ] )   # Environmental death probability  
         if ( is.na( k0 ) ) {
+            # Refer local variable d0, and set global variable k0
             k0 <<- 1 - (1 + d0) ^ (-1)
         }
         else {
