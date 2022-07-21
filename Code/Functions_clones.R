@@ -13,14 +13,32 @@ par(xpd=TRUE, cex.lab=2, lwd = 2, mar = c(5, 5, 5, 5), tcl = 0.5, cex.axis = 1.7
 
 # Analyze data block ------------------------------------------------------
 
-# function to read file
+#' Function to read file
+#'
+#' @param file_name Name of file to read
+#' @param stringsAsFactors Parameter for read.table function, by default stringsAsFactors = FALSE
+#'
+#' @return data.frame of data from a file
+#' @export
+#'
+#' @examples read_file( file_name = cloneoutfile )
 read_file  <-  function( file_name = '', stringsAsFactors = FALSE ){
     if ( file.size( file_name )  < 10 ) return( NULL )
     return( read.table( file = file_name, stringsAsFactors  =  stringsAsFactors ,
                         sep="\t", header = TRUE ))
 }
 
-### The function to get data about last simulation
+#' Function to get data about last simulation from cloneoutfile 
+#'
+#' @param cloneoutfile Name of file to read data about clone evolition
+#' @param genefile 
+#' @param mainDir Working directory, by default mainDir = getwd()
+#' @param sbdr_Output Directory for output data getting from mainDir
+#'
+#' @return NULL, but several data.frames appear with clones evolution info like onco, hall, data_last (data of last time step), data_avg (average data for all time steps), data_flow (data without average rows), time_max (max time step), pnt_mut (data.frame of point mutations) and cna_mut (data.frame of CNA mutations)  
+#' @export
+#'
+#' @examples get_flow_data(cloneoutfile, genefile, mainDir = getwd(), sbdr_Output = '/Output' ) 
 get_flow_data <- function(cloneoutfile, genefile, mainDir = getwd(), sbdr_Output = '/Output' ) {
 
     # Get data about onco and hallmarks
@@ -61,7 +79,12 @@ get_flow_data <- function(cloneoutfile, genefile, mainDir = getwd(), sbdr_Output
     
 }  
 
-### the function to plot main data
+#' Function to plot main data from data.frame with average data
+#'
+#' @return NULL, draw many plot with average data
+#' @export
+#'
+#' @examples plot_average_simulation_data()
 plot_average_simulation_data  <-  function(){
     # plot number of cells:
   
@@ -120,8 +143,15 @@ plot_average_simulation_data  <-  function(){
 }
 
 
-### the function to get order of genes' dysfunction:
-
+#' Function to get order of genes' dysfunction
+#'
+#' @param pnt_mut data.frame with info about all the point mutations
+#' @param file_name Name of file to save data
+#'
+#' @return data.frame of genes' dysfunction and save it in a file
+#' @export
+#'
+#' @examples get_order_of_genes_dysfunction( pnt_mut, file_name = './Output/order_genes_dysfunction.txt' )
 get_order_of_genes_dysfunction  <-  function( pnt_mut, file_name = './Output/order_genes_dysfunction.txt' ){
     
     # as.numeric( unlist( str_split( data_last[ , 'PointMut_ID' ], pattern = ',' ) ) )
@@ -181,14 +211,24 @@ get_order_of_genes_dysfunction  <-  function( pnt_mut, file_name = './Output/ord
 
 
 
+#' Function to get data about Variant allele frequencies (VAF)
+#'
+#' @param file_name Name of file to save data
+#'
+#' @return data.frame with info about Variant allele frequencies
+#' @export
+#'
+#' @examples get_VAF( file_name = 'Output/VAF_data.txt')
 get_VAF  <-  function( file_name = 'Output/VAF_data.txt'){
     
     pnt_mut_A  <<-  pnt_mut[ which(  is.na( pnt_mut$MalfunctionedByPointMut ) ) , ]
     pnt_mut_B  <<-  pnt_mut[ which( !is.na( pnt_mut$MalfunctionedByPointMut ) ) , ]
     
-    ids  =  str_split( data_last$PointMut_ID, pattern = ',' )
-    ids =  sapply( X = 1:nrow( data_last), FUN = function(x) as.numeric( ids[[ x ]] ) )
+    if ( nrow(data_last) == 0 ) return( NULL )
     
+    ids  =  str_split( data_last$PointMut_ID, pattern = ',' )
+    ids  =  lapply( X = 1:nrow( data_last), FUN = function(x) as.numeric( ids[[ x ]] ) )
+
     nqu  =  sort( unique( unlist( ids ) ) )  # unique IDs of point mutations
     if ( nqu[1] == 0 ) nqu = nqu[ -1 ]       # exclude intact normal cells
     
@@ -251,6 +291,16 @@ get_VAF  <-  function( file_name = 'Output/VAF_data.txt'){
 }
 
 
+#' Function to get Variant allele frequencies (VAF) based on rho input parameters
+#'
+#' @param vf data.frame getting from get_VAF() function
+#' @param rho Vector of rho parameter in the range (0,1)
+#' @param file_name Name of file to save VAF
+#'
+#' @return VAF for different rho with separation for metastatic cells and (primary tumor + speckled normal) cells
+#' @export
+#'
+#' @examples get_rho_VAF( vf = NULL, rho = c( 0.0, 0.1, 0.5 ) , file_name = './Output/VAF.txt' )
 get_rho_VAF  <-  function( vf = NULL, rho = c( 0.0, 0.1, 0.5 ) , file_name = './Output/VAF.txt' ){
     # rho is an admixture rate of intact normal cells, it can be vector of numbers
     # vf is a VAF data getting from get_VAF function
