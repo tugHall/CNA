@@ -39,7 +39,7 @@ print( 'Tested parameters are obtained from /Tests/Input/ folder.' )
 # print_parameters()
 
 # To accelerate the calculations:
-censore_t  <<- 10 
+censor_time_step  <<- 10 
 
 # Define trial() function: trial_complex or trial_simple
 if ( model_name != 'simplified' ){
@@ -66,7 +66,7 @@ for( nos in  1:7 ){
     cloneoutfile <- paste0( subDir, '/cloneout.txt' )  # output information of simulation
     
     ### Simulation of the cancer cell/clone evolution:
-    smlt = model(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, censore_n, censore_t, d0)
+    smlt = model(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, censor_cells_number, censor_time_step, d0)
     
     clones      =  smlt[[1]]
     onco_clones =  smlt[[2]] 
