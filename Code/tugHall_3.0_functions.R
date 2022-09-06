@@ -2271,6 +2271,70 @@ write_weights <- function(outfile, hall) {
     write.table(data, outfile, sep="\t", row.names = FALSE)
 }
 
+
+
+#' @describeIn write_weights Function to write info about relationship between genes and hallmarks in the framework of break points
+#'
+#'
+#' @return \code{write_break_points} returns NULL,
+#' but break points of weights between genes and hallmarks will write to a file
+#'
+#' @export
+#'
+#' @examples
+#' if ( !dir.exists('./Output') ) dir.create('./Output')
+#' hall = tugHall_dataset$hall
+#' onco = tugHall_dataset$onco
+#' write_break_points(outfile = './Output/break_points.txt', hall)
+write_break_points <- function(outfile, hall) {
+    #data <- c("Hallmarks", "Designation", onco$name)
+    data <- data.frame( "Gene" = onco$name)
+    data$Gene <-   as.character( data$Gene )
+
+    w <- rep(0.0, onco$len)
+    for (j in 1:onco$len) {
+        if ( length( which(j==hall$Ha) ) > 0  ) w[j] = hall$Ha_w[which(j==hall$Ha)]
+    }
+    data <- cbind(data, "Apoptosis" = w)
+
+    w <- rep(0.0, onco$len)
+    for (j in 1:onco$len) { if ( length( which(j==hall$Hb) ) > 0  ) w[j] = hall$Hb_w[which(j==hall$Hb)]  }
+    data <- cbind(data, "Angiogenesis" = w)
+
+    w <- rep(0.0, onco$len)
+    for (j in 1:onco$len) { if ( length( which(j==hall$Hd) ) > 0  ) w[j] = hall$Hd_w[which(j==hall$Hd)]  }
+    data <- cbind(data, "Growth_Antigrowth" = w)
+
+    w <- rep( 0.0, onco$len )
+    for (j in 1:onco$len) { if ( length( which(j==hall$Hi) ) > 0  ) w[j] = hall$Hi_w[which(j==hall$Hi)]  }
+    data <- cbind(data, "Immortalization" = w)
+
+    w <- rep(0.0, onco$len)
+    for (j in 1:onco$len) { if ( length( which(j==hall$Him) ) > 0  ) w[j] = hall$Him_w[which(j==hall$Him)]  }
+    data <- cbind(data, "Invasion_Metastasis" = w)
+
+    # Correct normalization
+    if ( Compaction_factor ){
+
+        data$Apoptosis     =  data$Apoptosis / CF$Ha
+        data$Angiogenesis  =  data$Angiogenesis / CF$Hb
+        data$Growth_Antigrowth  =  data$Growth_Antigrowth / CF$Hd
+        data$Immortalization    =  data$Immortalization   / CF$Hi
+        data$Invasion_Metastasis  =  data$Invasion_Metastasis / CF$Him
+    }
+
+    data$break_points = paste0( 'break_point_', data$Gene )
+    data = data[, -1]
+    data = cbind( data[ , 6], data[, -6 ])
+    names( data ) = c( 'break_points', names( data[ , -1]))
+    for( i in 2:nrow( data ) ){
+        data[ i, 2:6]  =  data[ i, 2:6] + data[ i-1, 2:6]
+    }
+
+    write.table(data, outfile, sep="\t", row.names = FALSE)
+}
+
+
 #' Function to write the point mutation info for all clones for all time steps, used at the last time step or after simulation
 #'
 #' @param pnt_clones List of objects of class 'Point_Mutations'
@@ -2467,6 +2531,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     onco_clones = init_onco_clones( onco, clones )    # onco_clones - the onco related to each clone in clones
     write_geneout(geneoutfile, hall, Compaction_factor, CF)                  # write the geneout.txt file with initial hallmarks
     write_weights("Output/Weights.txt", hall)                 # write the weights of genes for hallmarks
+    write_break_points("Output/Break_points.txt", hall)
     write_header( cloneoutfile, env, onco )                   #
     if ( monitor ) write_monitor( start = TRUE )
     cells_number <- sum_N_P_M(env, clones)                 # to calculate cells numbers - N,M
