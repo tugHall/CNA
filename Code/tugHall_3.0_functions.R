@@ -407,7 +407,7 @@ environ <- setRefClass(
         gene = "numeric",        # cancer gene damage rate
         # posdriver = "character", # cancer gene damage position (function deficit)
         # pospasngr = "character", # cancer gene damage position (maintaince of function)
-        mutden = "numeric",      # average mutation rate
+        mutden = "numeric",      # mutation density
         last_id = "numeric"
     ),
 
