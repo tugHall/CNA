@@ -61,6 +61,7 @@ define_gene_location  <-  function( file_input  =  'Input/CCDS.current.txt',
 #' @param   s0 Parameter in the sigmoid function, numeric type only
 #' @param   k0 Environmental death probability, numeric type only
 #' @param   d0 Initial probability to divide cells, numeric type only
+#' @param   ctmax Hayflick limitation for cell division, integer type
 #' @param   censor_cells_number Max cell number where the program forcibly stops, integer type only
 #' @param   censor_time_step Max time where the program forcibly stops, integer type only
 #' @param   real_time_stop Max time in seconds of running after that the program forcibly stops, integer type only
@@ -84,7 +85,7 @@ define_gene_location  <-  function( file_input  =  'Input/CCDS.current.txt',
 #'
 #' @examples     define_paramaters( read_fl = TRUE , file_name = './Input/parameters.txt' )
 define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us =  0.9,
-                                 s0 =  10, k0 =  0.12, d0 =  0.4, censor_cells_number = 10^5,
+                                 s0 =  10, k0 =  0.12, d0 =  0.4, ctmax = 50, censor_cells_number = 1E05,
                                  censor_time_step = 50, m_dup  = 1E-8, m_del  = 1E-8,
                                  lambda_dup  = 5000, lambda_del  = 7000,
                                  uo_dup  = 0.8, us_dup  = 0.5, uo_del  = 0, us_del  = 0.8,
@@ -116,10 +117,10 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
             # k0 <<- 1 - (1 + d0) ^ (-1)
             sgmd  =  1 / ( 1 + exp( -s0 * ( 0 - 0.5 ) ) )
             k0  <<-  1 - ( ( 1 - sgmd ) * ( 1 + d0 ) ) ^ (-1)
-        }
-        else {
+        } else {
             k0 <<-  as.numeric( k0 )
         }
+        ctmax <<-  as.numeric( data_log[ which( data_log$var == 'ctmax' ), 2 ] )      # Hayflick limitation ctmax
         ### Additional parameters of simulation
         censor_cells_number <<- as.numeric( data_log[ which( data_log$var == 'censor_cells_number' ), 2 ] )       # Max cell number where the program forcibly stops
         censor_time_step <<- as.numeric( data_log[ which( data_log$var == 'censor_time_step' ), 2 ] )       # Max time where the program forcibly stops
@@ -140,13 +141,14 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         model_name         <<-  model
         # Parameters:
         E0 <<-  E0       # parameter in the division probability
-        F0 <<-  F0         # parameter in the division probability
-        m0 <<-  m0      # mutation probability
-        uo <<-  uo        # oncogene mutation probability
-        us <<-  us        # suppressor mutation probability
-        s0 <<-  s0         # parameter in the sigmoid function
-        k0 <<-  k0        # Environmental death probability
+        F0 <<-  F0       # parameter in the division probability
+        m0 <<-  m0       # mutation probability
+        uo <<-  uo       # oncogene mutation probability
+        us <<-  us       # suppressor mutation probability
+        s0 <<-  s0       # parameter in the sigmoid function
+        k0 <<-  k0       # Environmental death probability
         d0 <<-  d0       # Initial probability to divide cells
+        ctmax <<-  ctmax # Hayflick limitation ctmax
         ### Additional parameters of simulation
         censor_cells_number <<- censor_cells_number       # Max cell number where the program forcibly stops
         censor_time_step <<- censor_time_step         # Max time where the program forcibly stops
@@ -1620,7 +1622,7 @@ trial_complex <- function( clone1, onco1 ) {
     N_new = clone1$N_cells   # the initial number to split / before trial / - all cells "want" to split
 
     # Fragmentation restriction trial
-    if (clone1$c > 50) {
+    if (clone1$c > ctmax) {
         N_new = calc_binom(1, N_new, (1 - clone1$i))
     }
 
@@ -2020,6 +2022,7 @@ onco_copy <- function( onco1 ){
 #' @param   s0 Parameter in the sigmoid function, numeric type only
 #' @param   k0 Environmental death probability, numeric type only
 #' @param   d0 Initial probability to divide cells, numeric type only
+#' @param   ctmax Hayflick limitation for cell division, integer type
 #' @param   censor_cells_number Max cell number where the program forcibly stops, integer type only
 #' @param   censor_time_step Max time where the program forcibly stops, integer type only
 #' @param   real_time_stop Max time in seconds of running after that the program forcibly stops, integer type only
@@ -2039,21 +2042,21 @@ onco_copy <- function( onco1 ){
 #' @return
 #' @export
 #'
-#' @examples write_log(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, m_dup, m_del, lambda_dup, lambda_del, uo_dup, us_dup, uo_del, us_del, censor_cells_number, censor_time_step, d0, Compaction_factor, model_name, real_time_stop, n_repeat, monitor )
+#' @examples write_log(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, ctmax, m_dup, m_del, lambda_dup, lambda_del, uo_dup, us_dup, uo_del, us_del, censor_cells_number, censor_time_step, d0, Compaction_factor, model_name, real_time_stop, n_repeat, monitor )
 write_log <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
-                      E0, F0, m0, uo, us, s0, k0,
+                      E0, F0, m0, uo, us, s0, k0, ctmax,
                       m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
                       uo_dup, us_dup, uo_del, us_del,       # CNA parameters
                       censor_cells_number, censor_time_step, d0, Compaction_factor, model_name,
                       real_time_stop, n_repeat, monitor ) {
     data <- c("genefile", "clonefile", "geneoutfile", "cloneoutfile", "logoutfile",
-              "E0", "F0", "m0", "uo", "us", "s0", "k0",
+              "E0", "F0", "m0", "uo", "us", "s0", "k0", 'ctmax',
               "m_dup", "m_del", "lambda_dup", "lambda_del",
               "uo_dup", "us_dup", "uo_del", "us_del",
               "censor_cells_number", "censor_time_step", "d0", 'Compaction_factor', 'model_name',
               'real_time_stop', 'n_repeat', 'monitor' )
     data <- rbind( data, c(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
-                             E0, F0, m0, uo, us, s0, k0,
+                             E0, F0, m0, uo, us, s0, k0, ctmax,
                              m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
                              uo_dup, us_dup, uo_del, us_del,       # CNA parameters
                              censor_cells_number, censor_time_step, d0, Compaction_factor, model_name,
@@ -2489,6 +2492,7 @@ calc_binom <- function(tr,n,p){
 #' @param us Suppressor mutation probability, numeric type only
 #' @param s0 Parameter in the sigmoid function, numeric type only
 #' @param k0 Environmental death probability, numeric type only
+#' @param ctmax Hayflick limitation for cell division, integer type
 #' @param d0 Initial probability to divide cells, numeric type only
 #' @param censor_cells_number Max cell number where the program forcibly stops, integer type only
 #' @param censor_time_step Max time where the program forcibly stops, integer type only
@@ -2498,9 +2502,9 @@ calc_binom <- function(tr,n,p){
 #'
 #' @examples model(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, censor_cells_number, censor_time_step, d0)
 model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
-                  E0, F0, m0, uo, us, s0, k0, censor_cells_number, censor_time_step, d0) {
+                  E0, F0, m0, uo, us, s0, k0, ctmax = 50, censor_cells_number, censor_time_step, d0) {
     write_log(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
-              E0, F0, m0, uo, us, s=10, k=k0,
+              E0, F0, m0, uo, us, s0=s0, k0=k0, ctmax = ctmax,
               m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
               uo_dup, us_dup, uo_del, us_del,       # CNA parameters
               censor_cells_number, censor_time_step, d0, Compaction_factor, model_name, real_time_stop,
