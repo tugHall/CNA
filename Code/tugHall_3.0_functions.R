@@ -2529,6 +2529,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     assign("hall", hall, env=.GlobalEnv)
     assign("uo", uo, env=.GlobalEnv)
     assign("us", us, env=.GlobalEnv)
+    assign("ctmax", ctmax, env=.GlobalEnv)
     clone1 = clone$new(gene_size=length(onco$cds_1),
                      m=m0, s=s0, k=k0, E=E0)          # clone1  -  empty object of clone
     clones = init_clones(clonefile, clone1)           # clones - the clones with hallmarks from cellfile - cellinit.txt - initial cells
