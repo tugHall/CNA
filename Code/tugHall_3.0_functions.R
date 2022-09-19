@@ -93,7 +93,12 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
                                  model  =  c( 'proportional_metastatic', 'threshold_metastatic', 'simplified' )[ 1 ],
                                  real_time_stop = 120,
                                  read_fl = FALSE, file_name ='./Input/parameters.txt',
-                                 n_repeat = 1000, monitor  =  TRUE ){
+                                 n_repeat = 1000, monitor  =  TRUE,
+                                 tumbler_for_metastasis_trial =  TRUE,
+                                 tumbler_for_apoptosis_trial =  TRUE,
+                                 tumbler_for_immortalization_trial =  TRUE,
+                                 tumbler_for_angiogenesis_trial =  TRUE,
+                                 tumbler_for_drug_intervention_trial =  TRUE ){
     if ( read_fl ){
         data_log  =  read.table( file = file_name, sep = '\t', stringsAsFactors = FALSE )
         names( data_log )  =  c( 'var', 'value' )
@@ -134,6 +139,12 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         uo_del  <<- as.numeric( data_log[ which( data_log$var == 'uo_del' ), 2 ] )   # Gene malfunction probability by CNA deletion    for oncogene
         us_del  <<- as.numeric( data_log[ which( data_log$var == 'us_del' ), 2 ] ) # Gene malfunction probability by CNA deletion    for suppressor
         monitor <<- as.logical( data_log[ which( data_log$var == 'monitor' ), 2 ] )
+        # Tumblers for all the trials:
+        tumbler_for_metastasis_trial   <<-  as.logical( data_log[ which( data_log$var == 'tumbler_for_metastasis_trial' ), 2 ] )
+        tumbler_for_apoptosis_trial    <<-  as.logical( data_log[ which( data_log$var == 'tumbler_for_apoptosis_trial' ), 2 ] )
+        tumbler_for_immortalization_trial    <<-  as.logical( data_log[ which( data_log$var == 'tumbler_for_immortalization_trial' ), 2 ] )
+        tumbler_for_angiogenesis_trial       <<-  as.logical( data_log[ which( data_log$var == 'tumbler_for_angiogenesis_trial' ), 2 ] )
+        tumbler_for_drug_intervention_trial  <<-  as.logical( data_log[ which( data_log$var == 'tumbler_for_drug_intervention_trial' ), 2 ] )
     } else {
 
         # Model definition:
@@ -164,6 +175,12 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         uo_del  <<- uo_del   # Gene malfunction probability by CNA deletion    for oncogene
         us_del  <<- us_del # Gene malfunction probability by CNA deletion    for suppressor
         monitor <<- monitor  # The indicator to make monitor file during a simulation or do not make
+        # Tumblers for all the trials:
+        tumbler_for_metastasis_trial   <<-  tumbler_for_metastasis_trial
+        tumbler_for_apoptosis_trial    <<-  tumbler_for_apoptosis_trial
+        tumbler_for_immortalization_trial    <<-  tumbler_for_immortalization_trial
+        tumbler_for_angiogenesis_trial       <<-  tumbler_for_angiogenesis_trial
+        tumbler_for_drug_intervention_trial  <<-  tumbler_for_drug_intervention_trial
     }
 }
 
@@ -209,7 +226,13 @@ print_parameters  <-  function(){
         'Compaction factor for growth/antigrowth hallmark CF$Hd = ', CF$Hd, ' \n',
         'Compaction factor for immortalization hallmark CF$Hi = ', CF$Hi, ' \n',
         'Compaction factor for invasion/metastasis hallmark CF$Him = ', CF$Him,
-        '\n Monitoring: \n indicator monitor  =  ', monitor, '\n \n '
+        '\n Monitoring: \n indicator monitor  =  ', monitor, '\n',
+        'Tumblers for simulation processes/trials: \n',
+        'Tumbler for metastasis/invasion trial is ', tumbler_for_metastasis_trial, '\n',
+        'Tumbler for apoptosis trial is ', tumbler_for_apoptosis_trial, '\n',
+        'Tumbler for immortalization trial is ', tumbler_for_immortalization_trial, '\n',
+        'Tumbler for angiogenesis trial is ', tumbler_for_angiogenesis_trial, '\n',
+        'Tumbler for drug intervention trial is ', tumbler_for_drug_intervention_trial, '\n \n '
     )
 
     cat( paste0( msg, collapse = ' ' ) )
@@ -1596,17 +1619,20 @@ number_N_P_M <- function(clone1) {
 #' @return Number of new clones originated by clone1
 #' @export
 #'
-#' @examples trial_complex( clone1, onco1 )
+#' @examples
+#' trial_complex( clone1, onco1 )
 trial_complex <- function( clone1, onco1 ) {
 
     # trial for Environmental death of cell
     N_die  =  calc_binom( 1, clone1$N_cells, clone1$k )   # The number of cells to die due to the Environmental death of cells in clone
 
     # Apoptosis trial
-    N_die  =  N_die + calc_binom( 1, clone1$N_cells, clone1$a )
+    if ( tumbler_for_apoptosis_trial ){
+        N_die  =  N_die + calc_binom( 1, clone1$N_cells, clone1$a )
+    }
 
     # invasion / metastasis trial
-    if (clone1$im > 0) {
+    if (clone1$im > 0 & tumbler_for_metastasis_trial ) {
         if (!clone1$invasion) {
             N_die  =  N_die + calc_binom( 1, clone1$N_cells, ( 1 - clone1$im ) )
             if ( model_name == 'proportional_metastatic') {
@@ -1623,7 +1649,7 @@ trial_complex <- function( clone1, onco1 ) {
     N_new = clone1$N_cells   # the initial number to split / before trial / - all cells "want" to split
 
     # Fragmentation restriction trial
-    if (clone1$c > ctmax) {
+    if (clone1$c > ctmax &  tumbler_for_immortalization_trial ) {
         N_new = calc_binom(1, N_new, (1 - clone1$i))
     }
 
@@ -1654,7 +1680,8 @@ trial_complex <- function( clone1, onco1 ) {
 #' @return Number of new clones originated by clone1
 #' @export
 #'
-#' @examples trial_simple( clone1, onco1 )
+#' @examples
+#' trial_simple( clone1, onco1 )
 trial_simple <- function( clone1, onco1 ) {
 
     # trial for Environmental death of cell
@@ -2531,6 +2558,12 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     assign("uo", uo, env=.GlobalEnv)
     assign("us", us, env=.GlobalEnv)
     assign("ctmax", ctmax, env=.GlobalEnv)
+    assign("tumbler_for_metastasis_trial", tumbler_for_metastasis_trial, env=.GlobalEnv)
+    assign("tumbler_for_apoptosis_trial",  tumbler_for_apoptosis_trial,  env=.GlobalEnv)
+    assign("tumbler_for_immortalization_trial", tumbler_for_immortalization_trial, env=.GlobalEnv)
+    assign("tumbler_for_angiogenesis_trial", tumbler_for_angiogenesis_trial, env=.GlobalEnv)
+    assign("tumbler_for_drug_intervention_trial", tumbler_for_drug_intervention_trial, env=.GlobalEnv)
+
     clone1 = clone$new(gene_size=length(onco$cds_1),
                      m=m0, s=s0, k=k0, E=E0)          # clone1  -  empty object of clone
     clones = init_clones(clonefile, clone1)           # clones - the clones with hallmarks from cellfile - cellinit.txt - initial cells
