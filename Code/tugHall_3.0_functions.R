@@ -2064,31 +2064,46 @@ onco_copy <- function( onco1 ){
 #' @param  uo_del Gene malfunction probability by CNA deletion    for oncogene, numeric type only
 #' @param  us_del Gene malfunction probability by CNA deletion    for suppressor, numeric type only
 #' @param  monitor The indicator to make monitor file during a simulation or do not make, binary type only
-#' @param Compaction_factor Compaction factor, binary type only. True means 'to use', False means 'do not use' Compaction factor for hallmarks variables
-#' @param model_name Name of the model to use. Can be  'proportional_metastatic' or 'threshold_metastatic' or 'simplified'
+#' @param  Compaction_factor Compaction factor, binary type only. True means 'to use', False means 'do not use' Compaction factor for hallmarks variables
+#' @param  model_name Name of the model to use. Can be  'proportional_metastatic' or 'threshold_metastatic' or 'simplified'
+#' @param  tumbler_for_metastasis_trial Logical parameter to turn on/off invasion/metastasis transformation trial
+#' @param  tumbler_for_apoptosis_trial Logical parameter to turn on/off the apoptosis trial
+#' @param  tumbler_for_immortalization_trial Logical parameter to turn on/off the immortalization trial
+#' @param  tumbler_for_angiogenesis_trial Logical parameter to turn on/off angiogenesis trial
+#' @param  tumbler_for_drug_intervention_trial Logical parameter to turn on/off drug intervention trial
 #'
 #' @return
 #' @export
 #'
-#' @examples write_log(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, ctmax, m_dup, m_del, lambda_dup, lambda_del, uo_dup, us_dup, uo_del, us_del, censor_cells_number, censor_time_step, d0, Compaction_factor, model_name, real_time_stop, n_repeat, monitor )
+#' @examples
+#' write_log(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, ctmax, m_dup, m_del, lambda_dup, lambda_del, uo_dup, us_dup, uo_del, us_del, censor_cells_number, censor_time_step, d0, Compaction_factor, model_name, real_time_stop, n_repeat, monitor )
 write_log <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
                       E0, F0, m0, uo, us, s0, k0, ctmax,
                       m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
                       uo_dup, us_dup, uo_del, us_del,       # CNA parameters
                       censor_cells_number, censor_time_step, d0, Compaction_factor, model_name,
-                      real_time_stop, n_repeat, monitor ) {
+                      real_time_stop, n_repeat, monitor,
+                      tumbler_for_metastasis_trial, tumbler_for_apoptosis_trial,
+                      tumbler_for_immortalization_trial, tumbler_for_angiogenesis_trial,
+                      tumbler_for_drug_intervention_trial ) {
     data <- c("genefile", "clonefile", "geneoutfile", "cloneoutfile", "logoutfile",
               "E0", "F0", "m0", "uo", "us", "s0", "k0", 'ctmax',
               "m_dup", "m_del", "lambda_dup", "lambda_del",
               "uo_dup", "us_dup", "uo_del", "us_del",
               "censor_cells_number", "censor_time_step", "d0", 'Compaction_factor', 'model_name',
-              'real_time_stop', 'n_repeat', 'monitor' )
+              'real_time_stop', 'n_repeat', 'monitor',
+              'tumbler_for_metastasis_trial', 'tumbler_for_apoptosis_trial',
+              'tumbler_for_immortalization_trial', 'tumbler_for_angiogenesis_trial',
+              'tumbler_for_drug_intervention_trial' )
     data <- rbind( data, c(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
                              E0, F0, m0, uo, us, s0, k0, ctmax,
                              m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
                              uo_dup, us_dup, uo_del, us_del,       # CNA parameters
                              censor_cells_number, censor_time_step, d0, Compaction_factor, model_name,
-                           real_time_stop, n_repeat, monitor ) )
+                             real_time_stop, n_repeat, monitor,
+                             tumbler_for_metastasis_trial, tumbler_for_apoptosis_trial,
+                             tumbler_for_immortalization_trial, tumbler_for_angiogenesis_trial,
+                             tumbler_for_drug_intervention_trial ) )
     write(data, logoutfile, ncolumn=2, sep="\t")
 }
 
