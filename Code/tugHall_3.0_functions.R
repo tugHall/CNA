@@ -2244,7 +2244,7 @@ write_monitor  <- function( outfile, start = FALSE , env, clones ){
 
     if ( start ) {
         header <- c('Time', 'N_clones', 'N_normal_intact',  'N_normal_speckled', 'N_primary', 'N_metastatic',
-                    'N_point_mutations', 'N_duplications',   'N_deletions' , 'TMB')
+                    'N_point_mutations', 'N_duplications',   'N_deletions' , 'TMB', 'TMB%5', 'TMB%10' )
         write( header, outfile, append = FALSE, ncolumns = length( header ), sep="\t" )
     } else {
         if ( length( clones )  >  0 ) {
@@ -2256,7 +2256,6 @@ write_monitor  <- function( outfile, start = FALSE , env, clones ){
             dupdel  =  unlist( sapply( X = cna_list, FUN = function( x ) cna_clones[[ x ]]$dupOrdel ) )
             l_dup   =  length( which( dupdel  ==  'dup' ) )
             l_del   =  length( which( dupdel  ==  'del' ) )
-            TMB     =  l_pm * 1E06 / sum( onco$cds_1 ) / ( env$N + env$P + env$M )
 
             # Get intact and speckled normal cells:
             i_n  =  which( sapply( 1:length(clones), FUN = function(x) get_type( clones[[ x ]] ) ) == 'normal')
@@ -2271,6 +2270,31 @@ write_monitor  <- function( outfile, start = FALSE , env, clones ){
             } else {
                 N_intact    =  0
                 N_speckled  =  0
+            }
+
+            if ( env$T %% 1 == 0 ){
+                vf        =  get_VAF_clones( env = env, clones = clones, pnt_clones = pck.env$pnt_clones )
+                VAF       =  get_rho_VAF( vf = vf, rho = c( 0.0 ), save_to_file = FALSE )
+
+                cffc      =  1E06 / 2 / sum( onco$cds_1 ) / sum( env$N + env$P + env$M )
+
+                TMB = NULL
+                for( it in c( 0, 0.05, 0.1 ) ){
+                    wc   =   which(  VAF$VAF_primary >= it   |   VAF$VAF_metastatic >= it  )
+                    if ( length( wc ) > 0 ){
+                        sites  =  VAF$site[ wc ]
+                        wc_vf  =  which( vf$Ref_pos %in% sites )
+                        n_mut  =  sum( sapply( wc_vf, FUN = function( x ) {
+                            vf$Copy_number[ x ] * ( vf$N_speckled_normal[ x ] + vf$N_primary[ x ] + vf$N_metastatic[ x ] )
+                        } ) )
+                    } else {
+                        n_mut  =  0
+                    }
+                    TMB   =   c( TMB , n_mut )
+                }
+                TMB  =  TMB * cffc
+            } else{
+                TMB = c( 0, 0, 0 )
             }
 
             data <- c( env$T, length( clones ), N_intact, N_speckled, env$P, env$M, l_pm, l_dup, l_del, TMB )
