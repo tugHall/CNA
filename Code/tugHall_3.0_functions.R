@@ -2284,6 +2284,96 @@ write_monitor  <- function( outfile, start = FALSE , env, clones ){
 }
 
 
+#' @describeIn write_monitor  Function to get VAF info for each site during a simulation in order to get
+#' TMB - number of point mutations per 10^6 bps (per M bps)
+#'
+#' @param pnt_clones list of point mutations usually saved in tugHall environment pck.env
+#'
+#' @return get_VAF_clones() returns data frame same as output of get_VAF() function
+#'
+#' @export
+#'
+#' @examples
+#' NULL
+#'
+get_VAF_clones  <- function( env, clones, pnt_clones ){
+
+    if ( is.null(clones) ) return( NULL )
+
+    l   =   ( 1:(length(pnt_clones)/2) ) * 2 - 1
+    pnt_mut_B  =  lapply( l, FUN = function( x ) pnt_clones[[ x ]] )
+    pnt_mut_A  =  lapply( l+1, FUN = function( x ) pnt_clones[[ x ]] )
+
+    # l do not choose invasion clones:
+    # l    =  which( !sapply( 1:length( clones ), FUN = function( x ) clones[[ x ]]$invasion ) )
+    cl   =  clones   #  lapply( l, FUN = function( x ) clones[[ x ]] )
+
+    # indexes of point mutations for each clone:
+    ids  =  lapply( 1:length( cl ), FUN = function( x ) cl[[ x ]]$PointMut_ID )
+    nqu  =  sort( unique( unlist( ids ) ) )  # unique IDs of point mutations
+    if ( nqu[1] == 0 ) nqu = nqu[ -1 ]       # exclude intact normal cells
+
+    # start VAF
+    VAF  =  NULL
+    if ( length( nqu ) == 0 ) return( NULL )
+
+    # get types for all the clones:
+    clone_types  =  sapply( 1:length( cl ), FUN = function( x ) get_type( cl[[ x ]]) )
+    # get number of cells for ll the clones:
+    clone_numbers  =  sapply( 1:length( cl ), FUN = function( x ) cl[[ x ]]$N_cells )
+    # iteration across all the unique point mutations:
+    for( j in 1:length( nqu ) ){
+        # wc - which clones have an ID of point mutation
+        wc  =  which( sapply( X = 1:length( ids ), FUN = function( x ) is.element( nqu[j] , ids[[ x ]] ) ) )
+
+        VAF_1  =  pnt_mut_B[[ (nqu[ j ] + 1) / 2 ]]$safe( )
+
+        ### number of cells: speckled normal cells and primary tumor cells:
+        if ( any( clone_types[ wc ] == 'normal' ) ){
+            sm  =  sum( clone_numbers[ wc[ which( clone_types[ wc ]  ==  'normal' ) ] ] )
+            if ( length( sm ) == 0 ) sm = 0  # if all the normal clones are intact normal
+            VAF_1$N_speckled_normal =  sm
+        } else VAF_1$N_speckled_normal =  0
+
+        if ( any( clone_types[ wc ] == 'primary' ) ){
+            VAF_1$N_primary  =  sum( clone_numbers[ wc[ which( clone_types[ wc ]  ==  'primary' ) ] ] )
+        } else VAF_1$N_primary  =  0
+
+        if ( any( clone_types[ wc ] == 'metastatic' ) ){
+            VAF_1$N_metastatic  =  sum( clone_numbers[ wc[ which( clone_types[ wc ]  ==  'metastatic' ) ] ] )
+        } else VAF_1$N_metastatic  =  0
+
+        # add copy number of original allele A:
+        VAF_1$Copy_number_A  =  pnt_mut_A[[ ( nqu [ j ] + 1 ) / 2 ]]$Copy_number
+
+        VAF  =  rbind( VAF, VAF_1)
+    }
+
+    i_n  =  which( sapply( 1:length(clones), FUN = function(x) get_type( clones[[ x ]] ) ) == 'normal')
+    if ( length( i_n ) > 0 ){
+        int = sapply( i_n, FUN = function( x ) sum( clones[[ x ]]$pasgene ) )
+        if ( length( which( int == 0 ) ) > 0 ){
+            N_intact  =  sum( sapply( which( int == 0 ), FUN = function( x ) clones[[ x ]]$N_cells ) )
+        } else N_intact    =  0
+
+        N_speckled  =  env$N - N_intact
+    } else {
+        N_intact    =  0
+        N_speckled  =  0
+    }
+
+    VAF$N_speckled_normal_total  =  N_speckled
+    VAF$N_primary_total          =  env$P
+
+    # VAF$N_metastatic   =    0
+    VAF$N_metastatic_total   =   env$M
+
+    VAF$Chr  =  as.integer( VAF$Chr )
+
+    return( VAF )
+}
+
+
 
 #' Function to write info about relationship between genes and hallmarks
 #'
