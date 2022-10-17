@@ -9,7 +9,8 @@ m0	1e-07
 uo	0.5
 us	0.5
 s0	10
-k0	0.285714285714286
+k0	0.328841368667276
+ctmax	50
 m_dup	1e-08
 m_del	1e-09
 lambda_dup	5000
@@ -19,10 +20,15 @@ us_dup	0.8
 uo_del	0
 us_del	0.8
 censor_cells_number	1e+05
-censor_time_step	400
+censor_time_step	40
 d0	0.5
 Compaction_factor	TRUE
 model_name	proportional_metastatic
-real_time_stop	120000
+real_time_stop	120
 n_repeat	1
 monitor	TRUE
+tumbler_for_metastasis_trial	TRUE
+tumbler_for_apoptosis_trial	TRUE
+tumbler_for_immortalization_trial	TRUE
+tumbler_for_angiogenesis_trial	TRUE
+tumbler_for_drug_intervention_trial	TRUE

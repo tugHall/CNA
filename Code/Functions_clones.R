@@ -373,10 +373,10 @@ get_rho_VAF  <-  function( vf = NULL, rho = c( 0.0, 0.1, 0.5 ) , file_name = './
     }
 
     if ( save_to_file ){
-        Stop_reason = if ( sum( pck.env$data_last$N_cells ) > pck.env$censor_cells_number ){
+        Stop_reason = if ( sum( data_last$N_cells ) > censor_cells_number ){
             Stop_reason  =  'Cells number'
         } else {
-            if ( pck.env$data_last$Time[1] >= pck.env$censor_time_step ){
+            if ( data_last$Time[1] >= censor_time_step ){
                 Stop_reason  =  'Time step'
             } else {
                 Stop_reason  =  'Real time'

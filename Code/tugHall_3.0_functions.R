@@ -1149,7 +1149,7 @@ mixed_mut_order   <-   function( clone1 ) {
     # return the order, type and number of mutation (del, dup or point in order of appearance)
     order_tp_num  <-  data.frame( order = NULL, type = NULL, ID = NULL )
     i  =  0
-    if ( length( clone1$PointMut_ID ) > 0  & clone1$PointMut_ID  != 0 ){
+    if ( length( clone1$PointMut_ID ) > 0  & clone1$PointMut_ID[1]  != 0 ){
         for (i in 1:length( clone1$PointMut_ID )) {
             order_tp_num[i,'type']   =  'pnt'
             order_tp_num[i,'ID']     =  as.numeric( clone1$PointMut_ID[i] )
@@ -1157,7 +1157,7 @@ mixed_mut_order   <-   function( clone1 ) {
         }
     }
 
-    if ( length( clone1$CNA_ID ) > 0 & clone1$CNA_ID  != 0 ){
+    if ( length( clone1$CNA_ID ) > 0 & clone1$CNA_ID[1]  != 0 ){
         for (j in 1:length( clone1$CNA_ID ) ) {
             order_tp_num[j+i,'ID']      =   clone1$CNA_ID[ j ]
             cn1   =   cna_clones[[ order_tp_num[ j+i, 'ID' ] ]]
@@ -1764,7 +1764,7 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
             pos   = unlist( pm[[3]] )
             Chr   = unlist( pm[[4]] )
             pnt0 = generate_pnt( prntl, gene, pos, onco1, Chr )
-            if ( (clone1$PointMut_ID == 0)[1] ) {
+            if ( clone1$PointMut_ID[1] == 0 ) {
                         id   =  pnt_clones[[ length(pnt_clones) ]]$PointMut_ID
                       } else  id   =  c( clone1$PointMut_ID, pnt_clones[[ length(pnt_clones) ]]$PointMut_ID )
             clone1$PointMut_ID  =  id   # pnt_clone is generated in the generate_pnt function
@@ -1784,7 +1784,7 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
             genes =  unlist( cna_mut[[3]] )
             start_end   = unlist( cna_mut[[4]] )
             cna0 = generate_cna( prntl, genes, start_end, onco1, t )
-            if ( (clone1$CNA_ID == 0)[1] ) {
+            if ( clone1$CNA_ID[1] == 0 ) {
                 id   =  cna_clones[[ length(cna_clones) ]]$CNA_ID
             } else  id   =  c( clone1$CNA_ID, cna_clones[[ length(cna_clones) ]]$CNA_ID )
             clone1$CNA_ID  =  id
@@ -1803,7 +1803,7 @@ trial_mutagenesis <- function( clone1, num_mut, onco1 ) {
             ### Check what point mutations match into the CNA
             sp   = FALSE
             sp_A = FALSE
-            if ( clone1$PointMut_ID != 0 ){
+            if ( clone1$PointMut_ID[1] != 0 ){
                 sp = sapply( clone1$PointMut_ID , FUN = function( x )  {
                               chk_pnt_mut( pnt1  =  pnt_clones[[ x ]], Ref_start = start_end[1],
                                            Ref_end = start_end[2], Chr = Chr, prntl  =  prntl )
@@ -1881,7 +1881,7 @@ init_pnt_clones   <- function( clones, onco_clones ) {
               pnt0 = generate_pnt( prntl, gene, pos, onco1, Chr, mutation = TRUE )
 
               ### Add pnt mutation ID to a clone:
-              if ( (clone1$PointMut_ID == 0)[1] ) {
+              if ( (clone1$PointMut_ID[1] == 0) ) {
                 id   =  pnt_clones[[ length(pnt_clones) ]]$PointMut_ID
               } else  id   =  c( clone1$PointMut_ID, pnt_clones[[ length(pnt_clones) ]]$PointMut_ID )
               clone1$PointMut_ID  =  id
@@ -2240,7 +2240,7 @@ write_cloneout <- function( outfile, env, clones, isFirst, onco_clones ) {
 #' pnt_clones = tugHall_dataset$pnt_clones
 #' write_monitor( outfile = './Sim_monitoring.txt', start = TRUE , env, clones )
 #' write_monitor( outfile = './Sim_monitoring.txt', start = FALSE , env, clones )
-write_monitor  <- function( outfile, start = FALSE , env, clones ){
+write_monitor  <- function( outfile = './Sim_monitoring.txt', start = FALSE , env, clones ){
 
     if ( start ) {
         header <- c('Time', 'N_clones', 'N_normal_intact',  'N_normal_speckled', 'N_primary', 'N_metastatic',
@@ -2273,7 +2273,7 @@ write_monitor  <- function( outfile, start = FALSE , env, clones ){
             }
 
             if ( env$T %% 1 == 0 ){
-                vf        =  get_VAF_clones( env = env, clones = clones, pnt_clones = pck.env$pnt_clones )
+                vf        =  get_VAF_clones( env = env, clones = clones, pnt_clones = pnt_clones )
                 VAF       =  get_rho_VAF( vf = vf, rho = c( 0.0 ), save_to_file = FALSE )
 
                 cffc      =  1E06 / 2 / sum( onco$cds_1 ) / sum( env$N + env$P + env$M )
@@ -2311,7 +2311,7 @@ write_monitor  <- function( outfile, start = FALSE , env, clones ){
 #' @describeIn write_monitor  Function to get VAF info for each site during a simulation in order to get
 #' TMB - number of point mutations per 10^6 bps (per M bps)
 #'
-#' @param pnt_clones list of point mutations usually saved in tugHall environment pck.env
+#' @param pnt_clones list of point mutations 
 #'
 #' @return get_VAF_clones() returns data frame same as output of get_VAF() function
 #'
@@ -2663,14 +2663,24 @@ calc_binom <- function(tr,n,p){
 #' @export
 #'
 #' @examples model(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile, E0, F0, m0, uo, us, s0, k0, censor_cells_number, censor_time_step, d0)
-model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
-                  E0, F0, m0, uo, us, s0, k0, ctmax = 50, censor_cells_number, censor_time_step, d0) {
+model <- function( ) {
     write_log(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
-              E0, F0, m0, uo, us, s0=s0, k0=k0, ctmax = ctmax,
+              E0, F0, m0, uo, us, s0, k0, ctmax,
               m_dup, m_del, lambda_dup, lambda_del, # CNA parameters
               uo_dup, us_dup, uo_del, us_del,       # CNA parameters
-              censor_cells_number, censor_time_step, d0, Compaction_factor, model_name, real_time_stop,
-              n_repeat, monitor )   # write input parameters
+              censor_cells_number, censor_time_step, d0, Compaction_factor, model_name,
+              real_time_stop, n_repeat, monitor,
+              tumbler_for_metastasis_trial, tumbler_for_apoptosis_trial,
+              tumbler_for_immortalization_trial, tumbler_for_angiogenesis_trial,
+              tumbler_for_drug_intervention_trial )   # write input parameters
+    
+    # Define trial() function: trial_complex or trial_simple
+    if ( model_name != 'simplified' ){
+        trial  =  trial_complex
+    } else {
+        trial  =  trial_simple
+    }
+    
     onco = oncogene$new()        # make the vector onco about the hallmarks
     onco$read(genefile)          # read the input info to the onco from genefile - 'gene_cds2.txt'
     hall = hallmark$new()        # make a vector hall with hallmarks parameters
@@ -2706,7 +2716,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     write_weights("Output/Weights.txt", hall)                 # write the weights of genes for hallmarks
     write_break_points("Output/Break_points.txt", hall)
     write_header( cloneoutfile, env, onco )                   #
-    if ( monitor ) write_monitor( start = TRUE )
+    if ( monitor ) write_monitor( outfile = file_monitor, start = TRUE )
     cells_number <- sum_N_P_M(env, clones)                 # to calculate cells numbers - N,M
     init_pnt_clones( clones, onco_clones )              # initialization of pnt_clones for point mutations
 
@@ -2719,9 +2729,9 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
     print( paste0("The probability of an absence of the mutations is p0 = ", as.character(onco$p0_1) ))
     time_start  =  Sys.time()
     time_current  =  Sys.time()
-    while(length(clones) > 0 && censor_cells_number > cells_number &&
-          env$T < censor_time_step  &&
-          ( as.numeric( time_current - time_start ) < real_time_stop ) ){
+    while( length(clones) > 0 && censor_cells_number > cells_number &&
+           env$T < censor_time_step  &&
+          ( as.numeric( difftime( time_current, time_start, units = 'secs') ) < real_time_stop ) ){
 
         k_old = length(clones)          # the number of clones from last step
 
@@ -2771,7 +2781,7 @@ model <- function(genefile, clonefile, geneoutfile, cloneoutfile, logoutfile,
 
         write_cloneout( cloneoutfile, env, clones, isFirst, onco_clones )
         #print(c(env$T,env$N,env$M,env$last_id, length(clones), "N_clones_new = ", N_clones_new))
-        if ( monitor ) write_monitor( start = FALSE, env = env, clones = clones )
+        if ( monitor ) write_monitor( outfile = file_monitor, start = FALSE, env = env, clones = clones )
         time_current  =  Sys.time()
 
     }

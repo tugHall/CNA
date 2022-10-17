@@ -3,6 +3,16 @@
 
 library(stringr)   # to use string data in input files
 
+#' Function to make a gene_map data.frame with information of genes' locations
+#'
+#' @param f_out Name of file to save gene_map data.frame 
+#' @param ls List of IDs of genes corresponding CCDS database https://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/ 
+#' @param f_in Name of file to input downloaded from CCDS database
+#'
+#' @return gene_map data.frame with information of genes' locations for genes of interest
+#' @export
+#'
+#' @examples make_map(f_out    =  'Input/map.txt', ls   =  c( 'CCDS4107.1', 'CCDS8702.1', 'CCDS43171.1', 'CCDS11118.1' ), f_in =  'Input/CCDS.current.cdslen.txt' )
 make_map  <-  function(f_out    =  'Input/map.txt', 
                        ls   =  c( 'CCDS4107.1', 'CCDS8702.1', 
                                   'CCDS43171.1', 'CCDS11118.1' ), 
@@ -59,6 +69,14 @@ make_map  <-  function(f_out    =  'Input/map.txt',
 }    
 
 
+#' Function to order info in gene_map data.frame with information of genes' locations 
+#'
+#' @param gene_map data.frame with information of genes' locations
+#'
+#' @return The same data.frame gene_map with ordered positions for each gene and each chromosome  
+#' @export
+#'
+#' @examples order_gene_map( gene_map )
 order_gene_map  <-  function( gene_map ){
     gm = NULL
     for( t in   unique(gene_map$Chr) ) { 
@@ -73,7 +91,14 @@ order_gene_map  <-  function( gene_map ){
     return( gm )
 }
 
-# The function to get length of CDS and RNA from gene map
+#' Function to get length of CDS and whole gene from gene_map data.frame 
+#'
+#' @param gene_map 
+#'
+#' @return list of ( Name, CDS, LEN_Genes ) where Name is a vector of genes' names, CDS is a vector of CDS lengths, LEN_Genes is a vector of length of whole genes including introns and exons
+#' @export
+#'
+#' @examples get_len_cds_rna( gene_map)
 get_len_cds_rna  <-  function( gene_map){ 
     
     name0  =  unique( gene_map$Gene )
