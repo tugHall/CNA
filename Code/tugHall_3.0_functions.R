@@ -182,6 +182,24 @@ define_paramaters  <-  function( E0 =  1E-4, F0 =  10, m0 =  1E-7, uo =  0.9, us
         tumbler_for_angiogenesis_trial       <<-  tumbler_for_angiogenesis_trial
         tumbler_for_drug_intervention_trial  <<-  tumbler_for_drug_intervention_trial
     }
+
+    # The list of parameters:
+    vr = c( 'Compaction_factor', 'E0', 'F0', 'censor_cells_number',
+            'censor_time_step', 'clonefile', 'cloneoutfile', 'd0', 'ctmax',
+            'gene_map', 'genefile', 'geneoutfile', 'k0',
+            'lambda_del', 'lambda_dup', 'logoutfile', 'm0',
+            'm_del', 'm_dup', 'model_name', 'monitor',
+            'n_repeat', 's0', 'real_time_stop',
+            'uo', 'uo_del', 'uo_dup', 'us', 'us_del', 'us_dup',
+            'tumbler_for_metastasis_trial', 'tumbler_for_apoptosis_trial',
+            'tumbler_for_immortalization_trial', 'tumbler_for_angiogenesis_trial',
+            'tumbler_for_drug_intervention_trial' )
+    for( v in vr ){
+        if ( length( .GlobalEnv[[ v ]] ) == 0 ){
+            stop( paste0( 'The parameter ', v, ' is not defined. '))
+        }
+    }
+
 }
 
 #' Function to print GLOBAL parameters
@@ -2311,7 +2329,7 @@ write_monitor  <- function( outfile = './Sim_monitoring.txt', start = FALSE , en
 #' @describeIn write_monitor  Function to get VAF info for each site during a simulation in order to get
 #' TMB - number of point mutations per 10^6 bps (per M bps)
 #'
-#' @param pnt_clones list of point mutations 
+#' @param pnt_clones list of point mutations
 #'
 #' @return get_VAF_clones() returns data frame same as output of get_VAF() function
 #'
@@ -2673,14 +2691,14 @@ model <- function( ) {
               tumbler_for_metastasis_trial, tumbler_for_apoptosis_trial,
               tumbler_for_immortalization_trial, tumbler_for_angiogenesis_trial,
               tumbler_for_drug_intervention_trial )   # write input parameters
-    
+
     # Define trial() function: trial_complex or trial_simple
     if ( model_name != 'simplified' ){
         trial  =  trial_complex
     } else {
         trial  =  trial_simple
     }
-    
+
     onco = oncogene$new()        # make the vector onco about the hallmarks
     onco$read(genefile)          # read the input info to the onco from genefile - 'gene_cds2.txt'
     hall = hallmark$new()        # make a vector hall with hallmarks parameters
