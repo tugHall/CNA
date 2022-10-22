@@ -19,6 +19,7 @@
     define_gene_location()
     define_paramaters( read_fl = TRUE , file_name = './Input/parameters.txt' )
     define_compaction_factor( read_fl = TRUE , file_name = './Input/CF.txt' )
+    check_previous_data()
     print_parameters()
 
     n_c  =  0
